@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/layout/BottomNav";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "0815Poll - Easy Polling",
@@ -14,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-background min-h-screen">
+      <body className={`${inter.className} antialiased bg-background min-h-screen`}>
         <main className="pb-20 lg:pb-0">
           {children}
         </main>
