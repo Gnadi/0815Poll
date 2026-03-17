@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Header } from '@/components/layout/Header';
-import { PageContainer } from '@/components/layout/PageContainer';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Toggle } from '@/components/ui/Toggle';
+import Header from '@/components/layout/Header';
+import PageContainer from '@/components/layout/PageContainer';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Input from '@/components/ui/Input';
+import Toggle from '@/components/ui/Toggle';
 import { MapPin, X, Plus, Clock, ChevronRight } from 'lucide-react';
 import { getVoterId } from '@/lib/utils';
 
