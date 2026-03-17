@@ -35,6 +35,17 @@ export async function GET() {
   }
 }
 
+function parseDuration(duration: unknown): number {
+  if (typeof duration === 'number') return duration;
+  if (typeof duration === 'string') {
+    const match = duration.match(/^(\d+)h$/);
+    if (match) return parseInt(match[1], 10);
+    const num = parseFloat(duration);
+    if (!isNaN(num)) return num;
+  }
+  return 24;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -50,7 +61,7 @@ export async function POST(request: Request) {
 
     const pollId = generateId();
     const now = new Date();
-    const durationHours = duration || 24;
+    const durationHours = parseDuration(duration) || 24;
     const endsAt = new Date(now.getTime() + durationHours * 60 * 60 * 1000);
 
     const newPoll = {
@@ -68,14 +79,21 @@ export async function POST(request: Request) {
 
     await db.insert(polls).values(newPoll);
 
-    const optionRows = options.map((label: string, index: number) => ({
-      id: generateId(),
-      pollId,
-      label,
-      description: null,
-      metadata: optionMetadata?.[index] || null,
-      sortOrder: index,
-    }));
+    const optionRows = options.map((opt: string | { text: string; metadata?: Record<string, string> }, index: number) => {
+      const isObject = typeof opt === 'object' && opt !== null;
+      return {
+        id: generateId(),
+        pollId,
+        label: isObject ? opt.text : opt,
+        description: null,
+        metadata: isObject
+          ? (opt.metadata ? JSON.stringify(opt.metadata) : null)
+          : (optionMetadata?.[index]
+            ? (typeof optionMetadata[index] === 'string' ? optionMetadata[index] : JSON.stringify(optionMetadata[index]))
+            : null),
+        sortOrder: index,
+      };
+    });
 
     await db.insert(pollOptions).values(optionRows);
 
