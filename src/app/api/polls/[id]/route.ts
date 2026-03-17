@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/db';
+import { db, ensureDb } from '@/db';
+
+export const dynamic = 'force-dynamic';
 import { polls, pollOptions, votes } from '@/db/schema';
 import { eq, and, count } from 'drizzle-orm';
 
@@ -8,6 +10,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await ensureDb();
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const voterId = searchParams.get('voterId');

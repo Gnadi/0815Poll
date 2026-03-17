@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "better-sqlite3": "^12.8.0",
+    "@libsql/client": "^0.17.0",
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.7",
@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

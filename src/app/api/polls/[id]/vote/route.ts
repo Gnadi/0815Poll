@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/db';
+import { db, ensureDb } from '@/db';
+
+export const dynamic = 'force-dynamic';
 import { polls, pollOptions, votes } from '@/db/schema';
 import { generateId } from '@/lib/utils';
 import { eq, and, count } from 'drizzle-orm';
@@ -9,6 +11,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await ensureDb();
     const { id: pollId } = await params;
     const { optionId, voterId } = await request.json();
 

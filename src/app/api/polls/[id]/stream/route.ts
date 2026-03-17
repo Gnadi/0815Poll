@@ -1,5 +1,7 @@
-import { db } from '@/db';
+import { db, ensureDb } from '@/db';
 import { pollOptions, votes } from '@/db/schema';
+
+export const dynamic = 'force-dynamic';
 import { eq, count } from 'drizzle-orm';
 
 export async function GET(
@@ -7,6 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: pollId } = await params;
+  await ensureDb();
 
   let closed = false;
 

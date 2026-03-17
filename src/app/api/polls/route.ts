@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/db';
+import { db, ensureDb } from '@/db';
+
+export const dynamic = 'force-dynamic';
 import { polls, pollOptions, votes } from '@/db/schema';
 import { generateId } from '@/lib/utils';
 import { eq, desc, count, sql } from 'drizzle-orm';
 
 export async function GET() {
   try {
+    await ensureDb();
     const allPolls = await db
       .select({
         id: polls.id,
@@ -35,6 +38,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    await ensureDb();
     const { type, question, description, anonymous, duration, options, optionMetadata } = body;
 
     if (!type || !question || !options || options.length < 2) {
