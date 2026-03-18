@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server';
-import { db, ensureDb } from '@/db';
+import { firestore } from '@/lib/firebase';
+import { generateId } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
-import { polls, pollOptions, votes } from '@/db/schema';
-import { generateId } from '@/lib/utils';
-import { eq, and, count } from 'drizzle-orm';
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await ensureDb();
     const { id: pollId } = await params;
     const { optionId, voterId } = await request.json();
 
@@ -22,72 +19,75 @@ export async function POST(
       );
     }
 
-    // Check poll exists
-    const [poll] = await db
-      .select()
-      .from(polls)
-      .where(eq(polls.id, pollId));
+    const pollRef = firestore.collection('polls').doc(pollId);
+    const pollSnap = await pollRef.get();
 
-    if (!poll) {
+    if (!pollSnap.exists) {
       return NextResponse.json({ error: 'Poll not found' }, { status: 404 });
     }
+
+    const poll = pollSnap.data()!;
 
     // Check if poll is still active
     const now = new Date();
     const endsAt = new Date(poll.endsAt);
     if (poll.status === 'ended' || now > endsAt) {
       if (poll.status === 'active') {
-        await db.update(polls).set({ status: 'ended' }).where(eq(polls.id, pollId));
+        await pollRef.update({ status: 'ended' });
       }
       return NextResponse.json({ error: 'Poll has ended' }, { status: 400 });
     }
 
-    // Check if voter has already voted on this poll
-    const [existingVote] = await db
-      .select()
-      .from(votes)
-      .where(and(eq(votes.pollId, pollId), eq(votes.voterId, voterId)));
+    // Check if voter has already voted (use voterId as doc ID for uniqueness)
+    const existingVoteSnap = await pollRef
+      .collection('votes')
+      .where('voterId', '==', voterId)
+      .limit(1)
+      .get();
 
-    if (existingVote) {
+    if (!existingVoteSnap.empty) {
       return NextResponse.json({ error: 'You have already voted on this poll' }, { status: 409 });
     }
 
     // Insert the vote
-    await db.insert(votes).values({
-      id: generateId(),
-      pollId,
+    await pollRef.collection('votes').doc(generateId()).set({
       optionId,
       voterId,
       createdAt: now.toISOString(),
     });
 
-    // Return updated vote counts for all options
-    const updatedOptions = await db
-      .select({
-        id: pollOptions.id,
-        pollId: pollOptions.pollId,
-        label: pollOptions.label,
-        description: pollOptions.description,
-        metadata: pollOptions.metadata,
-        sortOrder: pollOptions.sortOrder,
-        voteCount: count(votes.id),
-      })
-      .from(pollOptions)
-      .leftJoin(votes, eq(votes.optionId, pollOptions.id))
-      .where(eq(pollOptions.pollId, pollId))
-      .groupBy(pollOptions.id)
-      .orderBy(pollOptions.sortOrder);
+    // Return updated vote counts
+    const [optionsSnap, votesSnap] = await Promise.all([
+      pollRef.collection('options').orderBy('sortOrder').get(),
+      pollRef.collection('votes').get(),
+    ]);
 
-    const totalVotes = updatedOptions.reduce((sum, opt) => sum + opt.voteCount, 0);
+    const voteCounts: Record<string, number> = {};
+    votesSnap.docs.forEach((doc) => {
+      const vote = doc.data();
+      voteCounts[vote.optionId] = (voteCounts[vote.optionId] || 0) + 1;
+    });
 
-    const optionsWithPercentage = updatedOptions.map((opt) => ({
-      ...opt,
-      percentage: totalVotes > 0 ? Math.round((opt.voteCount / totalVotes) * 100) : 0,
-    }));
+    const totalVotes = votesSnap.size;
+
+    const options = optionsSnap.docs.map((doc) => {
+      const data = doc.data();
+      const voteCount = voteCounts[doc.id] || 0;
+      return {
+        id: doc.id,
+        pollId,
+        label: data.label,
+        description: data.description,
+        metadata: data.metadata,
+        sortOrder: data.sortOrder,
+        voteCount,
+        percentage: totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0,
+      };
+    });
 
     return NextResponse.json({
       success: true,
-      options: optionsWithPercentage,
+      options,
       totalVotes,
     });
   } catch (error) {

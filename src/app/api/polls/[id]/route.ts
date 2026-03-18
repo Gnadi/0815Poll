@@ -1,82 +1,75 @@
 import { NextResponse } from 'next/server';
-import { db, ensureDb } from '@/db';
+import { firestore } from '@/lib/firebase';
 
 export const dynamic = 'force-dynamic';
-import { polls, pollOptions, votes } from '@/db/schema';
-import { eq, and, count } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await ensureDb();
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const voterId = searchParams.get('voterId');
 
-    // Fetch the poll
-    const [poll] = await db
-      .select()
-      .from(polls)
-      .where(eq(polls.id, id));
+    const pollRef = firestore.collection('polls').doc(id);
+    const pollSnap = await pollRef.get();
 
-    if (!poll) {
+    if (!pollSnap.exists) {
       return NextResponse.json({ error: 'Poll not found' }, { status: 404 });
     }
 
+    const poll = { id: pollSnap.id, ...pollSnap.data() } as Record<string, unknown>;
+
     // Check if poll has ended and update status if needed
     const now = new Date();
-    const endsAt = new Date(poll.endsAt);
+    const endsAt = new Date(poll.endsAt as string);
     if (poll.status === 'active' && now > endsAt) {
-      await db
-        .update(polls)
-        .set({ status: 'ended' })
-        .where(eq(polls.id, id));
+      await pollRef.update({ status: 'ended' });
       poll.status = 'ended';
     }
 
-    // Fetch options with vote counts
-    const optionsWithVotes = await db
-      .select({
-        id: pollOptions.id,
-        pollId: pollOptions.pollId,
-        label: pollOptions.label,
-        description: pollOptions.description,
-        metadata: pollOptions.metadata,
-        sortOrder: pollOptions.sortOrder,
-        voteCount: count(votes.id),
-      })
-      .from(pollOptions)
-      .leftJoin(votes, eq(votes.optionId, pollOptions.id))
-      .where(eq(pollOptions.pollId, id))
-      .groupBy(pollOptions.id)
-      .orderBy(pollOptions.sortOrder);
+    // Fetch options
+    const optionsSnap = await pollRef
+      .collection('options')
+      .orderBy('sortOrder')
+      .get();
 
-    // Calculate total votes and percentages
-    const totalVotes = optionsWithVotes.reduce((sum, opt) => sum + opt.voteCount, 0);
+    // Fetch all votes for this poll
+    const votesSnap = await pollRef.collection('votes').get();
 
-    const optionsWithPercentage = optionsWithVotes.map((opt) => ({
-      ...opt,
-      percentage: totalVotes > 0 ? Math.round((opt.voteCount / totalVotes) * 100) : 0,
-    }));
-
-    // Check if voter has already voted
+    // Count votes per option
+    const voteCounts: Record<string, number> = {};
     let userVotedOptionId: string | null = null;
-    if (voterId) {
-      const [existingVote] = await db
-        .select({ optionId: votes.optionId })
-        .from(votes)
-        .where(and(eq(votes.pollId, id), eq(votes.voterId, voterId)));
 
-      if (existingVote) {
-        userVotedOptionId = existingVote.optionId;
+    votesSnap.docs.forEach((voteDoc) => {
+      const vote = voteDoc.data();
+      voteCounts[vote.optionId] = (voteCounts[vote.optionId] || 0) + 1;
+      if (voterId && vote.voterId === voterId) {
+        userVotedOptionId = vote.optionId;
       }
-    }
+    });
+
+    const totalVotes = votesSnap.size;
+
+    const options = optionsSnap.docs.map((doc) => {
+      const data = doc.data();
+      const voteCount = voteCounts[doc.id] || 0;
+      return {
+        id: doc.id,
+        pollId: id,
+        label: data.label,
+        description: data.description,
+        metadata: data.metadata,
+        sortOrder: data.sortOrder,
+        voteCount,
+        percentage: totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0,
+      };
+    });
 
     return NextResponse.json({
       poll,
-      options: optionsWithPercentage,
+      options,
       totalVotes,
       userVotedOptionId,
     });

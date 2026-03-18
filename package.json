@@ -9,8 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.0",
-    "drizzle-orm": "^0.45.1",
+    "firebase-admin": "^13.7.0",
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.7",
     "next": "16.1.7",
@@ -22,7 +21,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
     "tailwindcss": "^4",

@@ -1,39 +1,8 @@
 import { NextResponse } from 'next/server';
-import { db, ensureDb } from '@/db';
+import { firestore } from '@/lib/firebase';
+import { generateId } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
-import { polls, pollOptions, votes } from '@/db/schema';
-import { generateId } from '@/lib/utils';
-import { eq, desc, count, sql } from 'drizzle-orm';
-
-export async function GET() {
-  try {
-    await ensureDb();
-    const allPolls = await db
-      .select({
-        id: polls.id,
-        type: polls.type,
-        question: polls.question,
-        description: polls.description,
-        anonymous: polls.anonymous,
-        duration: polls.duration,
-        createdAt: polls.createdAt,
-        endsAt: polls.endsAt,
-        status: polls.status,
-        creatorId: polls.creatorId,
-        totalVotes: count(votes.id),
-      })
-      .from(polls)
-      .leftJoin(votes, eq(votes.pollId, polls.id))
-      .groupBy(polls.id)
-      .orderBy(desc(polls.createdAt));
-
-    return NextResponse.json(allPolls);
-  } catch (error) {
-    console.error('Error fetching polls:', error);
-    return NextResponse.json({ error: 'Failed to fetch polls' }, { status: 500 });
-  }
-}
 
 function parseDuration(duration: unknown): number {
   if (typeof duration === 'number') return duration;
@@ -46,10 +15,36 @@ function parseDuration(duration: unknown): number {
   return 24;
 }
 
+export async function GET() {
+  try {
+    const pollsSnap = await firestore
+      .collection('polls')
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    const allPolls = await Promise.all(
+      pollsSnap.docs.map(async (doc) => {
+        const poll = { id: doc.id, ...doc.data() };
+        const votesSnap = await firestore
+          .collection('polls')
+          .doc(doc.id)
+          .collection('votes')
+          .count()
+          .get();
+        return { ...poll, totalVotes: votesSnap.data().count };
+      })
+    );
+
+    return NextResponse.json(allPolls);
+  } catch (error) {
+    console.error('Error fetching polls:', error);
+    return NextResponse.json({ error: 'Failed to fetch polls' }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    await ensureDb();
     const { type, question, description, anonymous, duration, options, optionMetadata } = body;
 
     if (!type || !question || !options || options.length < 2) {
@@ -64,8 +59,7 @@ export async function POST(request: Request) {
     const durationHours = parseDuration(duration) || 24;
     const endsAt = new Date(now.getTime() + durationHours * 60 * 60 * 1000);
 
-    const newPoll = {
-      id: pollId,
+    const pollData = {
       type,
       question,
       description: description || null,
@@ -73,17 +67,21 @@ export async function POST(request: Request) {
       duration: durationHours,
       createdAt: now.toISOString(),
       endsAt: endsAt.toISOString(),
-      status: 'active' as const,
+      status: 'active',
       creatorId: null,
     };
 
-    await db.insert(polls).values(newPoll);
+    const pollRef = firestore.collection('polls').doc(pollId);
+    const batch = firestore.batch();
 
-    const optionRows = options.map((opt: string | { text: string; metadata?: Record<string, string> }, index: number) => {
+    batch.set(pollRef, pollData);
+
+    const createdOptions: Array<Record<string, unknown>> = [];
+
+    options.forEach((opt: string | { text: string; metadata?: Record<string, string> }, index: number) => {
       const isObject = typeof opt === 'object' && opt !== null;
-      return {
-        id: generateId(),
-        pollId,
+      const optionId = generateId();
+      const optionData = {
         label: isObject ? opt.text : opt,
         description: null,
         metadata: isObject
@@ -93,16 +91,14 @@ export async function POST(request: Request) {
             : null),
         sortOrder: index,
       };
+
+      batch.set(pollRef.collection('options').doc(optionId), optionData);
+      createdOptions.push({ id: optionId, pollId, ...optionData });
     });
 
-    await db.insert(pollOptions).values(optionRows);
+    await batch.commit();
 
-    const createdOptions = await db
-      .select()
-      .from(pollOptions)
-      .where(eq(pollOptions.pollId, pollId));
-
-    return NextResponse.json({ ...newPoll, options: createdOptions }, { status: 201 });
+    return NextResponse.json({ id: pollId, ...pollData, options: createdOptions }, { status: 201 });
   } catch (error) {
     console.error('Error creating poll:', error);
     return NextResponse.json({ error: 'Failed to create poll' }, { status: 500 });

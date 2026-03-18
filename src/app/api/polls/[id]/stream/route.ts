@@ -1,15 +1,12 @@
-import { db, ensureDb } from '@/db';
-import { pollOptions, votes } from '@/db/schema';
+import { firestore } from '@/lib/firebase';
 
 export const dynamic = 'force-dynamic';
-import { eq, count } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: pollId } = await params;
-  await ensureDb();
 
   let closed = false;
 
@@ -27,28 +24,34 @@ export async function GET(
       };
 
       const getVoteCounts = async () => {
-        const options = await db
-          .select({
-            id: pollOptions.id,
-            label: pollOptions.label,
-            sortOrder: pollOptions.sortOrder,
-            voteCount: count(votes.id),
-          })
-          .from(pollOptions)
-          .leftJoin(votes, eq(votes.optionId, pollOptions.id))
-          .where(eq(pollOptions.pollId, pollId))
-          .groupBy(pollOptions.id)
-          .orderBy(pollOptions.sortOrder);
+        const pollRef = firestore.collection('polls').doc(pollId);
 
-        const totalVotes = options.reduce((sum, opt) => sum + opt.voteCount, 0);
+        const [optionsSnap, votesSnap] = await Promise.all([
+          pollRef.collection('options').orderBy('sortOrder').get(),
+          pollRef.collection('votes').get(),
+        ]);
 
-        return {
-          options: options.map((opt) => ({
-            ...opt,
-            percentage: totalVotes > 0 ? Math.round((opt.voteCount / totalVotes) * 100) : 0,
-          })),
-          totalVotes,
-        };
+        const voteCounts: Record<string, number> = {};
+        votesSnap.docs.forEach((doc) => {
+          const vote = doc.data();
+          voteCounts[vote.optionId] = (voteCounts[vote.optionId] || 0) + 1;
+        });
+
+        const totalVotes = votesSnap.size;
+
+        const options = optionsSnap.docs.map((doc) => {
+          const data = doc.data();
+          const voteCount = voteCounts[doc.id] || 0;
+          return {
+            id: doc.id,
+            label: data.label,
+            sortOrder: data.sortOrder,
+            voteCount,
+            percentage: totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0,
+          };
+        });
+
+        return { options, totalVotes };
       };
 
       // Send initial data
