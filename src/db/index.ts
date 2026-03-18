@@ -6,9 +6,16 @@ const isVercel = process.env.VERCEL === '1';
 const url = process.env.TURSO_DATABASE_URL || (isVercel ? 'file:/tmp/polls.db' : 'file:data/polls.db');
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
+if (isVercel && !process.env.TURSO_DATABASE_URL) {
+  console.warn(
+    '[0815Poll] WARNING: Running on Vercel without TURSO_DATABASE_URL. ' +
+    'Using ephemeral /tmp storage — data will be lost between serverless invocations. ' +
+    'Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars for persistent storage.'
+  );
+}
+
 let client: Client | null = null;
 let _db: ReturnType<typeof drizzle> | null = null;
-let _ready: Promise<void> | null = null;
 
 function getClient() {
   if (!client) {
@@ -74,8 +81,11 @@ async function initDb() {
   `);
 }
 
+// Always re-run initDb on Vercel to handle fresh /tmp after cold starts
+let _ready: Promise<void> | null = null;
+
 export function ensureDb() {
-  if (!_ready) {
+  if (!_ready || isVercel) {
     _ready = initDb();
   }
   return _ready;
