@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Image,
@@ -13,8 +13,11 @@ import {
   Smartphone,
   RefreshCw,
   ArrowLeft,
+  FileCode,
+  FileText,
+  FileJson,
 } from 'lucide-react'
-import RichEditor from '../components/RichEditor'
+import CodeEditor from '../components/CodeEditor'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
 import Sidebar from '../components/Sidebar'
@@ -29,42 +32,186 @@ const DURATION_OPTIONS = [
   { label: '7 days', value: 168 },
 ]
 
-const SNIPPETS = [
-  { icon: Image, label: 'Image Choice', description: 'Visual poll options', template: '<h3>Choose your favorite</h3>\n<p>Option A vs Option B</p>' },
-  { icon: Star, label: 'Star Rating', description: '1-5 scale feedback', template: '<h3>Rate this experience</h3>\n<p>⭐⭐⭐⭐⭐</p>' },
-  { icon: SlidersHorizontal, label: 'Range Slider', description: 'Numeric range input', template: '<h3>How likely are you to recommend?</h3>\n<p>1 ——————— 10</p>' },
-  { icon: ListOrdered, label: 'Ranking', description: 'Prioritize options', template: '<h3>Rank these options</h3>\n<ol><li>First choice</li><li>Second choice</li><li>Third choice</li></ol>' },
+const DEFAULT_HTML = `<div class="poll-container">
+    <h3>What's your favorite framework?</h3>
+
+    <div class="options">
+        <div class="option active">
+            <img src="react.svg" alt="React"
+/>
+
+            <span>React</span>
+        </div>
+        <div class="option">
+            <img src="vue.svg" alt="Vue" />
+            <span>Vue.js</span>
+        </div>
+    </div>
+
+    <button class="vote-btn">Cast Vote</button>
+</div>`
+
+const DEFAULT_CSS = `body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 16px;
+    background: #f6f6f8;
+}
+
+.poll-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+h3 {
+    color: #1a1a2e;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.option:hover,
+.option.active {
+    border-color: #5d5fef;
+    background: #eef0fd;
+}
+
+.option img {
+    width: 32px;
+    height: 32px;
+}
+
+.vote-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: #5d5fef;
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+}
+
+.vote-btn:hover {
+    background: #4b4dcc;
+}`
+
+const DEFAULT_JS = `// Add interactivity to your poll
+document.querySelectorAll('.option').forEach(option => {
+    option.addEventListener('click', () => {
+        document.querySelectorAll('.option').forEach(o => {
+            o.classList.remove('active');
+        });
+        option.classList.add('active');
+    });
+});
+
+document.querySelector('.vote-btn')?.addEventListener('click', () => {
+    const selected = document.querySelector('.option.active span');
+    if (selected) {
+        alert('You voted for: ' + selected.textContent);
+    }
+});`
+
+type TabId = 'html' | 'css' | 'js'
+
+const TABS: { id: TabId; label: string; icon: typeof FileCode; prefix: string }[] = [
+  { id: 'html', label: 'index.html', icon: FileCode, prefix: 'html' },
+  { id: 'css', label: 'styles.css', icon: FileText, prefix: 'css' },
+  { id: 'js', label: 'script.js', icon: FileJson, prefix: 'js' },
 ]
 
-const ADVANCED_SNIPPETS = [
-  { icon: GitBranch, label: 'Logic Jumps', description: 'Conditional flow' },
-  { icon: Webhook, label: 'Webhooks', description: 'External integrations' },
+const SNIPPETS = [
+  {
+    icon: Image, label: 'Image Choice', description: 'Visual poll options',
+    html: `\n<div class="option">\n    <img src="placeholder.svg" alt="Option" />\n    <span>New Option</span>\n</div>`,
+  },
+  {
+    icon: Star, label: 'Star Rating', description: '1-5 scale feedback',
+    html: `\n<div class="stars">\n    <span class="star" data-value="1">&#9733;</span>\n    <span class="star" data-value="2">&#9733;</span>\n    <span class="star" data-value="3">&#9733;</span>\n    <span class="star" data-value="4">&#9733;</span>\n    <span class="star" data-value="5">&#9733;</span>\n</div>`,
+  },
+  {
+    icon: SlidersHorizontal, label: 'Range Slider', description: 'Numeric range input',
+    html: `\n<div class="range-group">\n    <label>Rating: <span id="range-val">5</span>/10</label>\n    <input type="range" min="1" max="10" value="5"\n        oninput="document.getElementById('range-val').textContent=this.value" />\n</div>`,
+  },
+  {
+    icon: ListOrdered, label: 'Ranking', description: 'Prioritize options',
+    html: `\n<ol class="ranking">\n    <li draggable="true">First choice</li>\n    <li draggable="true">Second choice</li>\n    <li draggable="true">Third choice</li>\n</ol>`,
+  },
 ]
 
 export default function CreateCustom() {
   const [question, setQuestion] = useState('')
-  const [customContent, setCustomContent] = useState('')
+  const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML)
+  const [cssCode, setCssCode] = useState(DEFAULT_CSS)
+  const [jsCode, setJsCode] = useState(DEFAULT_JS)
+  const [activeTab, setActiveTab] = useState<TabId>('html')
   const [anonymous, setAnonymous] = useState(true)
   const [duration, setDuration] = useState(24)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [showConfig, setShowConfig] = useState(false)
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop')
+  const [previewKey, setPreviewKey] = useState(0)
 
   const { createPoll } = usePoll()
   const { user } = useAuth()
   const { showToast } = useToast()
   const navigate = useNavigate()
 
-  const handleSnippetInsert = (template: string) => {
-    setCustomContent((prev) => prev ? prev + template : template)
-    showToast('Snippet added to editor', 'success')
+  const codeMap: Record<TabId, { value: string; set: (v: string) => void }> = {
+    html: { value: htmlCode, set: setHtmlCode },
+    css: { value: cssCode, set: setCssCode },
+    js: { value: jsCode, set: setJsCode },
+  }
+
+  // Build the combined content for preview and storage
+  const combinedContent = useMemo(() =>
+    `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>${cssCode}</style>
+</head>
+<body>
+${htmlCode}
+<script>${jsCode}<\/script>
+</body>
+</html>`,
+    [htmlCode, cssCode, jsCode]
+  )
+
+  const previewSrcDoc = useMemo(() => combinedContent, [combinedContent])
+
+  const handleSnippetInsert = (snippetHtml: string) => {
+    setHtmlCode((prev) => prev + snippetHtml)
+    setActiveTab('html')
+    showToast('Snippet inserted into HTML', 'success')
   }
 
   const handleSubmit = async () => {
     const errs: Record<string, string> = {}
     if (!question.trim()) errs.question = 'Question is required.'
-    if (!customContent || customContent === '<p></p>') errs.content = 'Content is required.'
+    if (!htmlCode.trim()) errs.content = 'HTML content is required.'
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
     setSubmitting(true)
@@ -73,7 +220,7 @@ export default function CreateCustom() {
         type: 'custom',
         question: question.trim(),
         description: '',
-        customContent,
+        customContent: combinedContent,
         settings: { anonymous, duration },
         createdBy: user?.uid || null,
       })
@@ -93,33 +240,66 @@ export default function CreateCustom() {
         <button type="button" onClick={() => navigate(-1)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
           <ArrowLeft className="h-5 w-5 text-gray-700" />
         </button>
-        <h1 className="text-base font-bold text-gray-900">Create Custom Poll</h1>
+        <h1 className="text-base font-bold text-gray-900">Custom Poll</h1>
         <div className="w-10" />
       </header>
 
       <div className="px-4 py-4 pb-24 space-y-6">
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title / Question</label>
-          <textarea
+          <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title</label>
+          <input
+            type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            rows={2}
             placeholder="What's the topic of this poll?"
-            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400"
           />
           {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
         </div>
 
+        {/* Mobile tabs */}
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Custom Content</label>
-          <RichEditor
-            content={customContent}
-            onChange={setCustomContent}
-            placeholder="Write your poll content here..."
-          />
+          <div className="flex gap-1 mb-2">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 rounded-lg py-2 text-xs font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="rounded-2xl overflow-hidden border border-gray-200 bg-[#1e1e2e] h-64">
+            <CodeEditor
+              value={codeMap[activeTab].value}
+              onChange={codeMap[activeTab].set}
+              language={activeTab}
+            />
+          </div>
           {errors.content && <p className="mt-1 text-xs text-red-500">{errors.content}</p>}
         </div>
 
+        {/* Mobile preview */}
+        <div>
+          <label className="block text-sm font-bold text-gray-800 mb-2">Preview</label>
+          <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white h-64">
+            <iframe
+              key={previewKey}
+              srcDoc={previewSrcDoc}
+              title="Preview"
+              sandbox="allow-scripts"
+              className="w-full h-full border-0"
+            />
+          </div>
+        </div>
+
+        {/* Mobile settings */}
         <div>
           <label className="block text-sm font-bold text-gray-800 mb-2">Settings</label>
           <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100">
@@ -203,41 +383,39 @@ export default function CreateCustom() {
         {/* Config panel (collapsible) */}
         {showConfig && (
           <div className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="max-w-2xl mx-auto">
-              <div className="grid grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title / Question</label>
-                  <input
-                    type="text"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="What's the topic of this poll?"
-                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
-                  />
-                  {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
+            <div className="max-w-3xl mx-auto grid grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title / Question</label>
+                <input
+                  type="text"
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="What's the topic of this poll?"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
+                />
+                {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-2">Duration</label>
+                <div className="flex flex-wrap gap-2">
+                  {DURATION_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setDuration(opt.value)}
+                      className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
+                        duration === opt.value
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-800 mb-2">Duration</label>
-                  <div className="flex flex-wrap gap-2">
-                    {DURATION_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setDuration(opt.value)}
-                        className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
-                          duration === opt.value
-                            ? 'bg-primary-500 text-white border-primary-500'
-                            : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
-                </div>
+              </div>
+              <div>
+                <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
               </div>
             </div>
           </div>
@@ -258,7 +436,7 @@ export default function CreateCustom() {
                     <button
                       key={snippet.label}
                       type="button"
-                      onClick={() => handleSnippetInsert(snippet.template)}
+                      onClick={() => handleSnippetInsert(snippet.html)}
                       className="w-full flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-3 text-left hover:bg-primary-50 hover:border-primary-200 transition-colors"
                     >
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-100 shrink-0">
@@ -274,16 +452,16 @@ export default function CreateCustom() {
               </div>
 
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-3">Advanced</p>
-              <div className="space-y-2">
-                {ADVANCED_SNIPPETS.map((snippet) => {
-                  const Icon = snippet.icon
+              <div className="space-y-1">
+                {[
+                  { icon: GitBranch, label: 'Logic Jumps' },
+                  { icon: Webhook, label: 'Webhooks' },
+                ].map((item) => {
+                  const Icon = item.icon
                   return (
-                    <div
-                      key={snippet.label}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-gray-400"
-                    >
+                    <div key={item.label} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-gray-400">
                       <Icon className="h-4 w-4 shrink-0" />
-                      <span className="text-sm">{snippet.label}</span>
+                      <span className="text-sm">{item.label}</span>
                     </div>
                   )
                 })}
@@ -291,26 +469,37 @@ export default function CreateCustom() {
             </div>
           </div>
 
-          {/* Center panel - Editor */}
+          {/* Center panel - Code Editor */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Editor tabs */}
-            <div className="flex items-center border-b border-gray-200 bg-gray-50 px-4">
-              <div className="flex items-center gap-1 px-3 py-2.5 border-b-2 border-primary-500 text-primary-600 text-sm font-medium">
-                <span className="text-xs text-primary-400">{'</>'}</span>
-                Content Editor
-              </div>
+            {/* File tabs */}
+            <div className="flex items-center bg-[#252536] px-2 pt-2">
+              {TABS.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                      activeTab === tab.id
+                        ? 'bg-[#1e1e2e] text-white'
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {tab.label}
+                  </button>
+                )
+              })}
             </div>
 
-            {/* Editor area with dark theme */}
-            <div className="flex-1 bg-[#1e1e2e] overflow-y-auto">
-              <div className="p-0 custom-editor-dark">
-                <RichEditor
-                  content={customContent}
-                  onChange={setCustomContent}
-                  placeholder="Start building your custom poll content..."
-                />
-                {errors.content && <p className="mx-4 mb-4 text-xs text-red-400">{errors.content}</p>}
-              </div>
+            {/* Editor area */}
+            <div className="flex-1 bg-[#1e1e2e] overflow-auto">
+              <CodeEditor
+                value={codeMap[activeTab].value}
+                onChange={codeMap[activeTab].set}
+                language={activeTab}
+              />
             </div>
           </div>
 
@@ -335,72 +524,25 @@ export default function CreateCustom() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCustomContent(customContent)}
+                  onClick={() => setPreviewKey((k) => k + 1)}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600"
+                  title="Refresh preview"
                 >
                   <RefreshCw className="h-4 w-4" />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-              <div className={`mx-auto bg-white rounded-2xl border border-gray-200 p-5 shadow-sm ${previewMode === 'mobile' ? 'max-w-[280px]' : ''}`}>
-                {/* Preview header badge */}
-                {question && (
-                  <span className="inline-block rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-700 mb-3 uppercase tracking-wide">
-                    Community Poll
-                  </span>
-                )}
-
-                {/* Preview title */}
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  {question || 'Your poll title will appear here'}
-                </h3>
-
-                {/* Preview content */}
-                {customContent && customContent !== '<p></p>' ? (
-                  <div
-                    className="prose prose-sm max-w-none text-gray-700"
-                    dangerouslySetInnerHTML={{ __html: customContent }}
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    <div className="rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-100" />
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-100 rounded w-3/4 mb-1.5" />
-                        <div className="h-2 bg-gray-50 rounded w-1/2" />
-                      </div>
-                    </div>
-                    <div className="rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-100" />
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-100 rounded w-2/3 mb-1.5" />
-                        <div className="h-2 bg-gray-50 rounded w-2/5" />
-                      </div>
-                    </div>
-                    <div className="rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-100" />
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-100 rounded w-1/2 mb-1.5" />
-                        <div className="h-2 bg-gray-50 rounded w-1/3" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Preview submit button */}
-                <button
-                  type="button"
-                  className="w-full rounded-xl bg-primary-500 py-3 text-sm font-bold text-white mt-5"
-                  disabled
-                >
-                  Submit Response
-                </button>
-
-                <p className="text-center text-xs text-gray-400 mt-3">
-                  Preview only
-                </p>
+            <div className="flex-1 overflow-auto bg-gray-50 p-4">
+              <div className={`mx-auto h-full ${previewMode === 'mobile' ? 'max-w-[320px]' : ''}`}>
+                <iframe
+                  key={previewKey}
+                  srcDoc={previewSrcDoc}
+                  title="Live Preview"
+                  sandbox="allow-scripts"
+                  className="w-full h-full border-0 rounded-xl bg-white shadow-sm"
+                  style={{ minHeight: '500px' }}
+                />
               </div>
             </div>
           </div>
