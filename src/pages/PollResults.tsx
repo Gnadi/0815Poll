@@ -75,6 +75,15 @@ export default function PollResults() {
     runnerUpPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
   }
 
+  // Ranking poll: winner by Borda Count
+  let rankingWinner = null
+  let totalBordaPoints = 0
+  if (poll.type === 'ranking' && poll.options && poll.totalVotes > 0) {
+    totalBordaPoints = poll.options.reduce((sum, o) => sum + (o.bordaPoints || 0), 0)
+    const sorted = [...poll.options].sort((a, b) => (b.bordaPoints || 0) - (a.bordaPoints || 0))
+    rankingWinner = sorted[0]
+  }
+
   // Schedule poll: find most popular slot
   type TopSlot = { date: string; time: string; votes: number }
   let topSlot: TopSlot | null = null
@@ -160,6 +169,21 @@ export default function PollResults() {
             <div className="lg:grid lg:grid-cols-3 lg:gap-6">
               {/* Main results column */}
               <div className="lg:col-span-2 space-y-5">
+                {/* Winner card — Ranking poll */}
+                {poll.type === 'ranking' && rankingWinner && poll.totalVotes > 0 && (
+                  <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
+                    <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                    <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Top Ranked Option</p>
+                    <h3 className="text-2xl font-bold mb-2">{rankingWinner.text}</h3>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-black">{rankingWinner.bordaPoints || 0} pts</span>
+                      <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
+                        Borda Count
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Winner card — Standard poll */}
                 {poll.type === 'standard' && winnerOption && poll.totalVotes > 0 && (
                   <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
@@ -279,6 +303,33 @@ export default function PollResults() {
                   </div>
                 )}
 
+                {/* Ranking poll distribution */}
+                {poll.type === 'ranking' && poll.options && poll.options.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Borda Score Ranking</h3>
+                      <span className="text-xs text-gray-400">{poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[...poll.options]
+                        .sort((a, b) => (b.bordaPoints || 0) - (a.bordaPoints || 0))
+                        .map((opt, idx) => (
+                          <ResultBar
+                            key={opt.id}
+                            label={opt.text}
+                            votes={opt.bordaPoints || 0}
+                            totalVotes={totalBordaPoints || 1}
+                            isWinner={idx === 0 && (opt.bordaPoints || 0) > 0}
+                            isVoted={false}
+                          />
+                        ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2 text-center">
+                      Scores calculated via Borda Count — higher rank = more points per voter
+                    </p>
+                  </div>
+                )}
+
                 {/* Custom poll winner */}
                 {poll.type === 'custom' && poll.options && poll.totalVotes > 0 && (() => {
                   const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
@@ -363,6 +414,25 @@ export default function PollResults() {
 
               {/* Side column - stats and insights */}
               <div className="space-y-5 mt-5 lg:mt-0">
+                {/* Quick Insight — Ranking poll */}
+                {poll.type === 'ranking' && rankingWinner && poll.totalVotes > 0 && (
+                  <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lightbulb className="h-5 w-5 text-yellow-500" />
+                      <span className="text-sm font-bold text-gray-800">Quick Insight</span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      <strong>{rankingWinner.text}</strong> leads with {rankingWinner.bordaPoints || 0} Borda points
+                      across {poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}.
+                      {poll.options && poll.options.length > 1 && (() => {
+                        const sorted = [...poll.options].sort((a, b) => (b.bordaPoints || 0) - (a.bordaPoints || 0))
+                        const gap = (sorted[0].bordaPoints || 0) - (sorted[1] ? (sorted[1].bordaPoints || 0) : 0)
+                        return gap > 0 ? ` ${gap} pts ahead of the runner-up.` : ''
+                      })()}
+                    </p>
+                  </div>
+                )}
+
                 {/* Quick Insight */}
                 {poll.type === 'standard' && winnerOption && poll.totalVotes > 0 && (
                   <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
@@ -387,7 +457,7 @@ export default function PollResults() {
                   </div>
                   <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">
-                      {(poll.type === 'standard' || poll.type === 'custom') && poll.options ? poll.options.length :
+                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking') && poll.options ? poll.options.length :
                        poll.type === 'location' && poll.locations ? poll.locations.length :
                        poll.type === 'schedule' && poll.timeSlots ? poll.timeSlots.length : '—'}
                     </p>
