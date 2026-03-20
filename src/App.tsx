@@ -13,6 +13,7 @@ import CreateSchedule from './pages/CreateSchedule'
 import CreateLocation from './pages/CreateLocation'
 import CreateCustom from './pages/CreateCustom'
 import CreateRanking from './pages/CreateRanking'
+import CreatePriority from './pages/CreatePriority'
 import PollVote from './pages/PollVote'
 import PollResults from './pages/PollResults'
 import Profile from './pages/Profile'
@@ -34,6 +35,7 @@ export default function App() {
                 <Route path="/create/location" element={<CreateLocation />} />
                 <Route path="/create/custom" element={<CreateCustom />} />
                 <Route path="/create/ranking" element={<CreateRanking />} />
+                <Route path="/create/priority" element={<CreatePriority />} />
                 <Route path="/poll/:id" element={<PollVote />} />
                 <Route path="/poll/:id/results" element={<PollResults />} />
                 <Route path="/profile" element={<Profile />} />

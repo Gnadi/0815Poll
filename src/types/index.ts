@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
-export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking'
+export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking' | 'priority'
 export type PollStatus = 'active' | 'ended'
 
 export interface PollOption {
@@ -8,6 +8,7 @@ export interface PollOption {
   text: string
   votes: number
   bordaPoints?: number // Accumulated Borda Count points for ranking polls
+  priorityPoints?: number // Accumulated priority points for priority polls
   customContent?: string // Full HTML document for custom poll options
 }
 
@@ -29,6 +30,7 @@ export interface LocationOption {
 export interface PollSettings {
   anonymous: boolean
   duration: number // hours
+  votingPower?: number // Points each voter has in priority polls (default 5)
 }
 
 export interface Poll {
@@ -73,6 +75,14 @@ export interface RankingVote {
   pollId: string
   userId: string | null
   ranking: string[] // option IDs in user's preferred order (index 0 = top choice)
+  createdAt: Timestamp
+}
+
+export interface PriorityVote {
+  id: string
+  pollId: string
+  userId: string | null
+  distribution: Record<string, number> // optionId -> points allocated
   createdAt: Timestamp
 }
 

@@ -104,6 +104,15 @@ export default function PollResults() {
     winnerLoc = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
   }
 
+  // Priority poll: winner by highest priorityPoints
+  let priorityWinner = null
+  let totalPriorityPoints = 0
+  if (poll.type === 'priority' && poll.options && poll.totalVotes > 0) {
+    totalPriorityPoints = poll.options.reduce((sum, o) => sum + (o.priorityPoints || 0), 0)
+    const sorted = [...poll.options].sort((a, b) => (b.priorityPoints || 0) - (a.priorityPoints || 0))
+    priorityWinner = sorted[0]
+  }
+
   return (
     <div className="min-h-screen bg-app-bg">
       {/* Desktop sidebar */}
@@ -222,6 +231,21 @@ export default function PollResults() {
                   </div>
                 )}
 
+                {/* Winner card — Priority poll */}
+                {poll.type === 'priority' && priorityWinner && poll.totalVotes > 0 && (
+                  <div className="rounded-2xl bg-teal-500 p-5 text-white relative overflow-hidden lg:p-6">
+                    <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                    <p className="text-xs font-semibold uppercase tracking-wide text-teal-100 mb-1">Top Priority</p>
+                    <h3 className="text-2xl font-bold mb-2">{priorityWinner.text}</h3>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-black">{priorityWinner.priorityPoints || 0} pts</span>
+                      <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
+                        {totalPriorityPoints > 0 ? Math.round(((priorityWinner.priorityPoints || 0) / totalPriorityPoints) * 100) : 0}% of all points
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Voting distribution */}
                 {poll.type === 'standard' && poll.options && poll.options.length > 0 && (
                   <div>
@@ -330,6 +354,33 @@ export default function PollResults() {
                   </div>
                 )}
 
+                {/* Priority poll distribution */}
+                {poll.type === 'priority' && poll.options && poll.options.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Priority Ranking</h3>
+                      <span className="text-xs text-gray-400">{poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'} · {totalPriorityPoints} pts total</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[...poll.options]
+                        .sort((a, b) => (b.priorityPoints || 0) - (a.priorityPoints || 0))
+                        .map((opt, idx) => (
+                          <ResultBar
+                            key={opt.id}
+                            label={opt.text}
+                            votes={opt.priorityPoints || 0}
+                            totalVotes={totalPriorityPoints || 1}
+                            isWinner={idx === 0 && (opt.priorityPoints || 0) > 0}
+                            isVoted={false}
+                          />
+                        ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2 text-center">
+                      Each voter had {poll.settings.votingPower ?? 5} points to distribute freely
+                    </p>
+                  </div>
+                )}
+
                 {/* Custom poll winner */}
                 {poll.type === 'custom' && poll.options && poll.totalVotes > 0 && (() => {
                   const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
@@ -433,6 +484,25 @@ export default function PollResults() {
                   </div>
                 )}
 
+                {/* Quick Insight — Priority poll */}
+                {poll.type === 'priority' && priorityWinner && poll.totalVotes > 0 && (
+                  <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lightbulb className="h-5 w-5 text-yellow-500" />
+                      <span className="text-sm font-bold text-gray-800">Quick Insight</span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      <strong>{priorityWinner.text}</strong> received {priorityWinner.priorityPoints || 0} of {totalPriorityPoints} total points
+                      from {poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}.
+                      {poll.options && poll.options.length > 1 && (() => {
+                        const sorted = [...poll.options].sort((a, b) => (b.priorityPoints || 0) - (a.priorityPoints || 0))
+                        const gap = (sorted[0].priorityPoints || 0) - (sorted[1] ? (sorted[1].priorityPoints || 0) : 0)
+                        return gap > 0 ? ` ${gap} pts ahead of the runner-up.` : ''
+                      })()}
+                    </p>
+                  </div>
+                )}
+
                 {/* Quick Insight */}
                 {poll.type === 'standard' && winnerOption && poll.totalVotes > 0 && (
                   <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
@@ -457,7 +527,7 @@ export default function PollResults() {
                   </div>
                   <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">
-                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking') && poll.options ? poll.options.length :
+                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking' || poll.type === 'priority') && poll.options ? poll.options.length :
                        poll.type === 'location' && poll.locations ? poll.locations.length :
                        poll.type === 'schedule' && poll.timeSlots ? poll.timeSlots.length : '—'}
                     </p>
