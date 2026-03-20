@@ -25,11 +25,11 @@ export default function Layout({
 
   return (
     <div className="min-h-screen bg-app-bg">
-      {/* Desktop sidebar */}
-      {!hideNav && <Sidebar />}
+      {/* Desktop sidebar - always visible on desktop */}
+      <Sidebar />
 
       {/* Main content area - offset by sidebar width on desktop */}
-      <div className={`min-h-screen flex flex-col ${!hideNav ? 'lg:ml-64' : ''}`}>
+      <div className="min-h-screen flex flex-col lg:ml-64">
         <div className="mx-auto w-full max-w-md lg:max-w-5xl min-h-screen flex flex-col">
           {title !== undefined && (
             <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 bg-white px-4 py-3 lg:px-8 lg:py-4 lg:bg-app-bg lg:border-b-0">
