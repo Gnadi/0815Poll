@@ -64,67 +64,95 @@ export default function CreateLocation() {
 
   return (
     <Layout title="Create Location Poll" showBack>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Poll Question</label>
-          <textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            rows={2}
-            placeholder="Where should we meet?"
-            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
-          />
-          {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
-        </div>
+      <div className="lg:max-w-4xl lg:mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+            {/* Left column - form fields */}
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Question</label>
+                <textarea
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  rows={2}
+                  placeholder="Where should we meet?"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                />
+                {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
+              </div>
 
-        <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-            placeholder="Add context..."
-            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
-          />
-        </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                  placeholder="Add context..."
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                />
+              </div>
 
-        <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">
-            Locations
-            <span className="ml-2 text-xs font-normal text-gray-400">Min. 2 locations</span>
-          </label>
-          <MapPicker locations={locations} onAddLocation={addLocation} onRemoveLocation={removeLocation} />
-          {errors.locations && <p className="mt-1 text-xs text-red-500">{errors.locations}</p>}
-        </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Duration</label>
+                <div className="flex flex-wrap gap-2">
+                  {DURATION_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setDuration(opt.value)}
+                      className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
+                        duration === opt.value
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-        <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Poll Duration</label>
-          <div className="flex flex-wrap gap-2">
-            {DURATION_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setDuration(opt.value)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
-                  duration === opt.value
-                    ? 'bg-primary-500 text-white border-primary-500'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+              {/* Selected locations list - desktop */}
+              {locations.length > 0 && (
+                <div className="hidden lg:block">
+                  <label className="block text-sm font-bold text-gray-800 mb-2">Selected Locations ({locations.length})</label>
+                  <div className="space-y-2">
+                    {locations.map((loc) => (
+                      <div key={loc.id} className="flex items-center gap-3 rounded-xl bg-white border border-gray-100 px-4 py-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
+                          <span className="text-amber-600 text-sm">📍</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">{loc.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{loc.address}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right column - map */}
+            <div>
+              <label className="block text-sm font-bold text-gray-800 mb-2">
+                Locations
+                <span className="ml-2 text-xs font-normal text-gray-400">Min. 2 locations</span>
+              </label>
+              <MapPicker locations={locations} onAddLocation={addLocation} onRemoveLocation={removeLocation} />
+              {errors.locations && <p className="mt-1 text-xs text-red-500">{errors.locations}</p>}
+            </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-50"
-        >
-          {submitting ? <Spinner size="sm" /> : 'Create Poll'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-50 lg:max-w-md lg:mx-auto lg:block"
+          >
+            {submitting ? <Spinner size="sm" /> : 'Create Poll'}
+          </button>
+        </form>
+      </div>
     </Layout>
   )
 }
