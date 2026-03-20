@@ -19,7 +19,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote } from '../types'
+import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote } from '../types'
 
 // ─── Polls ───────────────────────────────────────────────────────────────────
 
@@ -218,6 +218,51 @@ export async function getUserScheduleVote(
   const snap = await getDocs(q)
   if (snap.empty) return null
   return { id: snap.docs[0].id, ...snap.docs[0].data() } as ScheduleVote
+}
+
+export async function castRankingVote(
+  pollId: string,
+  userId: string | null,
+  ranking: string[]
+): Promise<void> {
+  await runTransaction(db, async (tx) => {
+    const pollRef = doc(db, 'polls', pollId)
+    const pollSnap = await tx.get(pollRef)
+    if (!pollSnap.exists()) throw new Error('Poll not found')
+    const poll = { id: pollSnap.id, ...pollSnap.data() } as Poll
+
+    if (poll.options) {
+      const n = poll.options.length
+      const updatedOptions = poll.options.map((opt) => {
+        const rankIndex = ranking.indexOf(opt.id)
+        const points = rankIndex === -1 ? 0 : n - 1 - rankIndex
+        return { ...opt, bordaPoints: (opt.bordaPoints || 0) + points }
+      })
+      tx.update(pollRef, { options: updatedOptions, totalVotes: increment(1) })
+    }
+  })
+
+  await addDoc(collection(db, 'ranking_votes'), {
+    pollId,
+    userId,
+    ranking,
+    createdAt: Timestamp.now(),
+  })
+}
+
+export async function getUserRankingVote(
+  pollId: string,
+  userId: string
+): Promise<RankingVote | null> {
+  const q = query(
+    collection(db, 'ranking_votes'),
+    where('pollId', '==', pollId),
+    where('userId', '==', userId),
+    limit(1)
+  )
+  const snap = await getDocs(q)
+  if (snap.empty) return null
+  return { id: snap.docs[0].id, ...snap.docs[0].data() } as RankingVote
 }
 
 // ─── Users ───────────────────────────────────────────────────────────────────

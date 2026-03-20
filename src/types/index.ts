@@ -1,12 +1,13 @@
 import { Timestamp } from 'firebase/firestore'
 
-export type PollType = 'standard' | 'schedule' | 'location' | 'custom'
+export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking'
 export type PollStatus = 'active' | 'ended'
 
 export interface PollOption {
   id: string
   text: string
   votes: number
+  bordaPoints?: number // Accumulated Borda Count points for ranking polls
   customContent?: string // Full HTML document for custom poll options
 }
 
@@ -64,6 +65,14 @@ export interface ScheduleVote {
   pollId: string
   userId: string | null
   selectedSlots: string[] // "date|time" keys
+  createdAt: Timestamp
+}
+
+export interface RankingVote {
+  id: string
+  pollId: string
+  userId: string | null
+  ranking: string[] // option IDs in user's preferred order (index 0 = top choice)
   createdAt: Timestamp
 }
 

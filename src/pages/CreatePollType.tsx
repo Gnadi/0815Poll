@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Calendar, MapPin, Sliders, ChevronRight } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, Sliders, GripVertical, ChevronRight } from 'lucide-react'
 import Layout from '../components/Layout'
 
 const pollTypes = [
@@ -11,6 +11,15 @@ const pollTypes = [
     color: 'bg-indigo-50',
     iconColor: 'text-indigo-600',
     route: '/create/standard',
+  },
+  {
+    type: 'ranking',
+    icon: GripVertical,
+    title: 'Ranking Poll',
+    description: 'Participants rank options by preference via drag & drop. Aggregated with Borda Count.',
+    color: 'bg-rose-50',
+    iconColor: 'text-rose-600',
+    route: '/create/ranking',
   },
   {
     type: 'schedule',

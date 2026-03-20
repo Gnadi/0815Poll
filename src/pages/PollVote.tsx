@@ -4,9 +4,10 @@ import { formatDistanceToNow, format, isPast } from 'date-fns'
 import { BarChart2, Users, Clock, Share2 } from 'lucide-react'
 import Layout from '../components/Layout'
 import VoteOption from '../components/VoteOption'
+import RankingList from '../components/RankingList'
 import Spinner from '../components/Spinner'
 import LocationViewMap from '../components/LocationViewMap'
-import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote } from '../lib/firestore'
+import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote } from '../lib/firestore'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
@@ -15,7 +16,7 @@ import type { Poll } from '../types'
 export default function PollVote() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { castVote, castScheduleVote, getLocalVote } = usePoll()
+  const { castVote, castScheduleVote, castRankingVote, getLocalVote } = usePoll()
   const { user } = useAuth()
   const { showToast } = useToast()
 
@@ -23,6 +24,7 @@ export default function PollVote() {
   const [loading, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [selectedSlots, setSelectedSlots] = useState<string[]>([])
+  const [rankedOptions, setRankedOptions] = useState<string[]>([])
   const [voted, setVoted] = useState(false)
   const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -37,17 +39,23 @@ export default function PollVote() {
       return
     }
     // Check Firestore for logged-in users
-    if (user && poll.type !== 'schedule') {
-      const vote = await getUserVote(poll.id, user.uid)
-      if (vote) {
-        setVoted(true)
-        setVotedOptionId(vote.optionId)
-      }
-    } else if (user && poll.type === 'schedule') {
+    if (user && poll.type === 'schedule') {
       const vote = await getUserScheduleVote(poll.id, user.uid)
       if (vote) {
         setVoted(true)
         setSelectedSlots(vote.selectedSlots)
+      }
+    } else if (user && poll.type === 'ranking') {
+      const vote = await getUserRankingVote(poll.id, user.uid)
+      if (vote) {
+        setVoted(true)
+        setRankedOptions(vote.ranking)
+      }
+    } else if (user) {
+      const vote = await getUserVote(poll.id, user.uid)
+      if (vote) {
+        setVoted(true)
+        setVotedOptionId(vote.optionId)
       }
     }
   }, [user, getLocalVote])
@@ -70,6 +78,10 @@ export default function PollVote() {
 
       setPoll(p)
       setLoading(false)
+      // Initialize ranking order from poll options if not yet set
+      if (p.type === 'ranking' && p.options && rankedOptions.length === 0) {
+        setRankedOptions(p.options.map((o) => o.id))
+      }
       await checkVoted(p)
     })
     return unsub
@@ -79,6 +91,8 @@ export default function PollVote() {
     if (!poll || submitting || voted) return
     if (poll.type === 'schedule') {
       if (selectedSlots.length === 0) { showToast('Select at least one time slot.', 'error'); return }
+    } else if (poll.type === 'ranking') {
+      if (rankedOptions.length === 0) { showToast('Rank the options before submitting.', 'error'); return }
     } else {
       if (!selectedOption) { showToast('Please select an option.', 'error'); return }
     }
@@ -87,6 +101,8 @@ export default function PollVote() {
     try {
       if (poll.type === 'schedule') {
         await castScheduleVote(poll.id, user?.uid || null, selectedSlots)
+      } else if (poll.type === 'ranking') {
+        await castRankingVote(poll.id, user?.uid || null, rankedOptions)
       } else {
         await castVote(poll.id, user?.uid || null, selectedOption!)
         setVotedOptionId(selectedOption)
@@ -239,6 +255,23 @@ export default function PollVote() {
           </div>
         )}
 
+        {/* Ranking poll */}
+        {poll.type === 'ranking' && poll.options && (
+          <div className="mb-6">
+            {!voted && (
+              <p className="text-xs text-gray-500 mb-3">
+                Drag items or use the arrows to rank options from best (top) to worst (bottom).
+              </p>
+            )}
+            <RankingList
+              options={poll.options}
+              order={rankedOptions.length > 0 ? rankedOptions : poll.options.map((o) => o.id)}
+              onChange={setRankedOptions}
+              disabled={voted}
+            />
+          </div>
+        )}
+
         {/* Custom poll options (selectable cards rendered in iframes) */}
         {poll.type === 'custom' && poll.options && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
@@ -330,7 +363,11 @@ export default function PollVote() {
           <button
             type="button"
             onClick={handleVote}
-            disabled={submitting || (poll.type !== 'schedule' && !selectedOption) || (poll.type === 'schedule' && selectedSlots.length === 0)}
+            disabled={
+              submitting ||
+              (poll.type !== 'schedule' && poll.type !== 'ranking' && !selectedOption) ||
+              (poll.type === 'schedule' && selectedSlots.length === 0)
+            }
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
           >
             {submitting ? <Spinner size="sm" /> : 'Submit Vote'}
