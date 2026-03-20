@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
-import { MapPin, X, Loader2 } from 'lucide-react'
+import { MapPin, X, Loader2, Search } from 'lucide-react'
 import type { LocationOption } from '../types'
 
 // Fix Leaflet default icon for Vite (use CDN URLs)
@@ -35,6 +35,27 @@ function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) =
   return null
 }
 
+async function forwardGeocode(query: string): Promise<{ lat: number; lng: number; name: string; address: string } | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+      { headers: { 'Accept-Language': 'en' } }
+    )
+    const data = await res.json()
+    if (!data.length) return null
+    const item = data[0]
+    const parts = (item.display_name as string).split(', ')
+    return {
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon),
+      name: parts[0],
+      address: parts.slice(1, 4).join(', '),
+    }
+  } catch {
+    return null
+  }
+}
+
 async function reverseGeocode(lat: number, lng: number): Promise<{ name: string; address: string }> {
   try {
     const res = await fetch(
@@ -56,6 +77,9 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
   const [pending, setPending] = useState<PendingLocation | null>(null)
   const [loading, setLoading] = useState(false)
   const [editName, setEditName] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchError, setSearchError] = useState('')
+  const [searching, setSearching] = useState(false)
 
   const handleMapClick = async (lat: number, lng: number) => {
     setLoading(true)
@@ -70,6 +94,21 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
     onAddLocation({ lat: pending.lat, lng: pending.lng, name: editName || pending.name, address: pending.address })
     setPending(null)
     setEditName('')
+  }
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return
+    setSearching(true)
+    setSearchError('')
+    const result = await forwardGeocode(searchQuery.trim())
+    setSearching(false)
+    if (!result) {
+      setSearchError('No location found. Try a different search term.')
+      return
+    }
+    setPending(result)
+    setEditName(result.name)
+    setSearchQuery('')
   }
 
   useEffect(() => {
@@ -106,7 +145,26 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
         )}
       </div>
 
-      <p className="text-xs text-gray-500 text-center">Click on the map to add locations</p>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => { setSearchQuery(e.target.value); setSearchError('') }}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          placeholder="Search for a location..."
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
+        />
+        <button
+          type="button"
+          onClick={handleSearch}
+          disabled={searching || !searchQuery.trim()}
+          className="rounded-xl bg-primary-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+        </button>
+      </div>
+      {searchError && <p className="text-xs text-red-500">{searchError}</p>}
+      <p className="text-xs text-gray-500 text-center">Search above or click the map to add locations</p>
 
       {/* Pending location confirm dialog */}
       {pending && (
