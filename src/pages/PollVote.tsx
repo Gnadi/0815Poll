@@ -235,12 +235,70 @@ export default function PollVote() {
           </div>
         )}
 
-        {/* Custom poll */}
-        {poll.type === 'custom' && poll.customContent && (
-          <div
-            className="prose max-w-none text-gray-700 mb-6 rounded-2xl bg-white border border-gray-100 p-4"
-            dangerouslySetInnerHTML={{ __html: poll.customContent }}
-          />
+        {/* Custom poll options (selectable cards rendered in iframes) */}
+        {poll.type === 'custom' && poll.options && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {poll.options.map((opt) => {
+              const isSelected = selectedOption === opt.id || votedOptionId === opt.id
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => !voted && setSelectedOption(opt.id)}
+                  className={`relative rounded-2xl border-2 overflow-hidden transition-all text-left ${
+                    isSelected
+                      ? 'border-primary-500 ring-2 ring-primary-200 shadow-md'
+                      : voted
+                      ? 'border-gray-100 opacity-60 cursor-default'
+                      : 'border-gray-200 hover:border-primary-300 hover:shadow-sm'
+                  }`}
+                >
+                  {/* Rendered custom HTML in sandboxed iframe */}
+                  {opt.customContent && (
+                    <iframe
+                      srcDoc={opt.customContent}
+                      title={opt.text}
+                      sandbox="allow-scripts"
+                      className="w-full border-0 pointer-events-none"
+                      style={{ height: '160px' }}
+                    />
+                  )}
+                  {/* Option label + vote info */}
+                  <div className={`px-4 py-3 border-t ${isSelected ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm font-semibold ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>
+                        {opt.text}
+                      </span>
+                      {/* Radio indicator */}
+                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+                      }`}>
+                        {isSelected && (
+                          <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
+                            <circle cx="6" cy="6" r="3" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    {voted && (
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                          <span>{getPercentage(opt.votes)}%</span>
+                          <span>{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${isSelected ? 'bg-primary-500' : 'bg-gray-300'}`}
+                            style={{ width: `${getPercentage(opt.votes)}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         )}
 
         {/* Poll Stats */}
@@ -268,10 +326,10 @@ export default function PollVote() {
           <button
             type="button"
             onClick={handleVote}
-            disabled={submitting || (poll.type !== 'custom' && poll.type !== 'schedule' && !selectedOption) || (poll.type === 'schedule' && selectedSlots.length === 0)}
+            disabled={submitting || (poll.type !== 'schedule' && !selectedOption) || (poll.type === 'schedule' && selectedSlots.length === 0)}
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
           >
-            {submitting ? <Spinner size="sm" /> : poll.type === 'custom' ? 'Mark as Read' : 'Submit Vote'}
+            {submitting ? <Spinner size="sm" /> : 'Submit Vote'}
           </button>
         ) : (
           <button

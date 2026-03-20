@@ -277,12 +277,48 @@ export default function PollResults() {
                   </div>
                 )}
 
-                {/* Custom poll view */}
-                {poll.type === 'custom' && poll.customContent && (
-                  <div
-                    className="prose max-w-none text-gray-700 rounded-2xl bg-white border border-gray-100 p-4"
-                    dangerouslySetInnerHTML={{ __html: poll.customContent }}
-                  />
+                {/* Custom poll winner */}
+                {poll.type === 'custom' && poll.options && poll.totalVotes > 0 && (() => {
+                  const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
+                  const winner = sorted[0]
+                  const wPct = Math.round((winner.votes / poll.totalVotes) * 100)
+                  const ruPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
+                  return (
+                    <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
+                      <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                      <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Option</p>
+                      <h3 className="text-2xl font-bold mb-2">{winner.text}</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl font-black">{wPct}%</span>
+                        {ruPct > 0 && (
+                          <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
+                            +{wPct - ruPct}% vs runner-up
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })()}
+
+                {/* Custom poll distribution */}
+                {poll.type === 'custom' && poll.options && poll.options.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
+                    <div className="space-y-2">
+                      {[...poll.options]
+                        .sort((a, b) => b.votes - a.votes)
+                        .map((opt, idx) => (
+                          <ResultBar
+                            key={opt.id}
+                            label={opt.text}
+                            votes={opt.votes}
+                            totalVotes={poll.totalVotes}
+                            isWinner={idx === 0 && opt.votes > 0}
+                            isVoted={votedOptionId === opt.id}
+                          />
+                        ))}
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -312,7 +348,7 @@ export default function PollResults() {
                   </div>
                   <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">
-                      {poll.type === 'standard' && poll.options ? poll.options.length :
+                      {(poll.type === 'standard' || poll.type === 'custom') && poll.options ? poll.options.length :
                        poll.type === 'location' && poll.locations ? poll.locations.length :
                        poll.type === 'schedule' && poll.timeSlots ? poll.timeSlots.length : '—'}
                     </p>

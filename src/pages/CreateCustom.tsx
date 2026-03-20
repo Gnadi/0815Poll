@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Image,
@@ -16,6 +16,10 @@ import {
   FileCode,
   FileText,
   FileJson,
+  Plus,
+  Trash2,
+  Copy,
+  GripVertical,
 } from 'lucide-react'
 import CodeEditor from '../components/CodeEditor'
 import Toggle from '../components/Toggle'
@@ -32,135 +36,114 @@ const DURATION_OPTIONS = [
   { label: '7 days', value: 168 },
 ]
 
-const DEFAULT_HTML = `<div class="poll-container">
-    <h3>What's your favorite framework?</h3>
-
-    <div class="options">
-        <div class="option active">
-            <img src="react.svg" alt="React"
-/>
-
-            <span>React</span>
-        </div>
-        <div class="option">
-            <img src="vue.svg" alt="Vue" />
-            <span>Vue.js</span>
-        </div>
-    </div>
-
-    <button class="vote-btn">Cast Vote</button>
+const DEFAULT_OPTION_HTML = `<div class="option-card">
+    <div class="option-icon">🎨</div>
+    <h4>Option Title</h4>
+    <p>Describe this option here</p>
 </div>`
 
-const DEFAULT_CSS = `body {
+const DEFAULT_CSS = `.option-card {
+    text-align: center;
+    padding: 1.5rem;
     font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 16px;
-    background: #f6f6f8;
 }
 
-.poll-container {
-    max-width: 400px;
-    margin: 0 auto;
+.option-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
 }
 
-h3 {
+h4 {
     color: #1a1a2e;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
 }
 
-.options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.option:hover,
-.option.active {
-    border-color: #5d5fef;
-    background: #eef0fd;
-}
-
-.option img {
-    width: 32px;
-    height: 32px;
-}
-
-.vote-btn {
-    width: 100%;
-    padding: 0.875rem;
-    background: #5d5fef;
-    color: white;
-    border: none;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    font-size: 0.9375rem;
-    cursor: pointer;
-}
-
-.vote-btn:hover {
-    background: #4b4dcc;
+p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.5;
 }`
 
-const DEFAULT_JS = `// Add interactivity to your poll
-document.querySelectorAll('.option').forEach(option => {
-    option.addEventListener('click', () => {
-        document.querySelectorAll('.option').forEach(o => {
-            o.classList.remove('active');
-        });
-        option.classList.add('active');
-    });
-});
-
-document.querySelector('.vote-btn')?.addEventListener('click', () => {
-    const selected = document.querySelector('.option.active span');
-    if (selected) {
-        alert('You voted for: ' + selected.textContent);
-    }
-});`
+const DEFAULT_JS = `// Shared JS for all options
+// Use this for animations or interactivity`
 
 type TabId = 'html' | 'css' | 'js'
 
-const TABS: { id: TabId; label: string; icon: typeof FileCode; prefix: string }[] = [
-  { id: 'html', label: 'index.html', icon: FileCode, prefix: 'html' },
-  { id: 'css', label: 'styles.css', icon: FileText, prefix: 'css' },
-  { id: 'js', label: 'script.js', icon: FileJson, prefix: 'js' },
+interface OptionData {
+  id: string
+  name: string
+  html: string
+}
+
+const TABS: { id: TabId; label: string; icon: typeof FileCode }[] = [
+  { id: 'html', label: 'option.html', icon: FileCode },
+  { id: 'css', label: 'styles.css', icon: FileText },
+  { id: 'js', label: 'script.js', icon: FileJson },
 ]
 
 const SNIPPETS = [
   {
-    icon: Image, label: 'Image Choice', description: 'Visual poll options',
-    html: `\n<div class="option">\n    <img src="placeholder.svg" alt="Option" />\n    <span>New Option</span>\n</div>`,
+    icon: Image, label: 'Image Card', description: 'Option with image',
+    html: `<div class="option-card">
+    <img src="https://placehold.co/120x120/e2e8f0/5d5fef?text=IMG" alt="Option" style="border-radius:0.75rem;margin-bottom:0.75rem" />
+    <h4>Image Option</h4>
+    <p>Click to vote for this</p>
+</div>`,
   },
   {
-    icon: Star, label: 'Star Rating', description: '1-5 scale feedback',
-    html: `\n<div class="stars">\n    <span class="star" data-value="1">&#9733;</span>\n    <span class="star" data-value="2">&#9733;</span>\n    <span class="star" data-value="3">&#9733;</span>\n    <span class="star" data-value="4">&#9733;</span>\n    <span class="star" data-value="5">&#9733;</span>\n</div>`,
+    icon: Star, label: 'Emoji Card', description: 'Big emoji option',
+    html: `<div class="option-card">
+    <div style="font-size:3rem;margin-bottom:0.5rem">⭐</div>
+    <h4>Star Option</h4>
+    <p>A star-rated choice</p>
+</div>`,
   },
   {
-    icon: SlidersHorizontal, label: 'Range Slider', description: 'Numeric range input',
-    html: `\n<div class="range-group">\n    <label>Rating: <span id="range-val">5</span>/10</label>\n    <input type="range" min="1" max="10" value="5"\n        oninput="document.getElementById('range-val').textContent=this.value" />\n</div>`,
+    icon: SlidersHorizontal, label: 'Stat Card', description: 'Option with stats',
+    html: `<div class="option-card">
+    <div style="font-size:2rem;font-weight:800;color:#5d5fef;margin-bottom:0.25rem">99%</div>
+    <h4>Top Rated</h4>
+    <p>The crowd favorite</p>
+</div>`,
   },
   {
-    icon: ListOrdered, label: 'Ranking', description: 'Prioritize options',
-    html: `\n<ol class="ranking">\n    <li draggable="true">First choice</li>\n    <li draggable="true">Second choice</li>\n    <li draggable="true">Third choice</li>\n</ol>`,
+    icon: ListOrdered, label: 'List Card', description: 'Option with features',
+    html: `<div class="option-card" style="text-align:left">
+    <h4>🏆 Premium Plan</h4>
+    <ul style="color:#6b7280;font-size:0.8125rem;padding-left:1.25rem;margin:0.5rem 0 0">
+        <li>Feature one</li>
+        <li>Feature two</li>
+        <li>Feature three</li>
+    </ul>
+</div>`,
   },
 ]
 
+let nextId = 1
+function makeId() {
+  return `opt_${Date.now()}_${nextId++}`
+}
+
+function makeDefaultOption(index: number): OptionData {
+  const icons = ['🎨', '🚀', '💡', '🎯']
+  const icon = icons[index % icons.length]
+  return {
+    id: makeId(),
+    name: `Option ${index + 1}`,
+    html: DEFAULT_OPTION_HTML.replace('🎨', icon).replace('Option Title', `Option ${index + 1}`),
+  }
+}
+
 export default function CreateCustom() {
   const [question, setQuestion] = useState('')
-  const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML)
+  const [options, setOptions] = useState<OptionData[]>(() => [
+    makeDefaultOption(0),
+    makeDefaultOption(1),
+  ])
+  const [activeOptionIdx, setActiveOptionIdx] = useState(0)
   const [cssCode, setCssCode] = useState(DEFAULT_CSS)
   const [jsCode, setJsCode] = useState(DEFAULT_JS)
   const [activeTab, setActiveTab] = useState<TabId>('html')
@@ -177,50 +160,102 @@ export default function CreateCustom() {
   const { showToast } = useToast()
   const navigate = useNavigate()
 
-  const codeMap: Record<TabId, { value: string; set: (v: string) => void }> = {
-    html: { value: htmlCode, set: setHtmlCode },
-    css: { value: cssCode, set: setCssCode },
-    js: { value: jsCode, set: setJsCode },
+  const activeOption = options[activeOptionIdx] || options[0]
+
+  const setActiveOptionHtml = useCallback((html: string) => {
+    setOptions((prev) =>
+      prev.map((o, i) => (i === activeOptionIdx ? { ...o, html } : o))
+    )
+  }, [activeOptionIdx])
+
+  const addOption = () => {
+    const newOpt = makeDefaultOption(options.length)
+    setOptions((prev) => [...prev, newOpt])
+    setActiveOptionIdx(options.length)
+    setActiveTab('html')
+    showToast('Option added', 'success')
   }
 
-  // Build the combined content for preview and storage
-  const combinedContent = useMemo(() =>
+  const removeOption = (idx: number) => {
+    if (options.length <= 2) {
+      showToast('Need at least 2 options', 'error')
+      return
+    }
+    setOptions((prev) => prev.filter((_, i) => i !== idx))
+    if (activeOptionIdx >= idx && activeOptionIdx > 0) {
+      setActiveOptionIdx(activeOptionIdx - 1)
+    }
+  }
+
+  const duplicateOption = (idx: number) => {
+    const src = options[idx]
+    const dup: OptionData = { ...src, id: makeId(), name: `${src.name} (copy)` }
+    const next = [...options]
+    next.splice(idx + 1, 0, dup)
+    setOptions(next)
+    setActiveOptionIdx(idx + 1)
+    showToast('Option duplicated', 'success')
+  }
+
+  const renameOption = (idx: number, name: string) => {
+    setOptions((prev) =>
+      prev.map((o, i) => (i === idx ? { ...o, name } : o))
+    )
+  }
+
+  // Build full HTML document for a given option
+  const buildOptionDoc = useCallback((optHtml: string) =>
     `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>${cssCode}</style>
+<style>
+body { margin: 0; }
+${cssCode}
+</style>
 </head>
 <body>
-${htmlCode}
+${optHtml}
 <script>${jsCode}<\/script>
 </body>
 </html>`,
-    [htmlCode, cssCode, jsCode]
+    [cssCode, jsCode]
   )
 
-  const previewSrcDoc = useMemo(() => combinedContent, [combinedContent])
+  const previewSrcDoc = useMemo(
+    () => buildOptionDoc(activeOption.html),
+    [buildOptionDoc, activeOption.html]
+  )
 
   const handleSnippetInsert = (snippetHtml: string) => {
-    setHtmlCode((prev) => prev + snippetHtml)
+    setActiveOptionHtml(snippetHtml)
     setActiveTab('html')
-    showToast('Snippet inserted into HTML', 'success')
+    showToast('Snippet applied to current option', 'success')
   }
 
   const handleSubmit = async () => {
     const errs: Record<string, string> = {}
     if (!question.trim()) errs.question = 'Question is required.'
-    if (!htmlCode.trim()) errs.content = 'HTML content is required.'
+    if (options.length < 2) errs.options = 'Need at least 2 options.'
+    const emptyOpt = options.find((o) => !o.html.trim())
+    if (emptyOpt) errs.options = `"${emptyOpt.name}" has no HTML content.`
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
 
     setSubmitting(true)
     try {
+      const pollOptions = options.map((o) => ({
+        id: o.id,
+        text: o.name,
+        votes: 0,
+        customContent: buildOptionDoc(o.html),
+      }))
+
       const id = await createPoll({
         type: 'custom',
         question: question.trim(),
         description: '',
-        customContent: combinedContent,
+        options: pollOptions,
         settings: { anonymous, duration },
         createdBy: user?.uid || null,
       })
@@ -232,6 +267,11 @@ ${htmlCode}
       setSubmitting(false)
     }
   }
+
+  const codeValue = activeTab === 'html' ? activeOption.html : activeTab === 'css' ? cssCode : jsCode
+  const codeOnChange = activeTab === 'html' ? setActiveOptionHtml : activeTab === 'css' ? setCssCode : setJsCode
+
+  const tabLabel = activeTab === 'html' ? `${activeOption.name.toLowerCase().replace(/\s+/g, '-')}.html` : activeTab === 'css' ? 'styles.css' : 'script.js'
 
   /* ---- Mobile layout ---- */
   const mobileView = (
@@ -257,6 +297,48 @@ ${htmlCode}
           {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
         </div>
 
+        {/* Options list */}
+        <div>
+          <label className="block text-sm font-bold text-gray-800 mb-2">Options ({options.length})</label>
+          <div className="space-y-2 mb-3">
+            {options.map((opt, idx) => (
+              <div
+                key={opt.id}
+                onClick={() => { setActiveOptionIdx(idx); setActiveTab('html') }}
+                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-colors ${
+                  idx === activeOptionIdx
+                    ? 'border-primary-400 bg-primary-50'
+                    : 'border-gray-200 bg-white'
+                }`}
+              >
+                <GripVertical className="h-4 w-4 text-gray-300 shrink-0" />
+                <input
+                  type="text"
+                  value={opt.name}
+                  onChange={(e) => renameOption(idx, e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex-1 bg-transparent text-sm font-medium text-gray-800 outline-none min-w-0"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); removeOption(idx) }}
+                  className="p-1 text-gray-400 hover:text-red-500"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={addOption}
+            className="flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700"
+          >
+            <Plus className="h-4 w-4" /> Add Option
+          </button>
+          {errors.options && <p className="mt-1 text-xs text-red-500">{errors.options}</p>}
+        </div>
+
         {/* Mobile tabs */}
         <div>
           <div className="flex gap-1 mb-2">
@@ -271,26 +353,25 @@ ${htmlCode}
                     : 'bg-gray-100 text-gray-600'
                 }`}
               >
-                {tab.label}
+                {tab.id === 'html' ? activeOption.name : tab.label}
               </button>
             ))}
           </div>
           <div className="rounded-2xl overflow-hidden border border-gray-200 bg-[#1e1e2e] h-64">
             <CodeEditor
-              value={codeMap[activeTab].value}
-              onChange={codeMap[activeTab].set}
+              value={codeValue}
+              onChange={codeOnChange}
               language={activeTab}
             />
           </div>
-          {errors.content && <p className="mt-1 text-xs text-red-500">{errors.content}</p>}
         </div>
 
         {/* Mobile preview */}
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Preview</label>
-          <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white h-64">
+          <label className="block text-sm font-bold text-gray-800 mb-2">Preview: {activeOption.name}</label>
+          <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white h-48">
             <iframe
-              key={previewKey}
+              key={`${previewKey}-${activeOption.id}`}
               srcDoc={previewSrcDoc}
               title="Preview"
               sandbox="allow-scripts"
@@ -423,11 +504,65 @@ ${htmlCode}
 
         {/* Three-panel editor */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Left panel - Snippets */}
+          {/* Left panel - Options list + Snippets */}
           <div className="w-56 shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
             <div className="px-4 py-4">
-              <h3 className="text-sm font-bold text-gray-900 mb-1">Snippets</h3>
-              <p className="text-xs text-gray-500 mb-4">Drag & drop ready-to-use components</p>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-gray-900">Options</h3>
+                <button
+                  type="button"
+                  onClick={addOption}
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100"
+                  title="Add option"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-1.5 mb-6">
+                {options.map((opt, idx) => (
+                  <div
+                    key={opt.id}
+                    onClick={() => { setActiveOptionIdx(idx); setActiveTab('html') }}
+                    className={`group flex items-center gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-colors ${
+                      idx === activeOptionIdx
+                        ? 'border-primary-400 bg-primary-50'
+                        : 'border-gray-100 bg-gray-50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <GripVertical className="h-3.5 w-3.5 text-gray-300 shrink-0" />
+                    <input
+                      type="text"
+                      value={opt.name}
+                      onChange={(e) => renameOption(idx, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex-1 bg-transparent text-sm font-medium text-gray-800 outline-none min-w-0"
+                    />
+                    <div className="hidden group-hover:flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); duplicateOption(idx) }}
+                        className="p-1 text-gray-400 hover:text-primary-600"
+                        title="Duplicate"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); removeOption(idx) }}
+                        className="p-1 text-gray-400 hover:text-red-500"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {errors.options && <p className="mb-4 text-xs text-red-500">{errors.options}</p>}
+
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Snippets</p>
 
               <div className="space-y-2">
                 {SNIPPETS.map((snippet) => {
@@ -475,6 +610,7 @@ ${htmlCode}
             <div className="flex items-center bg-[#252536] px-2 pt-2">
               {TABS.map((tab) => {
                 const Icon = tab.icon
+                const label = tab.id === 'html' ? tabLabel : tab.label
                 return (
                   <button
                     key={tab.id}
@@ -487,7 +623,7 @@ ${htmlCode}
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />
-                    {tab.label}
+                    {label}
                   </button>
                 )
               })}
@@ -496,8 +632,8 @@ ${htmlCode}
             {/* Editor area */}
             <div className="flex-1 bg-[#1e1e2e] overflow-auto">
               <CodeEditor
-                value={codeMap[activeTab].value}
-                onChange={codeMap[activeTab].set}
+                value={codeValue}
+                onChange={codeOnChange}
                 language={activeTab}
               />
             </div>
@@ -506,7 +642,7 @@ ${htmlCode}
           {/* Right panel - Live Preview */}
           <div className="w-80 shrink-0 border-l border-gray-200 bg-white flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-              <span className="text-sm font-bold text-gray-900">Live Preview</span>
+              <span className="text-sm font-bold text-gray-900">Preview: {activeOption.name}</span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -533,16 +669,46 @@ ${htmlCode}
               </div>
             </div>
 
+            {/* Single option preview */}
             <div className="flex-1 overflow-auto bg-gray-50 p-4">
               <div className={`mx-auto h-full ${previewMode === 'mobile' ? 'max-w-[320px]' : ''}`}>
+                <p className="text-xs text-gray-400 mb-2 font-medium">Editing: {activeOption.name}</p>
                 <iframe
-                  key={previewKey}
+                  key={`${previewKey}-${activeOption.id}`}
                   srcDoc={previewSrcDoc}
                   title="Live Preview"
                   sandbox="allow-scripts"
-                  className="w-full h-full border-0 rounded-xl bg-white shadow-sm"
-                  style={{ minHeight: '500px' }}
+                  className="w-full border-0 rounded-xl bg-white shadow-sm"
+                  style={{ minHeight: '200px', height: '250px' }}
                 />
+              </div>
+            </div>
+
+            {/* All options preview */}
+            <div className="border-t border-gray-200 px-4 py-3 bg-gray-50 overflow-y-auto" style={{ maxHeight: '250px' }}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">All Options</p>
+              <div className="space-y-2">
+                {options.map((opt, idx) => (
+                  <div
+                    key={opt.id}
+                    onClick={() => { setActiveOptionIdx(idx); setActiveTab('html') }}
+                    className={`rounded-lg border overflow-hidden cursor-pointer transition-colors ${
+                      idx === activeOptionIdx ? 'border-primary-400 ring-1 ring-primary-200' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <iframe
+                      key={`${previewKey}-all-${opt.id}`}
+                      srcDoc={buildOptionDoc(opt.html)}
+                      title={opt.name}
+                      sandbox="allow-scripts"
+                      className="w-full border-0 pointer-events-none"
+                      style={{ height: '80px' }}
+                    />
+                    <div className="px-2 py-1 bg-white border-t border-gray-100">
+                      <p className="text-xs font-medium text-gray-600 truncate">{opt.name}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

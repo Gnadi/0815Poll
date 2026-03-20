@@ -7,6 +7,7 @@ export interface PollOption {
   id: string
   text: string
   votes: number
+  customContent?: string // Full HTML document for custom poll options
 }
 
 export interface TimeSlot {
