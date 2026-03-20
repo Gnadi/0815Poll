@@ -13,7 +13,7 @@ const typeConfig = {
 
 export default function PollCard({ poll }: { poll: Poll }) {
   const navigate = useNavigate()
-  const cfg = typeConfig[poll.type]
+  const cfg = typeConfig[poll.type] ?? typeConfig.standard
   const Icon = cfg.icon
   const isActive = poll.status === 'active'
   const endsAt = poll.endsAt?.toDate?.()
