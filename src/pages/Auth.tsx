@@ -15,6 +15,12 @@ function getErrorMessage(code: string): string {
     'auth/too-many-requests': 'Too many attempts. Please try again later.',
     'auth/popup-closed-by-user': 'Sign-in popup was closed.',
     'auth/invalid-credential': 'Invalid credentials. Please check your email and password.',
+    'auth/operation-not-allowed': 'This sign-in method is not enabled. Please contact support.',
+    'auth/network-request-failed': 'Network error. Please check your connection and try again.',
+    'auth/unauthorized-domain': 'This domain is not authorized for sign-in.',
+    'auth/cancelled-popup-request': 'Sign-in was cancelled. Please try again.',
+    'auth/popup-blocked': 'Sign-in popup was blocked by your browser. Please allow popups and try again.',
+    'auth/internal-error': 'An internal error occurred. Please try again.',
   }
   return map[code] || 'An error occurred. Please try again.'
 }

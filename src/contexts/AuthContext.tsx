@@ -34,23 +34,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser)
-      if (firebaseUser) {
-        const profile = await getUserProfile(firebaseUser.uid)
-        setUserProfile(profile)
-      } else {
-        setUserProfile(null)
+      try {
+        if (firebaseUser) {
+          const profile = await getUserProfile(firebaseUser.uid)
+          // Only update userProfile when a profile is found. If null is returned,
+          // don't override — this prevents a race condition during sign-up where
+          // onAuthStateChanged fires before the Firestore profile has been created.
+          if (profile) {
+            setUserProfile(profile)
+          }
+        } else {
+          setUserProfile(null)
+        }
+      } catch {
+        if (!firebaseUser) setUserProfile(null)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     })
     return unsub
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password)
+    const cred = await signInWithEmailAndPassword(auth, email, password)
+    setUser(cred.user)
+    const profile = await getUserProfile(cred.user.uid)
+    if (profile) setUserProfile(profile)
   }
 
   const signUp = async (email: string, password: string, displayName: string) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
+    setUser(cred.user)
     await updateProfile(cred.user, { displayName })
     const profile: Omit<User, 'id'> = {
       displayName,
@@ -64,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
     const cred = await signInWithPopup(auth, provider)
+    setUser(cred.user)
     const existing = await getUserProfile(cred.user.uid)
     if (!existing) {
       const profile: Omit<User, 'id'> = {
