@@ -156,6 +156,40 @@ export async function castVote(
   })
 }
 
+export async function castMultipleVote(
+  pollId: string,
+  userId: string | null,
+  optionIds: string[]
+): Promise<void> {
+  await runTransaction(db, async (tx) => {
+    const pollRef = doc(db, 'polls', pollId)
+    const pollSnap = await tx.get(pollRef)
+    if (!pollSnap.exists()) throw new Error('Poll not found')
+    const poll = { id: pollSnap.id, ...pollSnap.data() } as Poll
+
+    if ((poll.type === 'standard' || poll.type === 'custom') && poll.options) {
+      const updatedOptions = poll.options.map((o) =>
+        optionIds.includes(o.id) ? { ...o, votes: o.votes + 1 } : o
+      )
+      tx.update(pollRef, { options: updatedOptions, totalVotes: increment(1) })
+    } else if (poll.type === 'location' && poll.locations) {
+      const updatedLocations = poll.locations.map((l) =>
+        optionIds.includes(l.id) ? { ...l, votes: l.votes + 1 } : l
+      )
+      tx.update(pollRef, { locations: updatedLocations, totalVotes: increment(1) })
+    } else {
+      tx.update(pollRef, { totalVotes: increment(1) })
+    }
+  })
+
+  await addDoc(collection(db, 'votes'), {
+    pollId,
+    userId,
+    optionIds,
+    createdAt: Timestamp.now(),
+  })
+}
+
 export async function castScheduleVote(
   pollId: string,
   userId: string | null,

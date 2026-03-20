@@ -17,18 +17,20 @@ import type { Poll } from '../types'
 export default function PollVote() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { castVote, castScheduleVote, castRankingVote, castPriorityVote, getLocalVote } = usePoll()
+  const { castVote, castMultipleVote, castScheduleVote, castRankingVote, castPriorityVote, getLocalVote } = usePoll()
   const { user } = useAuth()
   const { showToast } = useToast()
 
   const [poll, setPoll] = useState<Poll | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [selectedSlots, setSelectedSlots] = useState<string[]>([])
   const [rankedOptions, setRankedOptions] = useState<string[]>([])
   const [priorityDistribution, setPriorityDistribution] = useState<Record<string, number>>({})
   const [voted, setVoted] = useState(false)
   const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
+  const [votedOptionIds, setVotedOptionIds] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
 
   // Check if already voted
@@ -63,7 +65,11 @@ export default function PollVote() {
       const vote = await getUserVote(poll.id, user.uid)
       if (vote) {
         setVoted(true)
-        setVotedOptionId(vote.optionId)
+        if (vote.optionIds && vote.optionIds.length > 0) {
+          setVotedOptionIds(vote.optionIds)
+        } else if (vote.optionId) {
+          setVotedOptionId(vote.optionId)
+        }
       }
     }
   }, [user, getLocalVote])
@@ -111,8 +117,15 @@ export default function PollVote() {
       const totalAllocated = Object.values(priorityDistribution).reduce((s, v) => s + v, 0)
       if (totalAllocated === 0) { showToast('Distribute at least 1 point before submitting.', 'error'); return }
     } else {
-      if (!selectedOption) { showToast('Please select an option.', 'error'); return }
+      const isMultiple = !!poll.settings?.allowMultipleChoices
+      if (isMultiple) {
+        if (selectedOptions.length === 0) { showToast('Please select at least one option.', 'error'); return }
+      } else {
+        if (!selectedOption) { showToast('Please select an option.', 'error'); return }
+      }
     }
+
+    const isMultiple = !!poll.settings?.allowMultipleChoices
 
     setSubmitting(true)
     try {
@@ -122,6 +135,9 @@ export default function PollVote() {
         await castRankingVote(poll.id, user?.uid || null, rankedOptions)
       } else if (poll.type === 'priority') {
         await castPriorityVote(poll.id, user?.uid || null, priorityDistribution)
+      } else if (isMultiple) {
+        await castMultipleVote(poll.id, user?.uid || null, selectedOptions)
+        setVotedOptionIds(selectedOptions)
       } else {
         await castVote(poll.id, user?.uid || null, selectedOption!)
         setVotedOptionId(selectedOption)
@@ -199,17 +215,39 @@ export default function PollVote() {
         {/* Standard poll options */}
         {poll.type === 'standard' && poll.options && (
           <div className="space-y-3 mb-6">
-            {poll.options.map((opt) => (
-              <VoteOption
-                key={opt.id}
-                id={opt.id}
-                label={opt.text}
-                percentage={voted ? getPercentage(opt.votes) : undefined}
-                selected={selectedOption === opt.id || votedOptionId === opt.id}
-                voted={voted}
-                onSelect={() => !voted && setSelectedOption(opt.id)}
-              />
-            ))}
+            {poll.settings?.allowMultipleChoices && !voted && (
+              <p className="text-xs text-gray-500 mb-1">You can select multiple options.</p>
+            )}
+            {poll.options.map((opt) => {
+              const isMultiple = !!poll.settings?.allowMultipleChoices
+              const isSelected = isMultiple
+                ? selectedOptions.includes(opt.id)
+                : selectedOption === opt.id
+              const isVoted = isMultiple
+                ? votedOptionIds.includes(opt.id)
+                : votedOptionId === opt.id
+              return (
+                <VoteOption
+                  key={opt.id}
+                  id={opt.id}
+                  label={opt.text}
+                  percentage={voted ? getPercentage(opt.votes) : undefined}
+                  selected={isSelected || isVoted}
+                  voted={voted}
+                  multiple={isMultiple}
+                  onSelect={() => {
+                    if (voted) return
+                    if (isMultiple) {
+                      setSelectedOptions((prev) =>
+                        prev.includes(opt.id) ? prev.filter((id) => id !== opt.id) : [...prev, opt.id]
+                      )
+                    } else {
+                      setSelectedOption(opt.id)
+                    }
+                  }}
+                />
+              )
+            })}
           </div>
         )}
 
@@ -218,17 +256,39 @@ export default function PollVote() {
           <>
             <LocationViewMap locations={poll.locations} />
             <div className="space-y-3 mb-6">
-              {poll.locations.map((loc, index) => (
-                <VoteOption
-                  key={loc.id}
-                  id={loc.id}
-                  label={`${index + 1}. ${loc.name}`}
-                  percentage={voted ? getPercentage(loc.votes) : undefined}
-                  selected={selectedOption === loc.id || votedOptionId === loc.id}
-                  voted={voted}
-                  onSelect={() => !voted && setSelectedOption(loc.id)}
-                />
-              ))}
+              {poll.settings?.allowMultipleChoices && !voted && (
+                <p className="text-xs text-gray-500 mb-1">You can select multiple locations.</p>
+              )}
+              {poll.locations.map((loc, index) => {
+                const isMultiple = !!poll.settings?.allowMultipleChoices
+                const isSelected = isMultiple
+                  ? selectedOptions.includes(loc.id)
+                  : selectedOption === loc.id
+                const isVoted = isMultiple
+                  ? votedOptionIds.includes(loc.id)
+                  : votedOptionId === loc.id
+                return (
+                  <VoteOption
+                    key={loc.id}
+                    id={loc.id}
+                    label={`${index + 1}. ${loc.name}`}
+                    percentage={voted ? getPercentage(loc.votes) : undefined}
+                    selected={isSelected || isVoted}
+                    voted={voted}
+                    multiple={isMultiple}
+                    onSelect={() => {
+                      if (voted) return
+                      if (isMultiple) {
+                        setSelectedOptions((prev) =>
+                          prev.includes(loc.id) ? prev.filter((id) => id !== loc.id) : [...prev, loc.id]
+                        )
+                      } else {
+                        setSelectedOption(loc.id)
+                      }
+                    }}
+                  />
+                )
+              })}
             </div>
           </>
         )}
@@ -312,15 +372,34 @@ export default function PollVote() {
         {/* Custom poll options (selectable cards rendered in iframes) */}
         {poll.type === 'custom' && poll.options && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {poll.settings?.allowMultipleChoices && !voted && (
+              <p className="col-span-full text-xs text-gray-500 mb-1">You can select multiple options.</p>
+            )}
             {poll.options.map((opt) => {
-              const isSelected = selectedOption === opt.id || votedOptionId === opt.id
+              const isMultiple = !!poll.settings?.allowMultipleChoices
+              const isSelected = isMultiple
+                ? selectedOptions.includes(opt.id)
+                : selectedOption === opt.id
+              const isVoted = isMultiple
+                ? votedOptionIds.includes(opt.id)
+                : votedOptionId === opt.id
+              const isActive = isSelected || isVoted
               return (
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => !voted && setSelectedOption(opt.id)}
+                  onClick={() => {
+                    if (voted) return
+                    if (isMultiple) {
+                      setSelectedOptions((prev) =>
+                        prev.includes(opt.id) ? prev.filter((id) => id !== opt.id) : [...prev, opt.id]
+                      )
+                    } else {
+                      setSelectedOption(opt.id)
+                    }
+                  }}
                   className={`relative rounded-2xl border-2 overflow-hidden transition-all text-left ${
-                    isSelected
+                    isActive
                       ? 'border-primary-500 ring-2 ring-primary-200 shadow-md'
                       : voted
                       ? 'border-gray-100 opacity-60 cursor-default'
@@ -338,21 +417,33 @@ export default function PollVote() {
                     />
                   )}
                   {/* Option label + vote info */}
-                  <div className={`px-4 py-3 border-t ${isSelected ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
+                  <div className={`px-4 py-3 border-t ${isActive ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
                     <div className="flex items-center justify-between">
-                      <span className={`text-sm font-semibold ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>
+                      <span className={`text-sm font-semibold ${isActive ? 'text-primary-700' : 'text-gray-800'}`}>
                         {opt.text}
                       </span>
-                      {/* Radio indicator */}
-                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
-                      }`}>
-                        {isSelected && (
-                          <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
-                            <circle cx="6" cy="6" r="3" />
-                          </svg>
-                        )}
-                      </div>
+                      {/* Radio or checkbox indicator */}
+                      {isMultiple ? (
+                        <div className={`h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
+                          isActive ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+                        }`}>
+                          {isActive && (
+                            <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 12 12">
+                              <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                          )}
+                        </div>
+                      ) : (
+                        <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          isActive ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+                        }`}>
+                          {isActive && (
+                            <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
+                              <circle cx="6" cy="6" r="3" />
+                            </svg>
+                          )}
+                        </div>
+                      )}
                     </div>
                     {voted && (
                       <div className="mt-2">
@@ -362,7 +453,7 @@ export default function PollVote() {
                         </div>
                         <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-500 ${isSelected ? 'bg-primary-500' : 'bg-gray-300'}`}
+                            className={`h-full rounded-full transition-all duration-500 ${isActive ? 'bg-primary-500' : 'bg-gray-300'}`}
                             style={{ width: `${getPercentage(opt.votes)}%` }}
                           />
                         </div>
@@ -402,9 +493,10 @@ export default function PollVote() {
             onClick={handleVote}
             disabled={
               submitting ||
-              (poll.type !== 'schedule' && poll.type !== 'ranking' && poll.type !== 'priority' && !selectedOption) ||
               (poll.type === 'schedule' && selectedSlots.length === 0) ||
-              (poll.type === 'priority' && Object.values(priorityDistribution).every((v) => v === 0))
+              (poll.type === 'priority' && Object.values(priorityDistribution).every((v) => v === 0)) ||
+              (poll.type !== 'schedule' && poll.type !== 'ranking' && poll.type !== 'priority' &&
+                (poll.settings?.allowMultipleChoices ? selectedOptions.length === 0 : !selectedOption))
             }
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
           >

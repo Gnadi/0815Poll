@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import MapPicker from '../components/MapPicker'
+import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -20,6 +21,7 @@ export default function CreateLocation() {
   const [description, setDescription] = useState('')
   const [locations, setLocations] = useState<LocationOption[]>([])
   const [duration, setDuration] = useState(24)
+  const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -50,7 +52,7 @@ export default function CreateLocation() {
         question: question.trim(),
         description: description.trim(),
         locations,
-        settings: { anonymous: true, duration },
+        settings: { anonymous: true, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
       })
       showToast('Location poll created!', 'success')
@@ -90,6 +92,20 @@ export default function CreateLocation() {
                   placeholder="Add context..."
                   className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Settings</label>
+                <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100 mb-4">
+                  <div className="px-4 py-4">
+                    <Toggle
+                      checked={allowMultipleChoices}
+                      onChange={setAllowMultipleChoices}
+                      label="Multiple Choice"
+                      description="Voters can select more than one location"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>

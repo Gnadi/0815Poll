@@ -3,6 +3,7 @@ import {
   createPoll as firestoreCreatePoll,
   getPolls,
   castVote as firestoreCastVote,
+  castMultipleVote as firestoreCastMultipleVote,
   castScheduleVote as firestoreCastScheduleVote,
   castRankingVote as firestoreCastRankingVote,
   castPriorityVote as firestoreCastPriorityVote,
@@ -32,6 +33,7 @@ interface PollContextValue {
   createPoll: (payload: CreatePollPayload) => Promise<string>
   getLocalVote: (pollId: string) => string | null
   castVote: (pollId: string, userId: string | null, optionId: string) => Promise<void>
+  castMultipleVote: (pollId: string, userId: string | null, optionIds: string[]) => Promise<void>
   castScheduleVote: (pollId: string, userId: string | null, slots: string[]) => Promise<void>
   castRankingVote: (pollId: string, userId: string | null, ranking: string[]) => Promise<void>
   castPriorityVote: (pollId: string, userId: string | null, distribution: Record<string, number>) => Promise<void>
@@ -72,6 +74,15 @@ export function PollProvider({ children }: { children: ReactNode }) {
     setLocalVote(pollId, optionId)
   }, [])
 
+  const castMultipleVote = useCallback(async (
+    pollId: string,
+    userId: string | null,
+    optionIds: string[]
+  ) => {
+    await firestoreCastMultipleVote(pollId, userId, optionIds)
+    setLocalVote(pollId, 'multi-voted')
+  }, [])
+
   const castScheduleVote = useCallback(async (
     pollId: string,
     userId: string | null,
@@ -107,6 +118,7 @@ export function PollProvider({ children }: { children: ReactNode }) {
       createPoll,
       getLocalVote,
       castVote,
+      castMultipleVote,
       castScheduleVote,
       castRankingVote,
       castPriorityVote,
