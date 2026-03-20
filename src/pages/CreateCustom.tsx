@@ -150,6 +150,7 @@ export default function CreateCustom() {
   const [activeTab, setActiveTab] = useState<TabId>('html')
   const [anonymous, setAnonymous] = useState(true)
   const [duration, setDuration] = useState(24)
+  const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [showConfig, setShowConfig] = useState(false)
@@ -257,7 +258,7 @@ ${optHtml}
         question: question.trim(),
         description: '',
         options: pollOptions,
-        settings: { anonymous, duration },
+        settings: { anonymous, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
       })
       showToast('Custom poll created!', 'success')
@@ -396,6 +397,9 @@ ${optHtml}
               <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
             </div>
             <div className="px-4 py-4">
+              <Toggle checked={allowMultipleChoices} onChange={setAllowMultipleChoices} label="Multiple Choice" description="Voters can select more than one option" />
+            </div>
+            <div className="px-4 py-4">
               <p className="text-sm font-medium text-gray-800 mb-2">Duration</p>
               <div className="flex flex-wrap gap-2">
                 {DURATION_OPTIONS.map((opt) => (
@@ -472,7 +476,7 @@ ${optHtml}
         {/* Config panel (collapsible) */}
         {showConfig && (
           <div className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="max-w-3xl mx-auto grid grid-cols-3 gap-6">
+            <div className="max-w-4xl mx-auto grid grid-cols-4 gap-6">
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title / Question</label>
                 <input
@@ -505,6 +509,9 @@ ${optHtml}
               </div>
               <div>
                 <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
+              </div>
+              <div>
+                <Toggle checked={allowMultipleChoices} onChange={setAllowMultipleChoices} label="Multiple Choice" description="Voters can select more than one option" />
               </div>
             </div>
           </div>

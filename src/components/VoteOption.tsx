@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Check } from 'lucide-react'
 import ProgressBar from './ProgressBar'
 
 interface VoteOptionProps {
@@ -7,10 +7,11 @@ interface VoteOptionProps {
   percentage?: number
   selected: boolean
   voted: boolean
+  multiple?: boolean
   onSelect: () => void
 }
 
-export default function VoteOption({ id, label, percentage, selected, voted, onSelect }: VoteOptionProps) {
+export default function VoteOption({ id, label, percentage, selected, voted, multiple, onSelect }: VoteOptionProps) {
   return (
     <button
       type="button"
@@ -26,11 +27,19 @@ export default function VoteOption({ id, label, percentage, selected, voted, onS
       id={id}
     >
       <div className="flex items-center gap-3">
-        <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
-          selected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
-        }`}>
-          {selected && <CheckCircle2 className="h-4 w-4 text-white" />}
-        </div>
+        {multiple ? (
+          <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 ${
+            selected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+          }`}>
+            {selected && <Check className="h-4 w-4 text-white" strokeWidth={2.5} />}
+          </div>
+        ) : (
+          <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
+            selected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+          }`}>
+            {selected && <CheckCircle2 className="h-4 w-4 text-white" />}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-800 text-sm">{label}</p>
           {voted && percentage !== undefined && (
@@ -41,7 +50,7 @@ export default function VoteOption({ id, label, percentage, selected, voted, onS
         </div>
         {!voted && !selected && (
           <span className="shrink-0 rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white">
-            Vote
+            {multiple ? 'Select' : 'Vote'}
           </span>
         )}
         {voted && percentage !== undefined && (

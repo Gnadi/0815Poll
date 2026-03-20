@@ -31,6 +31,7 @@ export interface PollSettings {
   anonymous: boolean
   duration: number // hours
   votingPower?: number // Points each voter has in priority polls (default 5)
+  allowMultipleChoices?: boolean // Allow voters to select more than one option
 }
 
 export interface Poll {
@@ -58,7 +59,8 @@ export interface Vote {
   id: string
   pollId: string
   userId: string | null
-  optionId: string
+  optionId?: string // Single-choice votes (legacy)
+  optionIds?: string[] // Multiple-choice votes
   createdAt: Timestamp
 }
 
