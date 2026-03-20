@@ -9,7 +9,7 @@ const typeConfig = {
   location: { icon: MapPin, label: 'Location', color: 'bg-amber-100 text-amber-700' },
   custom: { icon: Sliders, label: 'Custom', color: 'bg-purple-100 text-purple-700' },
   ranking: { icon: GripVertical, label: 'Ranking', color: 'bg-rose-100 text-rose-700' },
-  priority: { icon: Target, label: 'Priority', color: 'bg-teal-100 text-teal-700' },
+  priority: { icon: Target, label: 'Priority', color: 'bg-blue-100 text-blue-700' },
 }
 
 export default function PollCard({ poll }: { poll: Poll }) {
