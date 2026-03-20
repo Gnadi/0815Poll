@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { MapPin, X, Loader2, Search } from 'lucide-react'
@@ -26,6 +26,14 @@ interface PendingLocation {
   address: string
 }
 
+interface SearchResult {
+  lat: number
+  lng: number
+  name: string
+  address: string
+  displayName: string
+}
+
 function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
   useMapEvents({
     click(e) {
@@ -35,24 +43,25 @@ function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) =
   return null
 }
 
-async function forwardGeocode(query: string): Promise<{ lat: number; lng: number; name: string; address: string } | null> {
+async function searchPlaces(query: string): Promise<SearchResult[]> {
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5`,
       { headers: { 'Accept-Language': 'en' } }
     )
     const data = await res.json()
-    if (!data.length) return null
-    const item = data[0]
-    const parts = (item.display_name as string).split(', ')
-    return {
-      lat: parseFloat(item.lat),
-      lng: parseFloat(item.lon),
-      name: parts[0],
-      address: parts.slice(1, 4).join(', '),
-    }
+    return data.map((item: { lat: string; lon: string; display_name: string }) => {
+      const parts = (item.display_name as string).split(', ')
+      return {
+        lat: parseFloat(item.lat),
+        lng: parseFloat(item.lon),
+        name: parts[0],
+        address: parts.slice(1, 4).join(', '),
+        displayName: item.display_name,
+      }
+    })
   } catch {
-    return null
+    return []
   }
 }
 
@@ -78,8 +87,11 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
   const [loading, setLoading] = useState(false)
   const [editName, setEditName] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchError, setSearchError] = useState('')
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   const handleMapClick = async (lat: number, lng: number) => {
     setLoading(true)
@@ -96,20 +108,41 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
     setEditName('')
   }
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return
-    setSearching(true)
-    setSearchError('')
-    const result = await forwardGeocode(searchQuery.trim())
-    setSearching(false)
-    if (!result) {
-      setSearchError('No location found. Try a different search term.')
+  const handleSearchInput = (value: string) => {
+    setSearchQuery(value)
+    setShowDropdown(true)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (!value.trim()) {
+      setSearchResults([])
+      setSearching(false)
       return
     }
+    setSearching(true)
+    debounceRef.current = setTimeout(async () => {
+      const results = await searchPlaces(value.trim())
+      setSearchResults(results)
+      setSearching(false)
+    }, 350)
+  }
+
+  const handleSelectResult = (result: SearchResult) => {
     setPending(result)
     setEditName(result.name)
     setSearchQuery('')
+    setSearchResults([])
+    setShowDropdown(false)
   }
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   useEffect(() => {
     if (pending) setEditName(pending.name)
@@ -117,25 +150,42 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => { setSearchQuery(e.target.value); setSearchError('') }}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          placeholder="Search for a location..."
-          className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
-        />
-        <button
-          type="button"
-          onClick={handleSearch}
-          disabled={searching || !searchQuery.trim()}
-          className="rounded-xl bg-primary-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-        >
-          {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-        </button>
+      {/* Search input with dropdown */}
+      <div className="relative" ref={wrapperRef}>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
+            placeholder="Search for a location..."
+            className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-9 py-2 text-sm outline-none focus:border-primary-400"
+          />
+          {searching && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />
+          )}
+        </div>
+        {showDropdown && searchResults.length > 0 && (
+          <ul className="absolute z-[1000] w-full mt-1 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+            {searchResults.map((result, i) => (
+              <li key={i}>
+                <button
+                  type="button"
+                  onMouseDown={() => handleSelectResult(result)}
+                  className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                >
+                  <MapPin className="h-4 w-4 text-primary-500 shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">{result.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{result.address}</p>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-      {searchError && <p className="text-xs text-red-500">{searchError}</p>}
 
       <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 280 }}>
         <MapContainer
