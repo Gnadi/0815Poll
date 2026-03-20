@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Calendar, MapPin, Sliders, GripVertical, ChevronRight } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, Sliders, GripVertical, CheckSquare, ChevronRight } from 'lucide-react'
 import Layout from '../components/Layout'
 
 const pollTypes = [
@@ -47,6 +47,15 @@ const pollTypes = [
     color: 'bg-purple-50',
     iconColor: 'text-purple-600',
     route: '/create/custom',
+  },
+  {
+    type: 'multi_choice',
+    icon: CheckSquare,
+    title: 'Multi-Choice Poll',
+    description: 'Voters can select more than one option. Great for preferences across multiple items.',
+    color: 'bg-cyan-50',
+    iconColor: 'text-cyan-600',
+    route: '/create/multi-choice',
   },
 ]
 

@@ -19,7 +19,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote } from '../types'
+import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote, MultiChoiceVote } from '../types'
 
 // ─── Polls ───────────────────────────────────────────────────────────────────
 
@@ -263,6 +263,48 @@ export async function getUserRankingVote(
   const snap = await getDocs(q)
   if (snap.empty) return null
   return { id: snap.docs[0].id, ...snap.docs[0].data() } as RankingVote
+}
+
+export async function castMultiChoiceVote(
+  pollId: string,
+  userId: string | null,
+  selectedOptionIds: string[]
+): Promise<void> {
+  await runTransaction(db, async (tx) => {
+    const pollRef = doc(db, 'polls', pollId)
+    const pollSnap = await tx.get(pollRef)
+    if (!pollSnap.exists()) throw new Error('Poll not found')
+    const poll = { id: pollSnap.id, ...pollSnap.data() } as Poll
+
+    if (poll.options) {
+      const updatedOptions = poll.options.map((o) =>
+        selectedOptionIds.includes(o.id) ? { ...o, votes: o.votes + 1 } : o
+      )
+      tx.update(pollRef, { options: updatedOptions, totalVotes: increment(1) })
+    }
+  })
+
+  await addDoc(collection(db, 'multi_choice_votes'), {
+    pollId,
+    userId,
+    selectedOptionIds,
+    createdAt: Timestamp.now(),
+  })
+}
+
+export async function getUserMultiChoiceVote(
+  pollId: string,
+  userId: string
+): Promise<MultiChoiceVote | null> {
+  const q = query(
+    collection(db, 'multi_choice_votes'),
+    where('pollId', '==', pollId),
+    where('userId', '==', userId),
+    limit(1)
+  )
+  const snap = await getDocs(q)
+  if (snap.empty) return null
+  return { id: snap.docs[0].id, ...snap.docs[0].data() } as MultiChoiceVote
 }
 
 // ─── Users ───────────────────────────────────────────────────────────────────

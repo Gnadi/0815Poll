@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
-import { BarChart2, Calendar, MapPin, Sliders, GripVertical, Users } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, Sliders, GripVertical, CheckSquare, Users } from 'lucide-react'
 import type { Poll } from '../types'
 
 const typeConfig = {
@@ -9,6 +9,7 @@ const typeConfig = {
   location: { icon: MapPin, label: 'Location', color: 'bg-amber-100 text-amber-700' },
   custom: { icon: Sliders, label: 'Custom', color: 'bg-purple-100 text-purple-700' },
   ranking: { icon: GripVertical, label: 'Ranking', color: 'bg-rose-100 text-rose-700' },
+  multi_choice: { icon: CheckSquare, label: 'Multi-Choice', color: 'bg-cyan-100 text-cyan-700' },
 }
 
 export default function PollCard({ poll }: { poll: Poll }) {

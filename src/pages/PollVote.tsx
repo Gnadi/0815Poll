@@ -7,7 +7,7 @@ import VoteOption from '../components/VoteOption'
 import RankingList from '../components/RankingList'
 import Spinner from '../components/Spinner'
 import LocationViewMap from '../components/LocationViewMap'
-import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote } from '../lib/firestore'
+import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote, getUserMultiChoiceVote } from '../lib/firestore'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
@@ -16,7 +16,7 @@ import type { Poll } from '../types'
 export default function PollVote() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { castVote, castScheduleVote, castRankingVote, getLocalVote } = usePoll()
+  const { castVote, castScheduleVote, castRankingVote, castMultiChoiceVote, getLocalVote } = usePoll()
   const { user } = useAuth()
   const { showToast } = useToast()
 
@@ -25,6 +25,7 @@ export default function PollVote() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [selectedSlots, setSelectedSlots] = useState<string[]>([])
   const [rankedOptions, setRankedOptions] = useState<string[]>([])
+  const [selectedMultiOptions, setSelectedMultiOptions] = useState<string[]>([])
   const [voted, setVoted] = useState(false)
   const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -50,6 +51,12 @@ export default function PollVote() {
       if (vote) {
         setVoted(true)
         setRankedOptions(vote.ranking)
+      }
+    } else if (user && poll.type === 'multi_choice') {
+      const vote = await getUserMultiChoiceVote(poll.id, user.uid)
+      if (vote) {
+        setVoted(true)
+        setSelectedMultiOptions(vote.selectedOptionIds)
       }
     } else if (user) {
       const vote = await getUserVote(poll.id, user.uid)
@@ -93,6 +100,8 @@ export default function PollVote() {
       if (selectedSlots.length === 0) { showToast('Select at least one time slot.', 'error'); return }
     } else if (poll.type === 'ranking') {
       if (rankedOptions.length === 0) { showToast('Rank the options before submitting.', 'error'); return }
+    } else if (poll.type === 'multi_choice') {
+      if (selectedMultiOptions.length === 0) { showToast('Select at least one option.', 'error'); return }
     } else {
       if (!selectedOption) { showToast('Please select an option.', 'error'); return }
     }
@@ -103,6 +112,8 @@ export default function PollVote() {
         await castScheduleVote(poll.id, user?.uid || null, selectedSlots)
       } else if (poll.type === 'ranking') {
         await castRankingVote(poll.id, user?.uid || null, rankedOptions)
+      } else if (poll.type === 'multi_choice') {
+        await castMultiChoiceVote(poll.id, user?.uid || null, selectedMultiOptions)
       } else {
         await castVote(poll.id, user?.uid || null, selectedOption!)
         setVotedOptionId(selectedOption)
@@ -272,6 +283,50 @@ export default function PollVote() {
           </div>
         )}
 
+        {/* Multi-choice poll options */}
+        {poll.type === 'multi_choice' && poll.options && (
+          <div className="space-y-3 mb-6">
+            <p className="text-xs text-gray-500 -mt-2">You may select more than one option.</p>
+            {poll.options.map((opt) => {
+              const isSelected = selectedMultiOptions.includes(opt.id)
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => !voted && setSelectedMultiOptions((prev) =>
+                    prev.includes(opt.id) ? prev.filter((id) => id !== opt.id) : [...prev, opt.id]
+                  )}
+                  className={`w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-all ${
+                    isSelected
+                      ? 'border-primary-500 bg-primary-50'
+                      : voted
+                      ? 'border-gray-100 bg-white cursor-default'
+                      : 'border-gray-200 bg-white hover:border-primary-300'
+                  }`}
+                >
+                  <div className={`flex h-5 w-5 items-center justify-center rounded border-2 shrink-0 transition-colors ${
+                    isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+                  }`}>
+                    {isSelected && (
+                      <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
+                        <polyline points="2,6 5,9 10,3" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className={`flex-1 text-sm font-medium ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>
+                    {opt.text}
+                  </span>
+                  {voted && (
+                    <span className="text-xs text-gray-500 shrink-0">
+                      {getPercentage(opt.votes)}%
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
         {/* Custom poll options (selectable cards rendered in iframes) */}
         {poll.type === 'custom' && poll.options && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
@@ -365,8 +420,9 @@ export default function PollVote() {
             onClick={handleVote}
             disabled={
               submitting ||
-              (poll.type !== 'schedule' && poll.type !== 'ranking' && !selectedOption) ||
-              (poll.type === 'schedule' && selectedSlots.length === 0)
+              (poll.type !== 'schedule' && poll.type !== 'ranking' && poll.type !== 'multi_choice' && !selectedOption) ||
+              (poll.type === 'schedule' && selectedSlots.length === 0) ||
+              (poll.type === 'multi_choice' && selectedMultiOptions.length === 0)
             }
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
           >
