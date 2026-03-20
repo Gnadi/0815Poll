@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    background-color: #F0F0F5;
+    background-color: #f6f6f8;
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
@@ -16,6 +16,15 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* Leaflet map container requires explicit height */
@@ -54,7 +63,7 @@
 }
 
 .ProseMirror blockquote {
-  border-left: 3px solid #5B67CA;
+  border-left: 3px solid #5d5fef;
   padding-left: 1rem;
   margin: 0.5rem 0;
   color: #6b7280;

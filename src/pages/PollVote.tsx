@@ -145,142 +145,144 @@ export default function PollVote() {
         </button>
       }
     >
-      {/* LIVE badge */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-          LIVE NOW
-        </span>
-      </div>
-
-      {/* Question */}
-      <h2 className="text-2xl font-bold text-gray-900 mb-3">{poll.question}</h2>
-      {poll.description && (
-        <p className="text-sm text-gray-500 mb-6">{poll.description}</p>
-      )}
-
-      {/* Standard poll options */}
-      {poll.type === 'standard' && poll.options && (
-        <div className="space-y-3 mb-6">
-          {poll.options.map((opt) => (
-            <VoteOption
-              key={opt.id}
-              id={opt.id}
-              label={opt.text}
-              percentage={voted ? getPercentage(opt.votes) : undefined}
-              selected={selectedOption === opt.id || votedOptionId === opt.id}
-              voted={voted}
-              onSelect={() => !voted && setSelectedOption(opt.id)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Location poll options */}
-      {poll.type === 'location' && poll.locations && (
-        <div className="space-y-3 mb-6">
-          {poll.locations.map((loc) => (
-            <VoteOption
-              key={loc.id}
-              id={loc.id}
-              label={loc.name}
-              percentage={voted ? getPercentage(loc.votes) : undefined}
-              selected={selectedOption === loc.id || votedOptionId === loc.id}
-              voted={voted}
-              onSelect={() => !voted && setSelectedOption(loc.id)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Schedule poll */}
-      {poll.type === 'schedule' && poll.timeSlots && (
-        <div className="space-y-4 mb-6">
-          {poll.timeSlots.map((slot) => (
-            <div key={slot.date} className="rounded-2xl bg-white border border-gray-100 overflow-hidden">
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-800">
-                  {format(new Date(slot.date + 'T00:00:00'), 'EEEE, MMMM d')}
-                </p>
-              </div>
-              <div className="p-4 grid grid-cols-3 gap-2">
-                {slot.times.map((time) => {
-                  const key = `${slot.date}|${time}`
-                  const isSelected = selectedSlots.includes(key)
-                  const voteCount = slot.votes?.[time] || 0
-                  return (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => !voted && setSelectedSlots((prev) =>
-                        prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-                      )}
-                      className={`rounded-xl py-2.5 text-sm font-medium transition-colors border ${
-                        isSelected
-                          ? 'bg-primary-500 text-white border-primary-500'
-                          : voted
-                          ? 'bg-gray-50 text-gray-500 border-gray-100 cursor-default'
-                          : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300'
-                      }`}
-                    >
-                      <div>{time}</div>
-                      {voted && <div className="text-xs opacity-75">{voteCount}✓</div>}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Custom poll */}
-      {poll.type === 'custom' && poll.customContent && (
-        <div
-          className="prose max-w-none text-gray-700 mb-6 rounded-2xl bg-white border border-gray-100 p-4"
-          dangerouslySetInnerHTML={{ __html: poll.customContent }}
-        />
-      )}
-
-      {/* Poll Stats */}
-      <div className="mb-6 rounded-2xl bg-primary-50 border border-primary-100 p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <BarChart2 className="h-5 w-5 text-primary-500" />
-          <span className="text-sm font-semibold text-gray-800">Poll Statistics</span>
-        </div>
-        <p className="text-sm text-gray-600">
-          <span className="inline-flex items-center gap-1">
-            <Users className="h-4 w-4" />
-            {poll.totalVotes} {poll.totalVotes === 1 ? 'person has' : 'people have'} voted.
+      <div className="lg:max-w-2xl lg:mx-auto">
+        {/* LIVE badge */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            LIVE NOW
           </span>
-          {endsAt && (
-            <span className="ml-1 inline-flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              This poll ends {timeRemaining}.
-            </span>
-          )}
-        </p>
-      </div>
+        </div>
 
-      {/* Action buttons */}
-      {!voted ? (
-        <button
-          type="button"
-          onClick={handleVote}
-          disabled={submitting || (poll.type !== 'custom' && poll.type !== 'schedule' && !selectedOption) || (poll.type === 'schedule' && selectedSlots.length === 0)}
-          className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
-        >
-          {submitting ? <Spinner size="sm" /> : poll.type === 'custom' ? 'Mark as Read' : 'Submit Vote'}
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => navigate(`/poll/${poll.id}/results`)}
-          className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600"
-        >
-          View Results →
-        </button>
-      )}
+        {/* Question */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-3 lg:text-3xl">{poll.question}</h2>
+        {poll.description && (
+          <p className="text-sm text-gray-500 mb-6 lg:text-base">{poll.description}</p>
+        )}
+
+        {/* Standard poll options */}
+        {poll.type === 'standard' && poll.options && (
+          <div className="space-y-3 mb-6">
+            {poll.options.map((opt) => (
+              <VoteOption
+                key={opt.id}
+                id={opt.id}
+                label={opt.text}
+                percentage={voted ? getPercentage(opt.votes) : undefined}
+                selected={selectedOption === opt.id || votedOptionId === opt.id}
+                voted={voted}
+                onSelect={() => !voted && setSelectedOption(opt.id)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Location poll options */}
+        {poll.type === 'location' && poll.locations && (
+          <div className="space-y-3 mb-6">
+            {poll.locations.map((loc) => (
+              <VoteOption
+                key={loc.id}
+                id={loc.id}
+                label={loc.name}
+                percentage={voted ? getPercentage(loc.votes) : undefined}
+                selected={selectedOption === loc.id || votedOptionId === loc.id}
+                voted={voted}
+                onSelect={() => !voted && setSelectedOption(loc.id)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Schedule poll */}
+        {poll.type === 'schedule' && poll.timeSlots && (
+          <div className="space-y-4 mb-6">
+            {poll.timeSlots.map((slot) => (
+              <div key={slot.date} className="rounded-2xl bg-white border border-gray-100 overflow-hidden">
+                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                  <p className="text-sm font-semibold text-gray-800">
+                    {format(new Date(slot.date + 'T00:00:00'), 'EEEE, MMMM d')}
+                  </p>
+                </div>
+                <div className="p-4 grid grid-cols-3 gap-2 lg:grid-cols-4">
+                  {slot.times.map((time) => {
+                    const key = `${slot.date}|${time}`
+                    const isSelected = selectedSlots.includes(key)
+                    const voteCount = slot.votes?.[time] || 0
+                    return (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => !voted && setSelectedSlots((prev) =>
+                          prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+                        )}
+                        className={`rounded-xl py-2.5 text-sm font-medium transition-colors border ${
+                          isSelected
+                            ? 'bg-primary-500 text-white border-primary-500'
+                            : voted
+                            ? 'bg-gray-50 text-gray-500 border-gray-100 cursor-default'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300'
+                        }`}
+                      >
+                        <div>{time}</div>
+                        {voted && <div className="text-xs opacity-75">{voteCount}✓</div>}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Custom poll */}
+        {poll.type === 'custom' && poll.customContent && (
+          <div
+            className="prose max-w-none text-gray-700 mb-6 rounded-2xl bg-white border border-gray-100 p-4"
+            dangerouslySetInnerHTML={{ __html: poll.customContent }}
+          />
+        )}
+
+        {/* Poll Stats */}
+        <div className="mb-6 rounded-2xl bg-primary-50 border border-primary-100 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <BarChart2 className="h-5 w-5 text-primary-500" />
+            <span className="text-sm font-semibold text-gray-800">Poll Statistics</span>
+          </div>
+          <p className="text-sm text-gray-600">
+            <span className="inline-flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              {poll.totalVotes} {poll.totalVotes === 1 ? 'person has' : 'people have'} voted.
+            </span>
+            {endsAt && (
+              <span className="ml-1 inline-flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                This poll ends {timeRemaining}.
+              </span>
+            )}
+          </p>
+        </div>
+
+        {/* Action buttons */}
+        {!voted ? (
+          <button
+            type="button"
+            onClick={handleVote}
+            disabled={submitting || (poll.type !== 'custom' && poll.type !== 'schedule' && !selectedOption) || (poll.type === 'schedule' && selectedSlots.length === 0)}
+            className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
+          >
+            {submitting ? <Spinner size="sm" /> : poll.type === 'custom' ? 'Mark as Read' : 'Submit Vote'}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate(`/poll/${poll.id}/results`)}
+            className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600"
+          >
+            View Results
+          </button>
+        )}
+      </div>
     </Layout>
   )
 }

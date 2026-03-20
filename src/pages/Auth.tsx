@@ -85,7 +85,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-app-bg flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm lg:max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-500 shadow-lg">
