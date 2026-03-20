@@ -50,7 +50,7 @@ export default function Sidebar() {
       <div className="border-t border-gray-100 px-4 py-4">
         <div className="flex items-center gap-3">
           {user?.photoURL ? (
-            <img src={user.photoURL} alt={displayName} className="h-9 w-9 rounded-full object-cover" />
+            <img src={user.photoURL} alt={displayName} width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
           ) : (
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-500">
               <span className="text-sm font-bold text-white">{initial}</span>
@@ -60,7 +60,7 @@ export default function Sidebar() {
             <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
             {email && <p className="text-xs text-gray-500 truncate">{email}</p>}
           </div>
-          <button type="button" className="text-gray-400 hover:text-gray-600">
+          <button type="button" aria-label="Settings" className="text-gray-400 hover:text-gray-600">
             <Settings className="h-4 w-4" />
           </button>
         </div>

@@ -95,6 +95,8 @@ export default function Profile() {
             <img
               src={user.photoURL}
               alt={displayName}
+              width={80}
+              height={80}
               className="h-20 w-20 rounded-full object-cover mb-3 lg:mb-0 lg:h-24 lg:w-24"
             />
           ) : (
@@ -113,10 +115,10 @@ export default function Profile() {
                   className="rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-primary-400"
                   autoFocus
                 />
-                <button type="button" onClick={saveName} className="text-green-500 hover:text-green-600">
+                <button type="button" aria-label="Save name" onClick={saveName} className="text-green-500 hover:text-green-600">
                   <Check className="h-4 w-4" />
                 </button>
-                <button type="button" onClick={() => setEditingName(false)} className="text-gray-400 hover:text-gray-600">
+                <button type="button" aria-label="Cancel editing" onClick={() => setEditingName(false)} className="text-gray-400 hover:text-gray-600">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -125,6 +127,7 @@ export default function Profile() {
                 <h2 className="text-xl font-bold text-gray-900 lg:text-2xl">{displayName}</h2>
                 <button
                   type="button"
+                  aria-label="Edit display name"
                   onClick={() => { setNewName(displayName); setEditingName(true) }}
                   className="text-gray-400 hover:text-gray-600"
                 >

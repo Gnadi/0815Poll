@@ -53,6 +53,7 @@ export default function RichEditor({ content, onChange, placeholder }: RichEdito
             type="button"
             onClick={action}
             title={title}
+            aria-label={title}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
               active ? 'bg-primary-100 text-primary-600' : 'text-gray-500 hover:bg-gray-100'
             }`}
