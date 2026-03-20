@@ -187,36 +187,6 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
         )}
       </div>
 
-      <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 280 }}>
-        <MapContainer
-          center={[20, 0]}
-          zoom={2}
-          style={{ height: '100%', width: '100%' }}
-          scrollWheelZoom={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <ClickHandler onMapClick={handleMapClick} />
-          {locations.map((loc) => (
-            <Marker key={loc.id} position={[loc.lat, loc.lng]}>
-              <Popup>{loc.name}</Popup>
-            </Marker>
-          ))}
-          {pending && (
-            <Marker position={[pending.lat, pending.lng]} opacity={0.6} />
-          )}
-        </MapContainer>
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-            <Loader2 className="h-6 w-6 text-primary-500 animate-spin" />
-          </div>
-        )}
-      </div>
-
-      <p className="text-xs text-gray-500 text-center">Or click the map to add locations</p>
-
       {/* Pending location confirm dialog */}
       {pending && (
         <div className="rounded-2xl border border-primary-200 bg-primary-50 p-4">
@@ -247,6 +217,36 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
           </div>
         </div>
       )}
+
+      <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 280 }}>
+        <MapContainer
+          center={[20, 0]}
+          zoom={2}
+          style={{ height: '100%', width: '100%' }}
+          scrollWheelZoom={false}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <ClickHandler onMapClick={handleMapClick} />
+          {locations.map((loc) => (
+            <Marker key={loc.id} position={[loc.lat, loc.lng]}>
+              <Popup>{loc.name}</Popup>
+            </Marker>
+          ))}
+          {pending && (
+            <Marker position={[pending.lat, pending.lng]} opacity={0.6} />
+          )}
+        </MapContainer>
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <Loader2 className="h-6 w-6 text-primary-500 animate-spin" />
+          </div>
+        )}
+      </div>
+
+      <p className="text-xs text-gray-500 text-center">Or click the map to add locations</p>
 
       {/* Location list */}
       {locations.length > 0 && (
