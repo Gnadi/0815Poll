@@ -20,6 +20,7 @@ import {
   Trash2,
   Copy,
   GripVertical,
+  Pencil,
 } from 'lucide-react'
 import CodeEditor from '../components/CodeEditor'
 import Toggle from '../components/Toggle'
@@ -321,6 +322,13 @@ ${optHtml}
                 />
                 <button
                   type="button"
+                  onClick={(e) => { e.stopPropagation(); setActiveOptionIdx(idx); setActiveTab('html') }}
+                  className="p-1 text-gray-400 hover:text-primary-600"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); removeOption(idx) }}
                   className="p-1 text-gray-400 hover:text-red-500"
                 >
@@ -539,6 +547,14 @@ ${optHtml}
                       className="flex-1 bg-transparent text-sm font-medium text-gray-800 outline-none min-w-0"
                     />
                     <div className="hidden group-hover:flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setActiveOptionIdx(idx); setActiveTab('html') }}
+                        className="p-1 text-gray-400 hover:text-primary-600"
+                        title="Edit"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); duplicateOption(idx) }}
