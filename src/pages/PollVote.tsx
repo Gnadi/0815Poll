@@ -5,6 +5,7 @@ import { BarChart2, Users, Clock, Share2 } from 'lucide-react'
 import Layout from '../components/Layout'
 import VoteOption from '../components/VoteOption'
 import Spinner from '../components/Spinner'
+import LocationViewMap from '../components/LocationViewMap'
 import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote } from '../lib/firestore'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -179,19 +180,22 @@ export default function PollVote() {
 
         {/* Location poll options */}
         {poll.type === 'location' && poll.locations && (
-          <div className="space-y-3 mb-6">
-            {poll.locations.map((loc) => (
-              <VoteOption
-                key={loc.id}
-                id={loc.id}
-                label={loc.name}
-                percentage={voted ? getPercentage(loc.votes) : undefined}
-                selected={selectedOption === loc.id || votedOptionId === loc.id}
-                voted={voted}
-                onSelect={() => !voted && setSelectedOption(loc.id)}
-              />
-            ))}
-          </div>
+          <>
+            <LocationViewMap locations={poll.locations} />
+            <div className="space-y-3 mb-6">
+              {poll.locations.map((loc, index) => (
+                <VoteOption
+                  key={loc.id}
+                  id={loc.id}
+                  label={`${index + 1}. ${loc.name}`}
+                  percentage={voted ? getPercentage(loc.votes) : undefined}
+                  selected={selectedOption === loc.id || votedOptionId === loc.id}
+                  voted={voted}
+                  onSelect={() => !voted && setSelectedOption(loc.id)}
+                />
+              ))}
+            </div>
+          </>
         )}
 
         {/* Schedule poll */}

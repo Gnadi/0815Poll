@@ -5,6 +5,7 @@ import { Trophy, Share2, Users, Clock, Lightbulb, ArrowLeft } from 'lucide-react
 import ResultBar from '../components/ResultBar'
 import Spinner from '../components/Spinner'
 import Sidebar from '../components/Sidebar'
+import LocationViewMap from '../components/LocationViewMap'
 import { subscribeToPoll } from '../lib/firestore'
 import { usePoll } from '../contexts/PollContext'
 import { useToast } from '../components/Toast'
@@ -223,6 +224,7 @@ export default function PollResults() {
                 {/* Location distribution */}
                 {poll.type === 'location' && poll.locations && (
                   <div>
+                    <LocationViewMap locations={poll.locations} />
                     <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
                     <div className="space-y-2">
                       {[...poll.locations]
