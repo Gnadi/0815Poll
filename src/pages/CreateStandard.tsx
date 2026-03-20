@@ -22,6 +22,7 @@ export default function CreateStandard() {
   const [description, setDescription] = useState('')
   const [options, setOptions] = useState(['', ''])
   const [anonymous, setAnonymous] = useState(true)
+  const [multiChoice, setMultiChoice] = useState(false)
   const [duration, setDuration] = useState(24)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -68,7 +69,7 @@ export default function CreateStandard() {
           text: text.trim(),
           votes: 0,
         })),
-        settings: { anonymous, duration },
+        settings: { anonymous, multiChoice, duration },
         createdBy: user?.uid || null,
       })
       showToast('Poll created!', 'success')
@@ -168,6 +169,16 @@ export default function CreateStandard() {
                     onChange={setAnonymous}
                     label="Anonymous Results"
                     description="Hide voter identities"
+                  />
+                </div>
+              </div>
+              <div className="px-4 py-4 flex items-center gap-3">
+                <div className="flex-1">
+                  <Toggle
+                    checked={multiChoice}
+                    onChange={setMultiChoice}
+                    label="Allow Multiple Selections"
+                    description="Voters can pick more than one option"
                   />
                 </div>
               </div>

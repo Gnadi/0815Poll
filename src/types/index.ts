@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
-export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking' | 'multi_choice'
+export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking'
 export type PollStatus = 'active' | 'ended'
 
 export interface PollOption {
@@ -29,6 +29,7 @@ export interface LocationOption {
 export interface PollSettings {
   anonymous: boolean
   duration: number // hours
+  multiChoice?: boolean // allow voters to select more than one option
 }
 
 export interface Poll {
@@ -73,14 +74,6 @@ export interface RankingVote {
   pollId: string
   userId: string | null
   ranking: string[] // option IDs in user's preferred order (index 0 = top choice)
-  createdAt: Timestamp
-}
-
-export interface MultiChoiceVote {
-  id: string
-  pollId: string
-  userId: string | null
-  selectedOptionIds: string[] // all chosen option IDs
   createdAt: Timestamp
 }
 

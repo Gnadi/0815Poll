@@ -104,9 +104,9 @@ export default function PollResults() {
     winnerLoc = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
   }
 
-  // Multi-choice poll: most-selected option
+  // Multi-choice winner (standard poll with multiChoice setting)
   let multiChoiceWinner = null
-  if (poll.type === 'multi_choice' && poll.options && poll.totalVotes > 0) {
+  if (poll.type === 'standard' && poll.settings.multiChoice && poll.options && poll.totalVotes > 0) {
     multiChoiceWinner = [...poll.options].sort((a, b) => b.votes - a.votes)[0]
   }
 
@@ -190,8 +190,8 @@ export default function PollResults() {
                   </div>
                 )}
 
-                {/* Winner card — Standard poll */}
-                {poll.type === 'standard' && winnerOption && poll.totalVotes > 0 && (
+                {/* Winner card — Standard poll (single choice) */}
+                {poll.type === 'standard' && !poll.settings.multiChoice && winnerOption && poll.totalVotes > 0 && (
                   <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
                     <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
                     <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Option</p>
@@ -203,6 +203,23 @@ export default function PollResults() {
                           +{winnerPct - runnerUpPct}% vs runner-up
                         </span>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Winner card — Standard poll (multi-choice) */}
+                {poll.type === 'standard' && poll.settings.multiChoice && multiChoiceWinner && poll.totalVotes > 0 && (
+                  <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
+                    <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                    <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Most Selected Option</p>
+                    <h3 className="text-2xl font-bold mb-2">{multiChoiceWinner.text}</h3>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-black">
+                        {Math.round((multiChoiceWinner.votes / poll.totalVotes) * 100)}%
+                      </span>
+                      <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
+                        of voters
+                      </span>
                     </div>
                   </div>
                 )}
@@ -228,8 +245,8 @@ export default function PollResults() {
                   </div>
                 )}
 
-                {/* Voting distribution */}
-                {poll.type === 'standard' && poll.options && poll.options.length > 0 && (
+                {/* Voting distribution — standard single choice */}
+                {poll.type === 'standard' && !poll.settings.multiChoice && poll.options && poll.options.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-base font-bold text-gray-900 lg:text-lg">Voting Distribution</h3>
@@ -248,6 +265,33 @@ export default function PollResults() {
                           />
                         ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Voting distribution — standard multi-choice */}
+                {poll.type === 'standard' && poll.settings.multiChoice && poll.options && poll.options.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Selection Distribution</h3>
+                      <span className="text-xs text-gray-400">% of voters who chose each</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[...poll.options]
+                        .sort((a, b) => b.votes - a.votes)
+                        .map((opt, idx) => (
+                          <ResultBar
+                            key={opt.id}
+                            label={opt.text}
+                            votes={opt.votes}
+                            totalVotes={poll.totalVotes}
+                            isWinner={idx === 0 && opt.votes > 0}
+                            isVoted={false}
+                          />
+                        ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2 text-center">
+                      Percentages show share of voters who selected each option (total may exceed 100%)
+                    </p>
                   </div>
                 )}
 
@@ -332,50 +376,6 @@ export default function PollResults() {
                     </div>
                     <p className="text-xs text-gray-400 mt-2 text-center">
                       Scores calculated via Borda Count — higher rank = more points per voter
-                    </p>
-                  </div>
-                )}
-
-                {/* Winner card — Multi-choice poll */}
-                {poll.type === 'multi_choice' && multiChoiceWinner && poll.totalVotes > 0 && (
-                  <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
-                    <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
-                    <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Most Selected Option</p>
-                    <h3 className="text-2xl font-bold mb-2">{multiChoiceWinner.text}</h3>
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl font-black">
-                        {Math.round((multiChoiceWinner.votes / poll.totalVotes) * 100)}%
-                      </span>
-                      <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
-                        of voters
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Multi-choice distribution */}
-                {poll.type === 'multi_choice' && poll.options && poll.options.length > 0 && (
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Selection Distribution</h3>
-                      <span className="text-xs text-gray-400">% of voters who chose each</span>
-                    </div>
-                    <div className="space-y-2">
-                      {[...poll.options]
-                        .sort((a, b) => b.votes - a.votes)
-                        .map((opt, idx) => (
-                          <ResultBar
-                            key={opt.id}
-                            label={opt.text}
-                            votes={opt.votes}
-                            totalVotes={poll.totalVotes}
-                            isWinner={idx === 0 && opt.votes > 0}
-                            isVoted={false}
-                          />
-                        ))}
-                    </div>
-                    <p className="text-xs text-gray-400 mt-2 text-center">
-                      Percentages show share of voters who selected each option (total may exceed 100%)
                     </p>
                   </div>
                 )}
@@ -484,7 +484,7 @@ export default function PollResults() {
                 )}
 
                 {/* Quick Insight */}
-                {poll.type === 'standard' && winnerOption && poll.totalVotes > 0 && (
+                {poll.type === 'standard' && !poll.settings.multiChoice && winnerOption && poll.totalVotes > 0 && (
                   <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Lightbulb className="h-5 w-5 text-yellow-500" />

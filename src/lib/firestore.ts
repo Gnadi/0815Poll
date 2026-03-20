@@ -19,7 +19,9 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote, MultiChoiceVote } from '../types'
+import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote } from '../types'
+
+type MultiChoiceVote = { id: string; pollId: string; userId: string | null; selectedOptionIds: string[]; createdAt: Timestamp }
 
 // ─── Polls ───────────────────────────────────────────────────────────────────
 
