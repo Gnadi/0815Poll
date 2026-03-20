@@ -53,8 +53,8 @@ const pollTypes = [
     icon: Target,
     title: 'Priority Vote',
     description: 'Distribute points across options to rank by importance. Perfect for feature roadmaps and team decisions.',
-    color: 'bg-teal-50',
-    iconColor: 'text-teal-600',
+    color: 'bg-blue-50',
+    iconColor: 'text-blue-600',
     route: '/create/priority',
   },
 ]

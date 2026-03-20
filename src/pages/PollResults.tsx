@@ -233,9 +233,9 @@ export default function PollResults() {
 
                 {/* Winner card — Priority poll */}
                 {poll.type === 'priority' && priorityWinner && poll.totalVotes > 0 && (
-                  <div className="rounded-2xl bg-teal-500 p-5 text-white relative overflow-hidden lg:p-6">
+                  <div className="rounded-2xl bg-blue-500 p-5 text-white relative overflow-hidden lg:p-6">
                     <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
-                    <p className="text-xs font-semibold uppercase tracking-wide text-teal-100 mb-1">Top Priority</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-blue-100 mb-1">Top Priority</p>
                     <h3 className="text-2xl font-bold mb-2">{priorityWinner.text}</h3>
                     <div className="flex items-center gap-3">
                       <span className="text-3xl font-black">{priorityWinner.priorityPoints || 0} pts</span>

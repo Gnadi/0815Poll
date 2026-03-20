@@ -92,9 +92,9 @@ export default function CreatePriority() {
         </div>
 
         {/* Explanation banner */}
-        <div className="mb-6 rounded-2xl bg-teal-50 border border-teal-100 px-4 py-3">
-          <p className="text-sm text-teal-800 font-medium">How it works</p>
-          <p className="text-xs text-teal-600 mt-0.5">
+        <div className="mb-6 rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3">
+          <p className="text-sm text-blue-800 font-medium">How it works</p>
+          <p className="text-xs text-blue-600 mt-0.5">
             Every voter gets a fixed number of points to distribute freely across options — e.g., put 3 on your top pick and 2 on a second. The option with the most accumulated points wins.
           </p>
         </div>
@@ -108,7 +108,7 @@ export default function CreatePriority() {
               onChange={(e) => setQuestion(e.target.value)}
               rows={3}
               placeholder='e.g. "Which features should we build next quarter?"'
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-teal-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
             />
             {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
           </div>
@@ -121,7 +121,7 @@ export default function CreatePriority() {
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="Add more context for your voters..."
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-teal-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
             />
           </div>
 
@@ -161,7 +161,7 @@ export default function CreatePriority() {
               <button
                 type="button"
                 onClick={addOption}
-                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-teal-200 py-3 text-sm font-semibold text-teal-600 hover:bg-teal-50 transition-colors"
+                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-blue-200 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Add Option
@@ -185,8 +185,8 @@ export default function CreatePriority() {
                       onClick={() => setVotingPower(pts)}
                       className={`rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors border ${
                         votingPower === pts
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300'
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
                       }`}
                     >
                       {pts} pts
@@ -218,8 +218,8 @@ export default function CreatePriority() {
                       onClick={() => setDuration(opt.value)}
                       className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors border ${
                         duration === opt.value
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300'
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
                       }`}
                     >
                       {opt.label}
@@ -234,7 +234,7 @@ export default function CreatePriority() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-2xl bg-teal-500 py-4 text-base font-bold text-white hover:bg-teal-600 disabled:opacity-50 transition-colors"
+            className="w-full rounded-2xl bg-blue-500 py-4 text-base font-bold text-white hover:bg-blue-600 disabled:opacity-50 transition-colors"
           >
             {submitting ? <Spinner size="sm" /> : 'Create Priority Poll'}
           </button>
