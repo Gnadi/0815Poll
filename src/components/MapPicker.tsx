@@ -117,6 +117,26 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
 
   return (
     <div className="space-y-3">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => { setSearchQuery(e.target.value); setSearchError('') }}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          placeholder="Search for a location..."
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
+        />
+        <button
+          type="button"
+          onClick={handleSearch}
+          disabled={searching || !searchQuery.trim()}
+          className="rounded-xl bg-primary-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+        </button>
+      </div>
+      {searchError && <p className="text-xs text-red-500">{searchError}</p>}
+
       <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 280 }}>
         <MapContainer
           center={[20, 0]}
@@ -145,26 +165,7 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
         )}
       </div>
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => { setSearchQuery(e.target.value); setSearchError('') }}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          placeholder="Search for a location..."
-          className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
-        />
-        <button
-          type="button"
-          onClick={handleSearch}
-          disabled={searching || !searchQuery.trim()}
-          className="rounded-xl bg-primary-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-        >
-          {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-        </button>
-      </div>
-      {searchError && <p className="text-xs text-red-500">{searchError}</p>}
-      <p className="text-xs text-gray-500 text-center">Search above or click the map to add locations</p>
+      <p className="text-xs text-gray-500 text-center">Or click the map to add locations</p>
 
       {/* Pending location confirm dialog */}
       {pending && (
