@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F0F0F5;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Leaflet map container requires explicit height */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 0.75rem;
+}
+
+/* Tiptap editor styles */
+.ProseMirror {
+  outline: none;
+  min-height: 160px;
+}
+
+.ProseMirror p {
+  margin: 0.5rem 0;
+}
+
+.ProseMirror h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.75rem 0;
+}
+
+.ProseMirror h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #5B67CA;
+  padding-left: 1rem;
+  margin: 0.5rem 0;
+  color: #6b7280;
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 1rem 0;
+}

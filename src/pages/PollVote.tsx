@@ -1,0 +1,286 @@
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { formatDistanceToNow, format, isPast } from 'date-fns'
+import { BarChart2, Users, Clock, Share2 } from 'lucide-react'
+import Layout from '../components/Layout'
+import VoteOption from '../components/VoteOption'
+import Spinner from '../components/Spinner'
+import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote } from '../lib/firestore'
+import { usePoll } from '../contexts/PollContext'
+import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../components/Toast'
+import type { Poll } from '../types'
+
+export default function PollVote() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { castVote, castScheduleVote, getLocalVote } = usePoll()
+  const { user } = useAuth()
+  const { showToast } = useToast()
+
+  const [poll, setPoll] = useState<Poll | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([])
+  const [voted, setVoted] = useState(false)
+  const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  // Check if already voted
+  const checkVoted = useCallback(async (poll: Poll) => {
+    // Check local storage first (works for both authed and unauthed)
+    const localVote = getLocalVote(poll.id)
+    if (localVote) {
+      setVoted(true)
+      setVotedOptionId(localVote)
+      return
+    }
+    // Check Firestore for logged-in users
+    if (user && poll.type !== 'schedule') {
+      const vote = await getUserVote(poll.id, user.uid)
+      if (vote) {
+        setVoted(true)
+        setVotedOptionId(vote.optionId)
+      }
+    } else if (user && poll.type === 'schedule') {
+      const vote = await getUserScheduleVote(poll.id, user.uid)
+      if (vote) {
+        setVoted(true)
+        setSelectedSlots(vote.selectedSlots)
+      }
+    }
+  }, [user, getLocalVote])
+
+  useEffect(() => {
+    if (!id) return
+    const unsub = subscribeToPoll(id, async (p) => {
+      if (!p) { setLoading(false); return }
+
+      // Auto-expire check
+      if (p.status === 'active' && p.endsAt && isPast(p.endsAt.toDate())) {
+        await updatePollStatus(p.id, 'ended')
+        navigate(`/poll/${p.id}/results`, { replace: true })
+        return
+      }
+      if (p.status === 'ended') {
+        navigate(`/poll/${p.id}/results`, { replace: true })
+        return
+      }
+
+      setPoll(p)
+      setLoading(false)
+      await checkVoted(p)
+    })
+    return unsub
+  }, [id, navigate, checkVoted])
+
+  const handleVote = async () => {
+    if (!poll || submitting || voted) return
+    if (poll.type === 'schedule') {
+      if (selectedSlots.length === 0) { showToast('Select at least one time slot.', 'error'); return }
+    } else {
+      if (!selectedOption) { showToast('Please select an option.', 'error'); return }
+    }
+
+    setSubmitting(true)
+    try {
+      if (poll.type === 'schedule') {
+        await castScheduleVote(poll.id, user?.uid || null, selectedSlots)
+      } else {
+        await castVote(poll.id, user?.uid || null, selectedOption!)
+        setVotedOptionId(selectedOption)
+      }
+      setVoted(true)
+      showToast('Vote cast!', 'success')
+    } catch (err) {
+      showToast('Failed to cast vote. Please try again.', 'error')
+      console.error(err)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const share = async () => {
+    const url = window.location.href
+    if (navigator.share) {
+      await navigator.share({ title: poll?.question, url })
+    } else {
+      await navigator.clipboard.writeText(url)
+      showToast('Link copied!', 'success')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
+
+  if (!poll) {
+    return (
+      <Layout title="Poll Not Found" showBack>
+        <div className="text-center py-16">
+          <p className="text-gray-500">This poll doesn't exist or has been removed.</p>
+        </div>
+      </Layout>
+    )
+  }
+
+  const endsAt = poll.endsAt?.toDate?.()
+  const timeRemaining = endsAt ? formatDistanceToNow(endsAt, { addSuffix: true }) : ''
+
+  // Calculate percentages for standard/location polls
+  const getPercentage = (votes: number) =>
+    poll.totalVotes > 0 ? Math.round((votes / poll.totalVotes) * 100) : 0
+
+  return (
+    <Layout
+      title="Cast Your Vote"
+      showBack
+      headerRight={
+        <button type="button" onClick={share} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
+          <Share2 className="h-4 w-4 text-gray-600" />
+        </button>
+      }
+    >
+      {/* LIVE badge */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          LIVE NOW
+        </span>
+      </div>
+
+      {/* Question */}
+      <h2 className="text-2xl font-bold text-gray-900 mb-3">{poll.question}</h2>
+      {poll.description && (
+        <p className="text-sm text-gray-500 mb-6">{poll.description}</p>
+      )}
+
+      {/* Standard poll options */}
+      {poll.type === 'standard' && poll.options && (
+        <div className="space-y-3 mb-6">
+          {poll.options.map((opt) => (
+            <VoteOption
+              key={opt.id}
+              id={opt.id}
+              label={opt.text}
+              percentage={voted ? getPercentage(opt.votes) : undefined}
+              selected={selectedOption === opt.id || votedOptionId === opt.id}
+              voted={voted}
+              onSelect={() => !voted && setSelectedOption(opt.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Location poll options */}
+      {poll.type === 'location' && poll.locations && (
+        <div className="space-y-3 mb-6">
+          {poll.locations.map((loc) => (
+            <VoteOption
+              key={loc.id}
+              id={loc.id}
+              label={loc.name}
+              percentage={voted ? getPercentage(loc.votes) : undefined}
+              selected={selectedOption === loc.id || votedOptionId === loc.id}
+              voted={voted}
+              onSelect={() => !voted && setSelectedOption(loc.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Schedule poll */}
+      {poll.type === 'schedule' && poll.timeSlots && (
+        <div className="space-y-4 mb-6">
+          {poll.timeSlots.map((slot) => (
+            <div key={slot.date} className="rounded-2xl bg-white border border-gray-100 overflow-hidden">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-800">
+                  {format(new Date(slot.date + 'T00:00:00'), 'EEEE, MMMM d')}
+                </p>
+              </div>
+              <div className="p-4 grid grid-cols-3 gap-2">
+                {slot.times.map((time) => {
+                  const key = `${slot.date}|${time}`
+                  const isSelected = selectedSlots.includes(key)
+                  const voteCount = slot.votes?.[time] || 0
+                  return (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => !voted && setSelectedSlots((prev) =>
+                        prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+                      )}
+                      className={`rounded-xl py-2.5 text-sm font-medium transition-colors border ${
+                        isSelected
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : voted
+                          ? 'bg-gray-50 text-gray-500 border-gray-100 cursor-default'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300'
+                      }`}
+                    >
+                      <div>{time}</div>
+                      {voted && <div className="text-xs opacity-75">{voteCount}✓</div>}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Custom poll */}
+      {poll.type === 'custom' && poll.customContent && (
+        <div
+          className="prose max-w-none text-gray-700 mb-6 rounded-2xl bg-white border border-gray-100 p-4"
+          dangerouslySetInnerHTML={{ __html: poll.customContent }}
+        />
+      )}
+
+      {/* Poll Stats */}
+      <div className="mb-6 rounded-2xl bg-primary-50 border border-primary-100 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <BarChart2 className="h-5 w-5 text-primary-500" />
+          <span className="text-sm font-semibold text-gray-800">Poll Statistics</span>
+        </div>
+        <p className="text-sm text-gray-600">
+          <span className="inline-flex items-center gap-1">
+            <Users className="h-4 w-4" />
+            {poll.totalVotes} {poll.totalVotes === 1 ? 'person has' : 'people have'} voted.
+          </span>
+          {endsAt && (
+            <span className="ml-1 inline-flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              This poll ends {timeRemaining}.
+            </span>
+          )}
+        </p>
+      </div>
+
+      {/* Action buttons */}
+      {!voted ? (
+        <button
+          type="button"
+          onClick={handleVote}
+          disabled={submitting || (poll.type !== 'custom' && poll.type !== 'schedule' && !selectedOption) || (poll.type === 'schedule' && selectedSlots.length === 0)}
+          className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
+        >
+          {submitting ? <Spinner size="sm" /> : poll.type === 'custom' ? 'Mark as Read' : 'Submit Vote'}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => navigate(`/poll/${poll.id}/results`)}
+          className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600"
+        >
+          View Results →
+        </button>
+      )}
+    </Layout>
+  )
+}
