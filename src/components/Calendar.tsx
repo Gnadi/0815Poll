@@ -41,6 +41,7 @@ export default function Calendar({ selectedDates, onToggleDate, minDate }: Calen
       <div className="flex items-center justify-between mb-4">
         <button
           type="button"
+          aria-label="Previous month"
           onClick={() => setDisplayMonth(subMonths(displayMonth, 1))}
           className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
         >
@@ -51,6 +52,7 @@ export default function Calendar({ selectedDates, onToggleDate, minDate }: Calen
         </span>
         <button
           type="button"
+          aria-label="Next month"
           onClick={() => setDisplayMonth(addMonths(displayMonth, 1))}
           className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
         >
@@ -78,6 +80,7 @@ export default function Calendar({ selectedDates, onToggleDate, minDate }: Calen
             <button
               key={dateStr}
               type="button"
+              aria-label={format(day, 'EEEE, MMMM d, yyyy')}
               disabled={isPast || !isCurrentMonth}
               onClick={() => !isPast && isCurrentMonth && onToggleDate(dateStr)}
               className={`mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors ${

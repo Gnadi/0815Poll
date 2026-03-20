@@ -1,22 +1,23 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { PollProvider } from './contexts/PollContext'
 import { ToastProvider } from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
-
-import Auth from './pages/Auth'
 import Home from './pages/Home'
-import Explore from './pages/Explore'
-import CreatePollType from './pages/CreatePollType'
-import CreateStandard from './pages/CreateStandard'
-import CreateSchedule from './pages/CreateSchedule'
-import CreateLocation from './pages/CreateLocation'
-import CreateCustom from './pages/CreateCustom'
-import CreateRanking from './pages/CreateRanking'
-import CreatePriority from './pages/CreatePriority'
-import PollVote from './pages/PollVote'
-import PollResults from './pages/PollResults'
-import Profile from './pages/Profile'
+
+const Auth = lazy(() => import('./pages/Auth'))
+const Explore = lazy(() => import('./pages/Explore'))
+const CreatePollType = lazy(() => import('./pages/CreatePollType'))
+const CreateStandard = lazy(() => import('./pages/CreateStandard'))
+const CreateSchedule = lazy(() => import('./pages/CreateSchedule'))
+const CreateLocation = lazy(() => import('./pages/CreateLocation'))
+const CreateCustom = lazy(() => import('./pages/CreateCustom'))
+const CreateRanking = lazy(() => import('./pages/CreateRanking'))
+const CreatePriority = lazy(() => import('./pages/CreatePriority'))
+const PollVote = lazy(() => import('./pages/PollVote'))
+const PollResults = lazy(() => import('./pages/PollResults'))
+const Profile = lazy(() => import('./pages/Profile'))
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <AuthProvider>
           <PollProvider>
             <ToastProvider>
+              <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-500" /></div>}>
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/" element={<Home />} />
@@ -41,6 +43,7 @@ export default function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
+              </Suspense>
             </ToastProvider>
           </PollProvider>
         </AuthProvider>

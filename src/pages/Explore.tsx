@@ -71,8 +71,10 @@ export default function Explore() {
       <div className="lg:flex lg:items-center lg:gap-4 lg:mb-6">
         {/* Search */}
         <div className="relative mb-4 lg:mb-0 lg:flex-1 lg:max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <label htmlFor="explore-search" className="sr-only">Search polls</label>
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
           <input
+            id="explore-search"
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

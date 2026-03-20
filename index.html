@@ -2,11 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>0815Poll — The Place to Put a Poll</title>
-    <meta name="description" content="Create and share polls easily. Standard, Schedule, Location, and Custom poll types." />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta name="description" content="Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types." />
+    <meta name="theme-color" content="#5d5fef" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="0815Poll — The Place to Put a Poll" />
+    <meta property="og:description" content="Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types." />
+    <meta property="og:url" content="https://0815poll.vercel.app/" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="0815Poll — The Place to Put a Poll" />
+    <meta name="twitter:description" content="Create and share polls easily." />
+
+    <!-- Non-blocking Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "0815Poll",
+      "url": "https://0815poll.vercel.app",
+      "description": "Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types.",
+      "applicationCategory": "SocialApplication"
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
