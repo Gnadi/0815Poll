@@ -286,17 +286,28 @@ export default function PollResults() {
                   const wPct = Math.round((winner.votes / poll.totalVotes) * 100)
                   const ruPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
                   return (
-                    <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
-                      <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
-                      <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Option</p>
-                      <h3 className="text-2xl font-bold mb-2">{winner.text}</h3>
-                      <div className="flex items-center gap-3">
-                        <span className="text-3xl font-black">{wPct}%</span>
-                        {ruPct > 0 && (
-                          <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
-                            +{wPct - ruPct}% vs runner-up
-                          </span>
-                        )}
+                    <div className="rounded-2xl bg-primary-500 relative overflow-hidden">
+                      {winner.customContent && (
+                        <iframe
+                          srcDoc={winner.customContent}
+                          title={winner.text}
+                          sandbox="allow-scripts"
+                          className="w-full border-0 pointer-events-none"
+                          style={{ height: '200px' }}
+                        />
+                      )}
+                      <div className="p-5 lg:p-6">
+                        <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                        <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Option</p>
+                        <h3 className="text-2xl font-bold text-white mb-2">{winner.text}</h3>
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl font-black text-white">{wPct}%</span>
+                          {ruPct > 0 && (
+                            <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white">
+                              +{wPct - ruPct}% vs runner-up
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )
@@ -306,19 +317,45 @@ export default function PollResults() {
                 {poll.type === 'custom' && poll.options && poll.options.length > 0 && (
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {[...poll.options]
                         .sort((a, b) => b.votes - a.votes)
-                        .map((opt, idx) => (
-                          <ResultBar
-                            key={opt.id}
-                            label={opt.text}
-                            votes={opt.votes}
-                            totalVotes={poll.totalVotes}
-                            isWinner={idx === 0 && opt.votes > 0}
-                            isVoted={votedOptionId === opt.id}
-                          />
-                        ))}
+                        .map((opt, idx) => {
+                          const pct = poll.totalVotes > 0 ? Math.round((opt.votes / poll.totalVotes) * 100) : 0
+                          const isWinner = idx === 0 && opt.votes > 0
+                          const isVoted = votedOptionId === opt.id
+                          return (
+                            <div
+                              key={opt.id}
+                              className={`rounded-2xl border-2 overflow-hidden ${isWinner ? 'border-primary-500' : 'border-gray-100'}`}
+                            >
+                              {opt.customContent && (
+                                <iframe
+                                  srcDoc={opt.customContent}
+                                  title={opt.text}
+                                  sandbox="allow-scripts"
+                                  className="w-full border-0 pointer-events-none"
+                                  style={{ height: '160px' }}
+                                />
+                              )}
+                              <div className={`px-4 py-3 border-t ${isWinner ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className={`text-sm font-semibold ${isWinner ? 'text-primary-700' : 'text-gray-800'}`}>
+                                    {opt.text}
+                                  </span>
+                                  <span className="text-sm font-bold text-gray-700">{pct}%</span>
+                                </div>
+                                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-500 ${isWinner ? 'bg-primary-500' : isVoted ? 'bg-primary-300' : 'bg-gray-300'}`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</p>
+                              </div>
+                            </div>
+                          )
+                        })}
                     </div>
                   </div>
                 )}
