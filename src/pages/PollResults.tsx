@@ -110,7 +110,8 @@ export default function PollResults() {
     if (poll.options && poll.options.length > 0) {
       multiChoiceWinner = [...poll.options].sort((a, b) => b.votes - a.votes)[0]
     } else if (poll.locations && poll.locations.length > 0) {
-      multiChoiceWinner = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
+      const top = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
+      multiChoiceWinner = { text: top.name, votes: top.votes }
     }
   }
 
