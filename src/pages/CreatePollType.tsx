@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Calendar, MapPin, Sliders, GripVertical, ChevronRight } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, Sliders, GripVertical, ChevronRight, Target } from 'lucide-react'
 import Layout from '../components/Layout'
 
 const pollTypes = [
@@ -47,6 +47,15 @@ const pollTypes = [
     color: 'bg-purple-50',
     iconColor: 'text-purple-600',
     route: '/create/custom',
+  },
+  {
+    type: 'priority',
+    icon: Target,
+    title: 'Priority Vote',
+    description: 'Distribute points across options to rank by importance. Perfect for feature roadmaps and team decisions.',
+    color: 'bg-blue-50',
+    iconColor: 'text-blue-600',
+    route: '/create/priority',
   },
 ]
 

@@ -5,9 +5,10 @@ import { BarChart2, Users, Clock, Share2 } from 'lucide-react'
 import Layout from '../components/Layout'
 import VoteOption from '../components/VoteOption'
 import RankingList from '../components/RankingList'
+import PriorityVoteInput from '../components/PriorityVoteInput'
 import Spinner from '../components/Spinner'
 import LocationViewMap from '../components/LocationViewMap'
-import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote } from '../lib/firestore'
+import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote, getUserPriorityVote } from '../lib/firestore'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
@@ -16,7 +17,7 @@ import type { Poll } from '../types'
 export default function PollVote() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { castVote, castScheduleVote, castRankingVote, getLocalVote } = usePoll()
+  const { castVote, castScheduleVote, castRankingVote, castPriorityVote, getLocalVote } = usePoll()
   const { user } = useAuth()
   const { showToast } = useToast()
 
@@ -25,6 +26,7 @@ export default function PollVote() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [selectedSlots, setSelectedSlots] = useState<string[]>([])
   const [rankedOptions, setRankedOptions] = useState<string[]>([])
+  const [priorityDistribution, setPriorityDistribution] = useState<Record<string, number>>({})
   const [voted, setVoted] = useState(false)
   const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -50,6 +52,12 @@ export default function PollVote() {
       if (vote) {
         setVoted(true)
         setRankedOptions(vote.ranking)
+      }
+    } else if (user && poll.type === 'priority') {
+      const vote = await getUserPriorityVote(poll.id, user.uid)
+      if (vote) {
+        setVoted(true)
+        setPriorityDistribution(vote.distribution)
       }
     } else if (user) {
       const vote = await getUserVote(poll.id, user.uid)
@@ -82,6 +90,12 @@ export default function PollVote() {
       if (p.type === 'ranking' && p.options && rankedOptions.length === 0) {
         setRankedOptions(p.options.map((o) => o.id))
       }
+      // Initialize priority distribution with zeros if not yet set
+      if (p.type === 'priority' && p.options && Object.keys(priorityDistribution).length === 0) {
+        const init: Record<string, number> = {}
+        p.options.forEach((o) => { init[o.id] = 0 })
+        setPriorityDistribution(init)
+      }
       await checkVoted(p)
     })
     return unsub
@@ -93,6 +107,9 @@ export default function PollVote() {
       if (selectedSlots.length === 0) { showToast('Select at least one time slot.', 'error'); return }
     } else if (poll.type === 'ranking') {
       if (rankedOptions.length === 0) { showToast('Rank the options before submitting.', 'error'); return }
+    } else if (poll.type === 'priority') {
+      const totalAllocated = Object.values(priorityDistribution).reduce((s, v) => s + v, 0)
+      if (totalAllocated === 0) { showToast('Distribute at least 1 point before submitting.', 'error'); return }
     } else {
       if (!selectedOption) { showToast('Please select an option.', 'error'); return }
     }
@@ -103,6 +120,8 @@ export default function PollVote() {
         await castScheduleVote(poll.id, user?.uid || null, selectedSlots)
       } else if (poll.type === 'ranking') {
         await castRankingVote(poll.id, user?.uid || null, rankedOptions)
+      } else if (poll.type === 'priority') {
+        await castPriorityVote(poll.id, user?.uid || null, priorityDistribution)
       } else {
         await castVote(poll.id, user?.uid || null, selectedOption!)
         setVotedOptionId(selectedOption)
@@ -272,6 +291,24 @@ export default function PollVote() {
           </div>
         )}
 
+        {/* Priority poll */}
+        {poll.type === 'priority' && poll.options && (
+          <div className="mb-6">
+            {!voted && (
+              <p className="text-xs text-gray-500 mb-3">
+                You have <strong>{poll.settings.votingPower ?? 5} points</strong> to distribute. Add more points to options you care about most.
+              </p>
+            )}
+            <PriorityVoteInput
+              options={poll.options}
+              distribution={priorityDistribution}
+              votingPower={poll.settings.votingPower ?? 5}
+              onChange={setPriorityDistribution}
+              disabled={voted}
+            />
+          </div>
+        )}
+
         {/* Custom poll options (selectable cards rendered in iframes) */}
         {poll.type === 'custom' && poll.options && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
@@ -365,8 +402,9 @@ export default function PollVote() {
             onClick={handleVote}
             disabled={
               submitting ||
-              (poll.type !== 'schedule' && poll.type !== 'ranking' && !selectedOption) ||
-              (poll.type === 'schedule' && selectedSlots.length === 0)
+              (poll.type !== 'schedule' && poll.type !== 'ranking' && poll.type !== 'priority' && !selectedOption) ||
+              (poll.type === 'schedule' && selectedSlots.length === 0) ||
+              (poll.type === 'priority' && Object.values(priorityDistribution).every((v) => v === 0))
             }
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
           >

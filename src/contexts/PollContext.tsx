@@ -5,6 +5,7 @@ import {
   castVote as firestoreCastVote,
   castScheduleVote as firestoreCastScheduleVote,
   castRankingVote as firestoreCastRankingVote,
+  castPriorityVote as firestoreCastPriorityVote,
 } from '../lib/firestore'
 import type { Poll, CreatePollPayload } from '../types'
 
@@ -33,6 +34,7 @@ interface PollContextValue {
   castVote: (pollId: string, userId: string | null, optionId: string) => Promise<void>
   castScheduleVote: (pollId: string, userId: string | null, slots: string[]) => Promise<void>
   castRankingVote: (pollId: string, userId: string | null, ranking: string[]) => Promise<void>
+  castPriorityVote: (pollId: string, userId: string | null, distribution: Record<string, number>) => Promise<void>
 }
 
 const PollContext = createContext<PollContextValue | null>(null)
@@ -88,6 +90,15 @@ export function PollProvider({ children }: { children: ReactNode }) {
     setLocalVote(pollId, 'ranked')
   }, [])
 
+  const castPriorityVote = useCallback(async (
+    pollId: string,
+    userId: string | null,
+    distribution: Record<string, number>
+  ) => {
+    await firestoreCastPriorityVote(pollId, userId, distribution)
+    setLocalVote(pollId, 'priority-voted')
+  }, [])
+
   return (
     <PollContext.Provider value={{
       polls,
@@ -98,6 +109,7 @@ export function PollProvider({ children }: { children: ReactNode }) {
       castVote,
       castScheduleVote,
       castRankingVote,
+      castPriorityVote,
     }}>
       {children}
     </PollContext.Provider>
