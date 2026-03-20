@@ -104,10 +104,14 @@ export default function PollResults() {
     winnerLoc = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
   }
 
-  // Multi-choice winner (standard poll with multiChoice setting)
-  let multiChoiceWinner = null
-  if (poll.type === 'standard' && poll.settings.multiChoice && poll.options && poll.totalVotes > 0) {
-    multiChoiceWinner = [...poll.options].sort((a, b) => b.votes - a.votes)[0]
+  // Multi-choice winner (any poll type with multiChoice setting)
+  let multiChoiceWinner: { text: string; votes: number } | null = null
+  if (poll.settings.multiChoice && poll.totalVotes > 0) {
+    if (poll.options && poll.options.length > 0) {
+      multiChoiceWinner = [...poll.options].sort((a, b) => b.votes - a.votes)[0]
+    } else if (poll.locations && poll.locations.length > 0) {
+      multiChoiceWinner = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
+    }
   }
 
   return (
@@ -207,11 +211,11 @@ export default function PollResults() {
                   </div>
                 )}
 
-                {/* Winner card — Standard poll (multi-choice) */}
-                {poll.type === 'standard' && poll.settings.multiChoice && multiChoiceWinner && poll.totalVotes > 0 && (
+                {/* Winner card — any poll with multi-choice enabled */}
+                {poll.settings.multiChoice && multiChoiceWinner && poll.totalVotes > 0 && (
                   <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
                     <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
-                    <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Most Selected Option</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Most Selected</p>
                     <h3 className="text-2xl font-bold mb-2">{multiChoiceWinner.text}</h3>
                     <div className="flex items-center gap-3">
                       <span className="text-3xl font-black">
@@ -224,8 +228,8 @@ export default function PollResults() {
                   </div>
                 )}
 
-                {/* Winner card — Location poll */}
-                {poll.type === 'location' && winnerLoc && (
+                {/* Winner card — Location poll (single choice) */}
+                {poll.type === 'location' && !poll.settings.multiChoice && winnerLoc && (
                   <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
                     <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
                     <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Top Location</p>
@@ -299,7 +303,10 @@ export default function PollResults() {
                 {poll.type === 'location' && poll.locations && (
                   <div>
                     <LocationViewMap locations={poll.locations} />
-                    <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Voting Distribution</h3>
+                      {poll.settings.multiChoice && <span className="text-xs text-gray-400">% of voters who chose each</span>}
+                    </div>
                     <div className="space-y-2">
                       {[...poll.locations]
                         .sort((a, b) => b.votes - a.votes)
@@ -314,6 +321,11 @@ export default function PollResults() {
                           />
                         ))}
                     </div>
+                    {poll.settings.multiChoice && (
+                      <p className="text-xs text-gray-400 mt-2 text-center">
+                        Percentages show share of voters who selected each location (total may exceed 100%)
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -380,8 +392,8 @@ export default function PollResults() {
                   </div>
                 )}
 
-                {/* Custom poll winner */}
-                {poll.type === 'custom' && poll.options && poll.totalVotes > 0 && (() => {
+                {/* Custom poll winner (single choice only) */}
+                {poll.type === 'custom' && !poll.settings.multiChoice && poll.options && poll.totalVotes > 0 && (() => {
                   const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
                   const winner = sorted[0]
                   const wPct = Math.round((winner.votes / poll.totalVotes) * 100)
@@ -417,7 +429,10 @@ export default function PollResults() {
                 {/* Custom poll distribution */}
                 {poll.type === 'custom' && poll.options && poll.options.length > 0 && (
                   <div>
-                    <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Voting Distribution</h3>
+                      {poll.settings.multiChoice && <span className="text-xs text-gray-400">% of voters who chose each</span>}
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {[...poll.options]
                         .sort((a, b) => b.votes - a.votes)
@@ -507,7 +522,7 @@ export default function PollResults() {
                   </div>
                   <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">
-                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking' || poll.type === 'multi_choice') && poll.options ? poll.options.length :
+                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking') && poll.options ? poll.options.length :
                        poll.type === 'location' && poll.locations ? poll.locations.length :
                        poll.type === 'schedule' && poll.timeSlots ? poll.timeSlots.length : '—'}
                     </p>

@@ -149,6 +149,7 @@ export default function CreateCustom() {
   const [jsCode, setJsCode] = useState(DEFAULT_JS)
   const [activeTab, setActiveTab] = useState<TabId>('html')
   const [anonymous, setAnonymous] = useState(true)
+  const [multiChoice, setMultiChoice] = useState(false)
   const [duration, setDuration] = useState(24)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -257,7 +258,7 @@ ${optHtml}
         question: question.trim(),
         description: '',
         options: pollOptions,
-        settings: { anonymous, duration },
+        settings: { anonymous, multiChoice, duration },
         createdBy: user?.uid || null,
       })
       showToast('Custom poll created!', 'success')
@@ -396,6 +397,9 @@ ${optHtml}
               <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
             </div>
             <div className="px-4 py-4">
+              <Toggle checked={multiChoice} onChange={setMultiChoice} label="Allow Multiple Selections" description="Voters can pick more than one option" />
+            </div>
+            <div className="px-4 py-4">
               <p className="text-sm font-medium text-gray-800 mb-2">Duration</p>
               <div className="flex flex-wrap gap-2">
                 {DURATION_OPTIONS.map((opt) => (
@@ -503,8 +507,9 @@ ${optHtml}
                   ))}
                 </div>
               </div>
-              <div>
+              <div className="space-y-3">
                 <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
+                <Toggle checked={multiChoice} onChange={setMultiChoice} label="Allow Multiple Selections" description="Voters can pick more than one option" />
               </div>
             </div>
           </div>

@@ -52,7 +52,7 @@ export default function PollVote() {
         setVoted(true)
         setRankedOptions(vote.ranking)
       }
-    } else if (user && poll.type === 'standard' && poll.settings.multiChoice) {
+    } else if (user && poll.settings.multiChoice) {
       const vote = await getUserMultiChoiceVote(poll.id, user.uid)
       if (vote) {
         setVoted(true)
@@ -100,7 +100,7 @@ export default function PollVote() {
       if (selectedSlots.length === 0) { showToast('Select at least one time slot.', 'error'); return }
     } else if (poll.type === 'ranking') {
       if (rankedOptions.length === 0) { showToast('Rank the options before submitting.', 'error'); return }
-    } else if (poll.type === 'standard' && poll.settings.multiChoice) {
+    } else if (poll.settings.multiChoice) {
       if (selectedMultiOptions.length === 0) { showToast('Select at least one option.', 'error'); return }
     } else {
       if (!selectedOption) { showToast('Please select an option.', 'error'); return }
@@ -112,7 +112,7 @@ export default function PollVote() {
         await castScheduleVote(poll.id, user?.uid || null, selectedSlots)
       } else if (poll.type === 'ranking') {
         await castRankingVote(poll.id, user?.uid || null, rankedOptions)
-      } else if (poll.type === 'standard' && poll.settings.multiChoice) {
+      } else if (poll.settings.multiChoice) {
         await castMultiChoiceVote(poll.id, user?.uid || null, selectedMultiOptions)
       } else {
         await castVote(poll.id, user?.uid || null, selectedOption!)
@@ -249,8 +249,8 @@ export default function PollVote() {
           </div>
         )}
 
-        {/* Location poll options */}
-        {poll.type === 'location' && poll.locations && (
+        {/* Location poll options — single select */}
+        {poll.type === 'location' && poll.locations && !poll.settings.multiChoice && (
           <>
             <LocationViewMap locations={poll.locations} />
             <div className="space-y-3 mb-6">
@@ -265,6 +265,53 @@ export default function PollVote() {
                   onSelect={() => !voted && setSelectedOption(loc.id)}
                 />
               ))}
+            </div>
+          </>
+        )}
+
+        {/* Location poll options — multi select */}
+        {poll.type === 'location' && poll.locations && poll.settings.multiChoice && (
+          <>
+            <LocationViewMap locations={poll.locations} />
+            <div className="space-y-3 mb-6">
+              <p className="text-xs text-gray-500 -mt-2">You may select more than one location.</p>
+              {poll.locations.map((loc, index) => {
+                const isSelected = selectedMultiOptions.includes(loc.id)
+                return (
+                  <button
+                    key={loc.id}
+                    type="button"
+                    onClick={() => !voted && setSelectedMultiOptions((prev) =>
+                      prev.includes(loc.id) ? prev.filter((id) => id !== loc.id) : [...prev, loc.id]
+                    )}
+                    className={`w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-all ${
+                      isSelected
+                        ? 'border-primary-500 bg-primary-50'
+                        : voted
+                        ? 'border-gray-100 bg-white cursor-default'
+                        : 'border-gray-200 bg-white hover:border-primary-300'
+                    }`}
+                  >
+                    <div className={`flex h-5 w-5 items-center justify-center rounded border-2 shrink-0 transition-colors ${
+                      isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+                    }`}>
+                      {isSelected && (
+                        <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
+                          <polyline points="2,6 5,9 10,3" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className={`flex-1 text-sm font-medium ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>
+                      {index + 1}. {loc.name}
+                    </span>
+                    {voted && (
+                      <span className="text-xs text-gray-500 shrink-0">
+                        {getPercentage(loc.votes)}%
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </>
         )}
@@ -327,8 +374,8 @@ export default function PollVote() {
           </div>
         )}
 
-        {/* Custom poll options (selectable cards rendered in iframes) */}
-        {poll.type === 'custom' && poll.options && (
+        {/* Custom poll options — single select */}
+        {poll.type === 'custom' && poll.options && !poll.settings.multiChoice && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
             {poll.options.map((opt) => {
               const isSelected = selectedOption === opt.id || votedOptionId === opt.id
@@ -345,7 +392,6 @@ export default function PollVote() {
                       : 'border-gray-200 hover:border-primary-300 hover:shadow-sm'
                   }`}
                 >
-                  {/* Rendered custom HTML in sandboxed iframe */}
                   {opt.customContent && (
                     <iframe
                       srcDoc={opt.customContent}
@@ -355,19 +401,68 @@ export default function PollVote() {
                       style={{ height: '160px' }}
                     />
                   )}
-                  {/* Option label + vote info */}
                   <div className={`px-4 py-3 border-t ${isSelected ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
                     <div className="flex items-center justify-between">
-                      <span className={`text-sm font-semibold ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>
-                        {opt.text}
-                      </span>
-                      {/* Radio indicator */}
-                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
-                      }`}>
+                      <span className={`text-sm font-semibold ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>{opt.text}</span>
+                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'}`}>
+                        {isSelected && <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12"><circle cx="6" cy="6" r="3" /></svg>}
+                      </div>
+                    </div>
+                    {voted && (
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                          <span>{getPercentage(opt.votes)}%</span>
+                          <span>{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                          <div className={`h-full rounded-full transition-all duration-500 ${isSelected ? 'bg-primary-500' : 'bg-gray-300'}`} style={{ width: `${getPercentage(opt.votes)}%` }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Custom poll options — multi select */}
+        {poll.type === 'custom' && poll.options && poll.settings.multiChoice && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <p className="text-xs text-gray-500 col-span-full -mt-2">You may select more than one option.</p>
+            {poll.options.map((opt) => {
+              const isSelected = selectedMultiOptions.includes(opt.id)
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => !voted && setSelectedMultiOptions((prev) =>
+                    prev.includes(opt.id) ? prev.filter((id) => id !== opt.id) : [...prev, opt.id]
+                  )}
+                  className={`relative rounded-2xl border-2 overflow-hidden transition-all text-left ${
+                    isSelected
+                      ? 'border-primary-500 ring-2 ring-primary-200 shadow-md'
+                      : voted
+                      ? 'border-gray-100 opacity-60 cursor-default'
+                      : 'border-gray-200 hover:border-primary-300 hover:shadow-sm'
+                  }`}
+                >
+                  {opt.customContent && (
+                    <iframe
+                      srcDoc={opt.customContent}
+                      title={opt.text}
+                      sandbox="allow-scripts"
+                      className="w-full border-0 pointer-events-none"
+                      style={{ height: '160px' }}
+                    />
+                  )}
+                  <div className={`px-4 py-3 border-t ${isSelected ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm font-semibold ${isSelected ? 'text-primary-700' : 'text-gray-800'}`}>{opt.text}</span>
+                      <div className={`h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'}`}>
                         {isSelected && (
-                          <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
-                            <circle cx="6" cy="6" r="3" />
+                          <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
+                            <polyline points="2,6 5,9 10,3" />
                           </svg>
                         )}
                       </div>
@@ -379,10 +474,7 @@ export default function PollVote() {
                           <span>{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</span>
                         </div>
                         <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ${isSelected ? 'bg-primary-500' : 'bg-gray-300'}`}
-                            style={{ width: `${getPercentage(opt.votes)}%` }}
-                          />
+                          <div className={`h-full rounded-full transition-all duration-500 ${isSelected ? 'bg-primary-500' : 'bg-gray-300'}`} style={{ width: `${getPercentage(opt.votes)}%` }} />
                         </div>
                       </div>
                     )}
@@ -420,9 +512,9 @@ export default function PollVote() {
             onClick={handleVote}
             disabled={
               submitting ||
-              (poll.type !== 'schedule' && poll.type !== 'ranking' && !(poll.type === 'standard' && poll.settings.multiChoice) && !selectedOption) ||
+              (poll.type !== 'schedule' && poll.type !== 'ranking' && !poll.settings.multiChoice && !selectedOption) ||
               (poll.type === 'schedule' && selectedSlots.length === 0) ||
-              (poll.type === 'standard' && poll.settings.multiChoice && selectedMultiOptions.length === 0)
+              (poll.settings.multiChoice && selectedMultiOptions.length === 0)
             }
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
           >

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import MapPicker from '../components/MapPicker'
+import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -19,6 +20,7 @@ export default function CreateLocation() {
   const [question, setQuestion] = useState('')
   const [description, setDescription] = useState('')
   const [locations, setLocations] = useState<LocationOption[]>([])
+  const [multiChoice, setMultiChoice] = useState(false)
   const [duration, setDuration] = useState(24)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -50,7 +52,7 @@ export default function CreateLocation() {
         question: question.trim(),
         description: description.trim(),
         locations,
-        settings: { anonymous: true, duration },
+        settings: { anonymous: true, multiChoice, duration },
         createdBy: user?.uid || null,
       })
       showToast('Location poll created!', 'success')
@@ -90,6 +92,17 @@ export default function CreateLocation() {
                   placeholder="Add context..."
                   className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
                 />
+              </div>
+
+              <div>
+                <div className="rounded-2xl bg-white border border-gray-100 px-4 py-4 mb-4">
+                  <Toggle
+                    checked={multiChoice}
+                    onChange={setMultiChoice}
+                    label="Allow Multiple Selections"
+                    description="Voters can pick more than one location"
+                  />
+                </div>
               </div>
 
               <div>

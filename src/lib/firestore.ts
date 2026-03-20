@@ -278,7 +278,12 @@ export async function castMultiChoiceVote(
     if (!pollSnap.exists()) throw new Error('Poll not found')
     const poll = { id: pollSnap.id, ...pollSnap.data() } as Poll
 
-    if (poll.options) {
+    if (poll.locations) {
+      const updatedLocations = poll.locations.map((l) =>
+        selectedOptionIds.includes(l.id) ? { ...l, votes: l.votes + 1 } : l
+      )
+      tx.update(pollRef, { locations: updatedLocations, totalVotes: increment(1) })
+    } else if (poll.options) {
       const updatedOptions = poll.options.map((o) =>
         selectedOptionIds.includes(o.id) ? { ...o, votes: o.votes + 1 } : o
       )
