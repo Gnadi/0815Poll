@@ -32,7 +32,7 @@ export default function Auth() {
   const { showToast } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/'
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home'
 
   const validate = () => {
     if (!email) return 'Email is required.'
@@ -215,7 +215,7 @@ export default function Auth() {
         <div className="mt-4 text-center">
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
             className="text-sm text-gray-500 hover:text-gray-700 underline"
           >
             Continue without account

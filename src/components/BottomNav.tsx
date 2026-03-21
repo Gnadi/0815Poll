@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { BarChart2, Compass, PlusCircle, User } from 'lucide-react'
 
 const navItems = [
-  { to: '/', icon: BarChart2, label: 'Polls', exact: true },
+  { to: '/home', icon: BarChart2, label: 'Polls', exact: true },
   { to: '/explore', icon: Compass, label: 'Explore', exact: false },
   { to: '/create', icon: PlusCircle, label: 'Create', exact: false },
   { to: '/profile', icon: User, label: 'Profile', exact: false },

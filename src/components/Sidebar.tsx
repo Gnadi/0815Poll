@@ -3,7 +3,7 @@ import { BarChart2, Compass, PlusCircle, User, Settings } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const navItems = [
-  { to: '/', icon: BarChart2, label: 'Dashboard', exact: true },
+  { to: '/home', icon: BarChart2, label: 'Dashboard', exact: true },
   { to: '/explore', icon: Compass, label: 'Explore', exact: false },
   { to: '/create', icon: PlusCircle, label: 'Create', exact: false },
   { to: '/profile', icon: User, label: 'Profile', exact: false },
