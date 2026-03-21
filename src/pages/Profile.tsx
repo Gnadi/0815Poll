@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Edit2, Check, X, BarChart2 } from 'lucide-react'
+import { LogOut, Edit2, Check, X, BarChart2, Moon, Sun } from 'lucide-react'
 import Layout from '../components/Layout'
 import PollCard from '../components/PollCard'
 import Spinner from '../components/Spinner'
@@ -8,7 +8,35 @@ import EmptyState from '../components/EmptyState'
 import { getUserPolls, updateUserProfile, getUserVoteCount } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
+import { useTheme } from '../contexts/ThemeContext'
 import type { Poll } from '../types'
+
+function AppearanceSection() {
+  const { isDark, toggleTheme } = useTheme()
+  return (
+    <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 mb-6">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className="w-full flex items-center justify-between px-4 py-4 text-left"
+      >
+        <div className="flex items-center gap-3">
+          {isDark
+            ? <Moon className="h-5 w-5 text-primary-400" />
+            : <Sun className="h-5 w-5 text-primary-500" />
+          }
+          <div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Appearance</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{isDark ? 'Dark mode' : 'Light mode'}</p>
+          </div>
+        </div>
+        <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isDark ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-600'}`}>
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${isDark ? 'translate-x-6' : 'translate-x-1'}`} />
+        </div>
+      </button>
+    </div>
+  )
+}
 
 export default function Profile() {
   const { user, userProfile, signOut } = useAuth()
@@ -74,6 +102,9 @@ export default function Profile() {
           >
             Continue without account
           </button>
+          <div className="mt-8 w-full max-w-xs">
+            <AppearanceSection />
+          </div>
         </div>
       </Layout>
     )
@@ -193,6 +224,9 @@ export default function Profile() {
             </div>
           )}
         </section>
+
+        {/* Appearance */}
+        <AppearanceSection />
 
         {/* Mobile sign out */}
         <button
