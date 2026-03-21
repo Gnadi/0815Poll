@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { UserPlus, Trash2, Edit2, Check, X, Mail, Users } from 'lucide-react'
+import { UserPlus, Trash2, Edit2, Check, X, Mail, Phone, Users } from 'lucide-react'
 import Layout from '../components/Layout'
 import Spinner from '../components/Spinner'
 import { getContacts, addContact, updateContact, deleteContact } from '../lib/firestore'
@@ -18,10 +18,12 @@ export default function Contacts() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
+  const [newPhone, setNewPhone] = useState('')
   const [saving, setSaving] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
+  const [editPhone, setEditPhone] = useState('')
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
@@ -42,10 +44,12 @@ export default function Contacts() {
       const created = await addContact(user.uid, {
         name: newName.trim(),
         email: newEmail.trim(),
+        ...(newPhone.trim() ? { phone: newPhone.trim().replace(/[\s+\-()]/g, '') } : {}),
       })
       setContacts((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)))
       setNewName('')
       setNewEmail('')
+      setNewPhone('')
       setShowAddForm(false)
       showToast('Contact added!', 'success')
     } catch {
@@ -59,6 +63,7 @@ export default function Contacts() {
     setEditingId(contact.id)
     setEditName(contact.name)
     setEditEmail(contact.email)
+    setEditPhone(contact.phone || '')
   }
 
   const saveEdit = async (contactId: string) => {
@@ -71,10 +76,15 @@ export default function Contacts() {
       await updateContact(user.uid, contactId, {
         name: editName.trim(),
         email: editEmail.trim(),
+        phone: editPhone.trim() ? editPhone.trim().replace(/[\s+\-()]/g, '') : undefined,
       })
       setContacts((prev) =>
         prev
-          .map((c) => (c.id === contactId ? { ...c, name: editName.trim(), email: editEmail.trim() } : c))
+          .map((c) =>
+            c.id === contactId
+              ? { ...c, name: editName.trim(), email: editEmail.trim(), phone: editPhone.trim() || undefined }
+              : c
+          )
           .sort((a, b) => a.name.localeCompare(b.name))
       )
       setEditingId(null)
@@ -153,6 +163,13 @@ export default function Contacts() {
               placeholder="Email address"
               className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
             />
+            <input
+              type="tel"
+              value={newPhone}
+              onChange={(e) => setNewPhone(e.target.value)}
+              placeholder="Phone for WhatsApp (optional, e.g. +49 176 …)"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
+            />
             <div className="flex gap-2">
               <button
                 type="button"
@@ -164,7 +181,7 @@ export default function Contacts() {
               </button>
               <button
                 type="button"
-                onClick={() => { setShowAddForm(false); setNewName(''); setNewEmail('') }}
+                onClick={() => { setShowAddForm(false); setNewName(''); setNewEmail(''); setNewPhone('') }}
                 className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
               >
                 Cancel
@@ -202,6 +219,13 @@ export default function Contacts() {
                       onChange={(e) => setEditEmail(e.target.value)}
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary-400"
                     />
+                    <input
+                      type="tel"
+                      value={editPhone}
+                      onChange={(e) => setEditPhone(e.target.value)}
+                      placeholder="Phone for WhatsApp (optional)"
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary-400"
+                    />
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -229,6 +253,11 @@ export default function Contacts() {
                       <p className="text-xs text-gray-400 truncate flex items-center gap-1">
                         <Mail className="h-3 w-3" /> {contact.email}
                       </p>
+                      {contact.phone && (
+                        <p className="text-xs text-green-600 truncate flex items-center gap-1 mt-0.5">
+                          <Phone className="h-3 w-3" /> {contact.phone}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <button

@@ -10,6 +10,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
 import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
+import { writeNotificationsForEmails, enqueuePushNotification, getUserByEmail } from '../lib/firestore'
+import { filterFCMTokens } from '../lib/fcm'
 import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
@@ -97,6 +99,18 @@ export default function CreateStandard() {
         showToast('Poll created! (Email invites require EmailJS setup — see NOTIFICATION_ANALYSIS.md)', 'info')
       } else {
         showToast('Poll created!', 'success')
+      }
+
+      // In-app notifications for registered contacts
+      if (invitedContacts.length > 0) {
+        const emails = invitedContacts.map((c) => c.email)
+        writeNotificationsForEmails(emails, id, question.trim(), user?.displayName || 'Someone')
+        // FCM push for contacts who have granted permission
+        const users = await Promise.all(emails.map((e) => getUserByEmail(e)))
+        const tokens = filterFCMTokens(users.filter(Boolean) as { fcmToken?: string }[])
+        if (tokens.length > 0) {
+          enqueuePushNotification(tokens, `${user?.displayName || 'Someone'} invited you to vote`, question.trim(), id)
+        }
       }
 
       navigate(`/poll/${id}`)

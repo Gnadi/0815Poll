@@ -1,14 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, format, isPast } from 'date-fns'
-import { BarChart2, Users, Clock, Share2 } from 'lucide-react'
+import { BarChart2, Users, Clock, Share2, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import VoteOption from '../components/VoteOption'
 import RankingList from '../components/RankingList'
 import PriorityVoteInput from '../components/PriorityVoteInput'
 import Spinner from '../components/Spinner'
 import LocationViewMap from '../components/LocationViewMap'
+import PollQRCode from '../components/PollQRCode'
 import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote, getUserPriorityVote } from '../lib/firestore'
+import { buildWhatsAppShareLink, copyToClipboard } from '../lib/share'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
@@ -32,6 +34,7 @@ export default function PollVote() {
   const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
   const [votedOptionIds, setVotedOptionIds] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
+  const [showSharePanel, setShowSharePanel] = useState(false)
 
   // Check if already voted
   const checkVoted = useCallback(async (poll: Poll) => {
@@ -157,8 +160,8 @@ export default function PollVote() {
     if (navigator.share) {
       await navigator.share({ title: poll?.question, url })
     } else {
-      await navigator.clipboard.writeText(url)
-      showToast('Link copied!', 'success')
+      const ok = await copyToClipboard(url)
+      if (ok) showToast('Link copied!', 'success')
     }
   }
 
@@ -511,6 +514,46 @@ export default function PollVote() {
             View Results
           </button>
         )}
+
+        {/* Share Panel */}
+        <div className="mt-4 rounded-2xl border border-gray-100 bg-white overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowSharePanel((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Share2 className="h-4 w-4 text-gray-400" />
+              Share this poll
+            </span>
+            {showSharePanel ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+          </button>
+          {showSharePanel && poll && (
+            <div className="px-4 pb-4 pt-2 space-y-4 border-t border-gray-100">
+              {/* Copy link */}
+              <button
+                type="button"
+                onClick={share}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Share2 className="h-4 w-4" />
+                Copy / Share Link
+              </button>
+              {/* WhatsApp */}
+              <a
+                href={buildWhatsAppShareLink(poll.question, poll.id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-green-500 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Share via WhatsApp
+              </a>
+              {/* QR Code */}
+              <PollQRCode pollId={poll.id} size={140} />
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   )

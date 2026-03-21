@@ -11,6 +11,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
+import { writeNotificationsForEmails, enqueuePushNotification, getUserByEmail } from '../lib/firestore'
+import { filterFCMTokens } from '../lib/fcm'
 import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
@@ -124,6 +126,13 @@ export default function CreateSchedule() {
         showToast('Poll created! (Email invites require EmailJS setup)', 'info')
       } else {
         showToast('Schedule poll created!', 'success')
+      }
+      if (invitedContacts.length > 0) {
+        const emails = invitedContacts.map((c) => c.email)
+        writeNotificationsForEmails(emails, id, question.trim(), user?.displayName || 'Someone')
+        const users = await Promise.all(emails.map((e) => getUserByEmail(e)))
+        const tokens = filterFCMTokens(users.filter(Boolean) as { fcmToken?: string }[])
+        if (tokens.length > 0) enqueuePushNotification(tokens, `${user?.displayName || 'Someone'} invited you to vote`, question.trim(), id)
       }
       navigate(`/poll/${id}`)
     } catch {
