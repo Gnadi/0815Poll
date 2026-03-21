@@ -4,11 +4,13 @@ import Layout from '../components/Layout'
 import MapPicker from '../components/MapPicker'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
+import ContactSelector from '../components/ContactSelector'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
-import type { LocationOption } from '../types'
+import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
+import type { LocationOption, Contact } from '../types'
 
 const DURATION_OPTIONS = [
   { label: '24 hours', value: 24 },
@@ -22,6 +24,7 @@ export default function CreateLocation() {
   const [locations, setLocations] = useState<LocationOption[]>([])
   const [duration, setDuration] = useState(24)
   const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
+  const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -54,8 +57,18 @@ export default function CreateLocation() {
         locations,
         settings: { anonymous: true, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
+        invitedContactEmails: invitedContacts.map((c) => c.email),
       })
-      showToast('Location poll created!', 'success')
+      if (invitedContacts.length > 0 && isEmailJsConfigured()) {
+        const expiresAt = new Date(Date.now() + duration * 3600 * 1000)
+        const { sent, failed } = await sendPollInvites(invitedContacts, question.trim(), id, user?.displayName || 'Someone', expiresAt)
+        if (failed > 0) showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent, ${failed} failed.`, 'info')
+        else showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent.`, 'success')
+      } else if (invitedContacts.length > 0) {
+        showToast('Poll created! (Email invites require EmailJS setup)', 'info')
+      } else {
+        showToast('Location poll created!', 'success')
+      }
       navigate(`/poll/${id}`)
     } catch {
       showToast('Failed to create poll. Please try again.', 'error')
@@ -158,6 +171,11 @@ export default function CreateLocation() {
               <MapPicker locations={locations} onAddLocation={addLocation} onRemoveLocation={removeLocation} />
               {errors.locations && <p className="mt-1 text-xs text-red-500">{errors.locations}</p>}
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-800 mb-2">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+            <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
           </div>
 
           <button

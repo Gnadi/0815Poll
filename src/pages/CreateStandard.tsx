@@ -4,10 +4,13 @@ import { Plus, X } from 'lucide-react'
 import Layout from '../components/Layout'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
+import ContactSelector from '../components/ContactSelector'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
+import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
+import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
   { label: '1 hour', value: 1 },
@@ -24,6 +27,7 @@ export default function CreateStandard() {
   const [anonymous, setAnonymous] = useState(true)
   const [duration, setDuration] = useState(24)
   const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
+  const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -71,8 +75,30 @@ export default function CreateStandard() {
         })),
         settings: { anonymous, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
+        invitedContactEmails: invitedContacts.map((c) => c.email),
       })
-      showToast('Poll created!', 'success')
+
+      // Send email invitations
+      if (invitedContacts.length > 0 && isEmailJsConfigured()) {
+        const expiresAt = new Date(Date.now() + duration * 3600 * 1000)
+        const { sent, failed } = await sendPollInvites(
+          invitedContacts,
+          question.trim(),
+          id,
+          user?.displayName || 'Someone',
+          expiresAt
+        )
+        if (failed > 0) {
+          showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent, ${failed} failed.`, 'info')
+        } else {
+          showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent.`, 'success')
+        }
+      } else if (invitedContacts.length > 0 && !isEmailJsConfigured()) {
+        showToast('Poll created! (Email invites require EmailJS setup — see NOTIFICATION_ANALYSIS.md)', 'info')
+      } else {
+        showToast('Poll created!', 'success')
+      }
+
       navigate(`/poll/${id}`)
     } catch {
       showToast('Failed to create poll. Please try again.', 'error')
@@ -202,6 +228,12 @@ export default function CreateStandard() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Invite contacts */}
+          <div>
+            <label className="block text-sm font-bold text-gray-800 mb-2">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+            <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
           </div>
 
           {/* Submit */}

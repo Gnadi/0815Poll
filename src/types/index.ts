@@ -53,6 +53,7 @@ export interface Poll {
   endsAt: Timestamp
   status: PollStatus
   totalVotes: number
+  invitedContactEmails?: string[] // emails notified when poll was created
 }
 
 export interface Vote {
@@ -97,3 +98,10 @@ export interface User {
 }
 
 export type CreatePollPayload = Omit<Poll, 'id' | 'createdAt' | 'endsAt' | 'status' | 'totalVotes'>
+
+export interface Contact {
+  id: string
+  name: string
+  email: string
+  createdAt: Timestamp
+}

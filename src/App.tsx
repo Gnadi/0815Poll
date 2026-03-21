@@ -17,6 +17,7 @@ import CreatePriority from './pages/CreatePriority'
 import PollVote from './pages/PollVote'
 import PollResults from './pages/PollResults'
 import Profile from './pages/Profile'
+import Contacts from './pages/Contacts'
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
                 <Route path="/poll/:id" element={<PollVote />} />
                 <Route path="/poll/:id/results" element={<PollResults />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/contacts" element={<Contacts />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </ToastProvider>

@@ -5,10 +5,13 @@ import Layout from '../components/Layout'
 import Calendar from '../components/Calendar'
 import TimeSlotPicker, { DEFAULT_TIMES } from '../components/TimeSlotPicker'
 import Spinner from '../components/Spinner'
+import ContactSelector from '../components/ContactSelector'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
+import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
   { label: '24 hours', value: 24 },
@@ -29,6 +32,7 @@ export default function CreateSchedule() {
   const [selectedDates, setSelectedDates] = useState<string[]>([])
   const [slotMap, setSlotMap] = useState<SlotMap>({})
   const [activeDate, setActiveDate] = useState<string | null>(null)
+  const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -109,8 +113,18 @@ export default function CreateSchedule() {
         timeSlots,
         settings: { anonymous: true, duration },
         createdBy: user?.uid || null,
+        invitedContactEmails: invitedContacts.map((c) => c.email),
       })
-      showToast('Schedule poll created!', 'success')
+      if (invitedContacts.length > 0 && isEmailJsConfigured()) {
+        const expiresAt = new Date(Date.now() + duration * 3600 * 1000)
+        const { sent, failed } = await sendPollInvites(invitedContacts, question.trim(), id, user?.displayName || 'Someone', expiresAt)
+        if (failed > 0) showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent, ${failed} failed.`, 'info')
+        else showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent.`, 'success')
+      } else if (invitedContacts.length > 0) {
+        showToast('Poll created! (Email invites require EmailJS setup)', 'info')
+      } else {
+        showToast('Schedule poll created!', 'success')
+      }
       navigate(`/poll/${id}`)
     } catch {
       showToast('Failed to create poll. Please try again.', 'error')
@@ -297,6 +311,12 @@ export default function CreateSchedule() {
               <p className="text-sm text-primary-700">
                 Participants will be able to vote for their preferred time slots. Once everyone has voted, you can finalize the meeting.
               </p>
+            </div>
+
+            {/* Invite contacts */}
+            <div>
+              <label className="block text-sm font-bold text-gray-800 mb-2">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+              <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
             </div>
           </div>
         )}

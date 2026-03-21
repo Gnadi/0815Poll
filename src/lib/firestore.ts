@@ -6,6 +6,7 @@ import {
   getDocs,
   setDoc,
   updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
   where,
@@ -19,7 +20,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote, PriorityVote } from '../types'
+import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote, PriorityVote, Contact } from '../types'
 
 // ─── Polls ───────────────────────────────────────────────────────────────────
 
@@ -367,4 +368,40 @@ export async function getUserVoteCount(userId: string): Promise<number> {
   const q = query(collection(db, 'votes'), where('userId', '==', userId))
   const snap = await getDocs(q)
   return snap.size
+}
+
+// ─── Contacts ─────────────────────────────────────────────────────────────────
+
+function contactsRef(userId: string) {
+  return collection(db, 'users', userId, 'contacts')
+}
+
+export async function getContacts(userId: string): Promise<Contact[]> {
+  const q = query(contactsRef(userId), orderBy('name', 'asc'))
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Contact)
+}
+
+export async function addContact(
+  userId: string,
+  data: Omit<Contact, 'id' | 'createdAt'>
+): Promise<Contact> {
+  const ref = await addDoc(contactsRef(userId), {
+    ...data,
+    createdAt: Timestamp.now(),
+  })
+  const snap = await getDoc(ref)
+  return { id: snap.id, ...snap.data() } as Contact
+}
+
+export async function updateContact(
+  userId: string,
+  contactId: string,
+  data: Partial<Pick<Contact, 'name' | 'email'>>
+): Promise<void> {
+  await updateDoc(doc(db, 'users', userId, 'contacts', contactId), data)
+}
+
+export async function deleteContact(userId: string, contactId: string): Promise<void> {
+  await deleteDoc(doc(db, 'users', userId, 'contacts', contactId))
 }
