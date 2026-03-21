@@ -7,9 +7,10 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [dismissed, setDismissed] = useState(
-    () => localStorage.getItem('pwa-install-dismissed') === 'true'
-  )
+  const [dismissed, setDismissed] = useState(() => {
+    const snoozedUntil = localStorage.getItem('pwa-install-snoozed-until')
+    return snoozedUntil ? Date.now() < parseInt(snoozedUntil, 10) : false
+  })
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -31,7 +32,8 @@ export default function InstallPrompt() {
   }
 
   const handleDismiss = () => {
-    localStorage.setItem('pwa-install-dismissed', 'true')
+    const snoozedUntil = Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+    localStorage.setItem('pwa-install-snoozed-until', String(snoozedUntil))
     setDismissed(true)
   }
 
