@@ -69,7 +69,7 @@ export default function Profile() {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
             className="mt-3 text-sm text-gray-500 underline"
           >
             Continue without account

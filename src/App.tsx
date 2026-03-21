@@ -6,6 +6,7 @@ import { ToastProvider } from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
 import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
+import LandingPage from './pages/LandingPage'
 
 const Auth = lazy(() => import('./pages/Auth'))
 const Explore = lazy(() => import('./pages/Explore'))
@@ -30,7 +31,8 @@ export default function App() {
               <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-500" /></div>}>
               <Routes>
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/create" element={<CreatePollType />} />
                 <Route path="/create/standard" element={<CreateStandard />} />

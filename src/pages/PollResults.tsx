@@ -53,7 +53,7 @@ export default function PollResults() {
       <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-center px-6">
           <p className="text-gray-500 mb-4">Poll not found.</p>
-          <button onClick={() => navigate('/')} className="text-primary-600 font-medium">Go Home</button>
+          <button onClick={() => navigate('/home')} className="text-primary-600 font-medium">Go Home</button>
         </div>
       </div>
     )
