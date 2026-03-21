@@ -3,6 +3,146 @@ import { Link } from 'react-router-dom'
 const BLUE = '#1a56db'
 const BLUE_HOVER = '#1648c0'
 
+function PhoneMockup() {
+  return (
+    <div className="hidden md:flex justify-center">
+      {/* Phone frame */}
+      <div className="relative w-56" style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.18))' }}>
+        <div className="rounded-[2.5rem] bg-gray-900 p-2 border-4 border-gray-800">
+          {/* Notch */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-5 bg-gray-900 rounded-full z-10" />
+          {/* Screen */}
+          <div className="rounded-[2rem] bg-white overflow-hidden" style={{ minHeight: 420 }}>
+            {/* Status bar */}
+            <div className="bg-white px-4 pt-6 pb-1 flex justify-between items-center">
+              <span className="text-[9px] font-semibold text-gray-400 tracking-wider">FINAL RESULTS</span>
+              <span className="text-[9px] text-gray-400">31 Total votes</span>
+            </div>
+            {/* Poll title */}
+            <div className="px-4 pb-2">
+              <p className="text-xs font-bold text-gray-900">Ffff</p>
+              <p className="text-[9px] text-gray-400 mt-0.5">Ended 29 minutes ago</p>
+            </div>
+            {/* Top location card */}
+            <div className="mx-3 mb-2 rounded-xl px-3 py-2.5 flex items-center gap-2" style={{ backgroundColor: BLUE }}>
+              <div className="flex flex-col">
+                <span className="text-[8px] font-bold text-white/70 tracking-widest uppercase">Top Location</span>
+                <span className="text-sm font-bold text-white leading-tight">Arlit</span>
+                <span className="text-[9px] text-white/70">Agadez Region, Niger</span>
+              </div>
+              <div className="ml-auto">
+                <svg className="h-6 w-6 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 4v12l-4-2-4 2V4M6 20h12" />
+                </svg>
+              </div>
+            </div>
+            {/* Map placeholder */}
+            <div className="mx-3 mb-2 rounded-xl overflow-hidden relative" style={{ height: 120 }}>
+              {/* Tile grid to simulate a map */}
+              <div className="absolute inset-0" style={{ backgroundColor: '#e8eedc' }}>
+                {/* Map grid lines */}
+                <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 100" preserveAspectRatio="none">
+                  <line x1="0" y1="25" x2="200" y2="25" stroke="#aab" strokeWidth="0.5"/>
+                  <line x1="0" y1="50" x2="200" y2="50" stroke="#aab" strokeWidth="0.5"/>
+                  <line x1="0" y1="75" x2="200" y2="75" stroke="#aab" strokeWidth="0.5"/>
+                  <line x1="50" y1="0" x2="50" y2="100" stroke="#aab" strokeWidth="0.5"/>
+                  <line x1="100" y1="0" x2="100" y2="100" stroke="#aab" strokeWidth="0.5"/>
+                  <line x1="150" y1="0" x2="150" y2="100" stroke="#aab" strokeWidth="0.5"/>
+                  {/* Road lines */}
+                  <path d="M20 30 Q60 20 80 50 Q100 75 140 60 Q170 50 190 55" stroke="#c8c8a0" strokeWidth="1.5" fill="none"/>
+                  <path d="M0 60 Q40 55 70 65 Q110 75 150 50 Q170 40 200 45" stroke="#c8c8a0" strokeWidth="1" fill="none"/>
+                </svg>
+                {/* Map pin */}
+                <div className="absolute" style={{ top: '35%', left: '55%', transform: 'translate(-50%,-50%)' }}>
+                  <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center shadow-md" style={{ backgroundColor: BLUE }}>
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                  </div>
+                </div>
+                {/* Second smaller pin */}
+                <div className="absolute" style={{ top: '60%', left: '30%', transform: 'translate(-50%,-50%)' }}>
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white flex items-center justify-center shadow" style={{ backgroundColor: BLUE + 'aa' }}>
+                    <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Voting Distribution */}
+            <div className="px-4 pb-4">
+              <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Voting Distribution</p>
+              <div className="space-y-1.5">
+                <div>
+                  <div className="flex justify-between items-center mb-0.5">
+                    <span className="text-[10px] font-semibold text-gray-700">Arlit</span>
+                    <span className="text-[10px] text-gray-500">100%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: '100%', backgroundColor: BLUE }} />
+                  </div>
+                  <p className="text-[8px] text-gray-400 mt-0.5">1 vote</p>
+                </div>
+              </div>
+            </div>
+            {/* Bottom nav */}
+            <div className="border-t border-gray-100 px-4 py-2 flex justify-around">
+              {['Polls', 'Create', 'Profile'].map(label => (
+                <span key={label} className="text-[9px] text-gray-400 font-medium">{label}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CodeEditorMockup() {
+  return (
+    <div className="bg-gray-100 border-l border-gray-200 p-8 flex items-center justify-center">
+      <div className="w-full max-w-md rounded-xl overflow-hidden shadow-xl" style={{ backgroundColor: '#1e2030' }}>
+        {/* Title bar */}
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b" style={{ backgroundColor: '#161827', borderColor: '#2a2d45' }}>
+          <span className="h-3 w-3 rounded-full bg-red-500" />
+          <span className="h-3 w-3 rounded-full bg-yellow-400" />
+          <span className="h-3 w-3 rounded-full bg-green-500" />
+          <span className="ml-3 text-[11px] font-mono text-gray-400 tracking-wide">poll-config.json</span>
+        </div>
+        {/* Code content */}
+        <div className="px-5 py-4 font-mono text-[11px] leading-relaxed overflow-x-auto">
+          <p><span className="text-gray-500">{'{'}</span></p>
+          <p className="ml-4"><span className="text-red-400">"id"</span><span className="text-gray-400">: </span><span className="text-green-400">"live-event-0815"</span><span className="text-gray-500">,</span></p>
+          <p className="ml-4"><span className="text-red-400">"type"</span><span className="text-gray-400">: </span><span className="text-green-400">"sandbox"</span><span className="text-gray-500">,</span></p>
+          <p className="ml-4"><span className="text-red-400">"theme"</span><span className="text-gray-400">: </span><span className="text-gray-500">{'{'}</span></p>
+          <p className="ml-8"><span className="text-red-400">"primary"</span><span className="text-gray-400">: </span><span className="text-green-400">"#0052FF"</span><span className="text-gray-500">,</span></p>
+          <p className="ml-8"><span className="text-red-400">"borderRadius"</span><span className="text-gray-400">: </span><span className="text-green-400">"12px"</span></p>
+          <p className="ml-4"><span className="text-gray-500">{'}'}</span><span className="text-gray-500">,</span></p>
+          <p className="ml-4"><span className="text-red-400">"components"</span><span className="text-gray-400">: </span><span className="text-gray-500">{'['}</span></p>
+          <p className="ml-8"><span className="text-gray-500">{'{'}</span></p>
+          <p className="ml-12"><span className="text-red-400">"type"</span><span className="text-gray-400">: </span><span className="text-green-400">"visual-select"</span><span className="text-gray-500">,</span></p>
+          <p className="ml-12"><span className="text-red-400">"options"</span><span className="text-gray-400">: </span><span className="text-gray-500">['</span><span className="text-yellow-300">"A"</span><span className="text-gray-500">, </span><span className="text-yellow-300">"B"</span><span className="text-gray-500">, </span><span className="text-yellow-300">"C"</span><span className="text-gray-500">]</span></p>
+          <p className="ml-8"><span className="text-gray-500">{'}'}</span><span className="text-gray-500">,</span></p>
+          <p className="ml-8"><span className="text-gray-500">{'{'}</span></p>
+          <p className="ml-12"><span className="text-red-400">"type"</span><span className="text-gray-400">: </span><span className="text-green-400">"geofence"</span><span className="text-gray-500">,</span></p>
+          <p className="ml-12"><span className="text-red-400">"radius"</span><span className="text-gray-400">: </span><span className="text-blue-400">500</span></p>
+          <p className="ml-8"><span className="text-gray-500">{'}'}</span></p>
+          <p className="ml-4"><span className="text-gray-500">{']'}</span><span className="text-gray-500">,</span></p>
+          <p className="ml-4"><span className="text-red-400">"logic"</span><span className="text-gray-400">: </span><span className="text-green-400">"on_complete =&gt; trigger_webhook"</span></p>
+          <p><span className="text-gray-500">{'}'}</span></p>
+        </div>
+        {/* Footer bar */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-t" style={{ backgroundColor: '#161827', borderColor: '#2a2d45' }}>
+          <span className="text-[10px] font-mono font-semibold tracking-widest" style={{ color: '#6b7280' }}>TERMINAL ACTIVE</span>
+          <button
+            className="rounded-md px-3 py-1 text-[11px] font-bold text-white"
+            style={{ backgroundColor: BLUE }}
+          >
+            Deploy Config
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -67,38 +207,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Browser mockup */}
-          <div className="hidden md:block">
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
-              {/* Browser chrome */}
-              <div className="flex items-center gap-1.5 px-4 py-3 bg-gray-50 border-b border-gray-200">
-                <span className="h-3 w-3 rounded-full bg-red-400" />
-                <span className="h-3 w-3 rounded-full bg-yellow-400" />
-                <span className="h-3 w-3 rounded-full bg-green-400" />
-                <div className="ml-3 flex-1 rounded bg-gray-200 h-5 max-w-[200px]" />
-                <div
-                  className="ml-auto rounded-full px-3 py-0.5 text-xs font-bold text-white"
-                  style={{ backgroundColor: BLUE }}
-                >
-                  Poll live!
-                </div>
-              </div>
-              {/* Mock poll UI */}
-              <div className="p-5" style={{ background: 'linear-gradient(135deg, #1a3a8f 0%, #1a56db 100%)' }}>
-                <div className="mb-4 h-2 w-24 rounded bg-white/30" />
-                <div className="mb-3 h-4 w-3/4 rounded bg-white/20" />
-                <div className="h-16 rounded-xl bg-white/10 mb-4" />
-                <div className="space-y-2">
-                  {['Option A', 'Option B', 'Option C'].map((opt, i) => (
-                    <div key={opt} className="flex items-center justify-between rounded-lg bg-white/10 px-3 py-2">
-                      <div className="h-3 rounded bg-white/30" style={{ width: `${[60, 30, 10][i]}%` }} />
-                      <span className="text-xs text-white/60">{[60, 30, 10][i]}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <PhoneMockup />
         </div>
       </section>
 
@@ -203,43 +312,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Editor mockup */}
-              <div className="bg-gray-50 border-l border-gray-200 p-8 flex items-center justify-center">
-                <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-                  <div className="flex items-center gap-1.5 px-4 py-2.5 bg-white border-b border-gray-100">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
-                    <span className="ml-3 text-[10px] font-mono font-semibold text-gray-400 tracking-wider">EDITING MODE · CUSTOM SANDBOX</span>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <div className="rounded-lg border-2 border-dashed border-gray-200 px-4 py-3 text-sm text-gray-400 flex items-center gap-2">
-                      <span className="text-gray-300 text-lg">+</span> Add New Question Block
-                    </div>
-                    {[
-                      { icon: '▦', label: 'Visual Selection', color: BLUE },
-                      { icon: '◉', label: 'Geofence Filter', color: '#0ea5e9' },
-                    ].map((item) => (
-                      <div key={item.label} className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-base" style={{ color: item.color }}>{item.icon}</span>
-                          <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="h-0.5 w-4 bg-gray-300 rounded" />
-                          <div className="h-0.5 w-4 bg-gray-300 rounded" />
-                        </div>
-                      </div>
-                    ))}
-                    <button
-                      className="w-full rounded-lg py-2.5 text-sm font-bold text-white transition-colors"
-                      style={{ backgroundColor: BLUE }}
-                    >
-                      Preview Component
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <CodeEditorMockup />
             </div>
           </div>
         </div>
