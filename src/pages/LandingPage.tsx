@@ -318,18 +318,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social proof */}
-      <section className="py-16 border-t border-gray-100">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-8">Trusted by modern teams globally</p>
-          <div className="flex flex-wrap items-center justify-center gap-10">
-            {['Vortex.io', 'NEXUS', 'PulseData', 'LUMINA', 'ORBIT'].map((name) => (
-              <span key={name} className="text-base font-bold text-gray-300 hover:text-gray-400 transition-colors cursor-default">{name}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section id="pricing" className="py-16 px-6">
         <div className="mx-auto max-w-6xl">
@@ -364,7 +352,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-sm font-bold text-gray-900">0815poll</span>
-            <p className="text-xs text-gray-400 mt-0.5">© 2024 0815poll. Architecting Opinions.</p>
+            <p className="text-xs text-gray-400 mt-0.5">© 2026 Designed & Made by Johannes Gnadlinger</p>
           </div>
           <nav className="flex flex-wrap items-center gap-5">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Support'].map((item) => (
