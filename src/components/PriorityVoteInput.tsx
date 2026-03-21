@@ -27,7 +27,7 @@ export default function PriorityVoteInput({ options, distribution, votingPower, 
       {/* Points remaining indicator */}
       {!disabled && (
         <div className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-semibold ${
-          remaining === 0 ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-700'
+          remaining === 0 ? 'bg-blue-500 text-white' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
         }`}>
           <span>{remaining === 0 ? 'All points distributed!' : `${remaining} point${remaining !== 1 ? 's' : ''} remaining`}</span>
           <span className="text-xs opacity-75">{totalAllocated} / {votingPower} pts used</span>
@@ -43,17 +43,17 @@ export default function PriorityVoteInput({ options, distribution, votingPower, 
         return (
           <div
             key={opt.id}
-            className={`rounded-2xl border bg-white overflow-hidden transition-all ${
-              allocated > 0 ? 'border-blue-300 shadow-sm' : 'border-gray-200'
+            className={`rounded-2xl border bg-white dark:bg-gray-800 overflow-hidden transition-all ${
+              allocated > 0 ? 'border-blue-300 dark:border-blue-700 shadow-sm' : 'border-gray-200 dark:border-gray-700'
             }`}
           >
             <div className="px-4 py-3 flex items-center gap-3">
               {/* Option label */}
-              <span className="flex-1 text-sm font-medium text-gray-800">{opt.text}</span>
+              <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-200">{opt.text}</span>
 
               {disabled ? (
                 /* After voting: show accumulated points */
-                <span className="text-sm font-bold text-blue-600">{optPoints} pts</span>
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{optPoints} pts</span>
               ) : (
                 /* Stepper controls */
                 <div className="flex items-center gap-2 shrink-0">
@@ -61,19 +61,19 @@ export default function PriorityVoteInput({ options, distribution, votingPower, 
                     type="button"
                     onClick={() => adjust(opt.id, -1)}
                     disabled={allocated === 0}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-lg font-bold"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-lg font-bold"
                     aria-label="Remove point"
                   >
                     −
                   </button>
-                  <span className={`w-6 text-center text-base font-bold ${allocated > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+                  <span className={`w-6 text-center text-base font-bold ${allocated > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
                     {allocated}
                   </span>
                   <button
                     type="button"
                     onClick={() => adjust(opt.id, 1)}
                     disabled={remaining === 0}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-lg font-bold"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-lg font-bold"
                     aria-label="Add point"
                   >
                     +
@@ -83,7 +83,7 @@ export default function PriorityVoteInput({ options, distribution, votingPower, 
             </div>
 
             {/* Point bar (pre-vote: shows own allocation; post-vote: shows result) */}
-            <div className="h-1.5 bg-gray-100">
+            <div className="h-1.5 bg-gray-100 dark:bg-gray-700">
               <div
                 className="h-full bg-blue-500 transition-all duration-300"
                 style={{
@@ -96,7 +96,7 @@ export default function PriorityVoteInput({ options, distribution, votingPower, 
 
             {/* Post-vote percentage label */}
             {disabled && totalPoints > 0 && (
-              <div className="px-4 py-1.5 flex items-center justify-between text-xs text-gray-500">
+              <div className="px-4 py-1.5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>{pct}% of total points</span>
               </div>
             )}

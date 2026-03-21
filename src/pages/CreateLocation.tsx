@@ -72,31 +72,31 @@ export default function CreateLocation() {
             {/* Left column - form fields */}
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Question</label>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Question</label>
                 <textarea
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   rows={2}
                   placeholder="Where should we meet?"
-                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
                 />
                 {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={2}
                   placeholder="Add context..."
-                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Settings</label>
-                <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100 mb-4">
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Settings</label>
+                <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 mb-4">
                   <div className="px-4 py-4">
                     <Toggle
                       checked={allowMultipleChoices}
@@ -109,7 +109,7 @@ export default function CreateLocation() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Duration</label>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Duration</label>
                 <div className="flex flex-wrap gap-2">
                   {DURATION_OPTIONS.map((opt) => (
                     <button
@@ -119,7 +119,7 @@ export default function CreateLocation() {
                       className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
                         duration === opt.value
                           ? 'bg-primary-500 text-white border-primary-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                          : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600'
                       }`}
                     >
                       {opt.label}
@@ -131,16 +131,16 @@ export default function CreateLocation() {
               {/* Selected locations list - desktop */}
               {locations.length > 0 && (
                 <div className="hidden lg:block">
-                  <label className="block text-sm font-bold text-gray-800 mb-2">Selected Locations ({locations.length})</label>
+                  <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Selected Locations ({locations.length})</label>
                   <div className="space-y-2">
                     {locations.map((loc) => (
-                      <div key={loc.id} className="flex items-center gap-3 rounded-xl bg-white border border-gray-100 px-4 py-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
+                      <div key={loc.id} className="flex items-center gap-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-900/30">
                           <span className="text-amber-600 text-sm">📍</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">{loc.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{loc.address}</p>
+                          <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{loc.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{loc.address}</p>
                         </div>
                       </div>
                     ))}

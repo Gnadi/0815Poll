@@ -15,12 +15,12 @@ export default function Toggle({ checked, onChange, label, description }: Toggle
       className="flex w-full items-center justify-between text-left"
     >
       <span>
-        {label && <span className="block text-sm font-medium text-gray-800">{label}</span>}
-        {description && <span className="block text-xs text-gray-500">{description}</span>}
+        {label && <span className="block text-sm font-medium text-gray-800 dark:text-gray-200">{label}</span>}
+        {description && <span className="block text-xs text-gray-500 dark:text-gray-400">{description}</span>}
       </span>
       <span
         className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-          checked ? 'bg-primary-500' : 'bg-gray-200'
+          checked ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-600'
         }`}
       >
         <span

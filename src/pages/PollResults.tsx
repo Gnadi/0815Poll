@@ -50,9 +50,9 @@ export default function PollResults() {
 
   if (!poll) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-app-bg">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg dark:bg-dark-bg">
         <div className="text-center px-6">
-          <p className="text-gray-500 mb-4">Poll not found.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">Poll not found.</p>
           <button onClick={() => navigate('/')} className="text-primary-600 font-medium">Go Home</button>
         </div>
       </div>
@@ -114,49 +114,49 @@ export default function PollResults() {
   }
 
   return (
-    <div className="min-h-screen bg-app-bg">
+    <div className="min-h-screen bg-app-bg dark:bg-dark-bg">
       {/* Desktop sidebar */}
       <Sidebar />
 
       <div className="lg:ml-64">
         <div className="mx-auto max-w-md lg:max-w-5xl">
           {/* Header */}
-          <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 bg-white px-4 py-3 lg:bg-app-bg lg:border-b-0 lg:px-8 lg:py-4">
+          <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 lg:bg-app-bg lg:dark:bg-dark-bg lg:border-b-0 lg:px-8 lg:py-4">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
+              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <ArrowLeft className="h-5 w-5 text-gray-700" />
+              <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
             </button>
-            <h1 className="text-base font-bold text-gray-900 lg:hidden">Poll Results</h1>
+            <h1 className="text-base font-bold text-gray-900 dark:text-gray-100 lg:hidden">Poll Results</h1>
             <button
               type="button"
               onClick={share}
-              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
+              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <Share2 className="h-4 w-4 text-gray-600" />
+              <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </button>
           </header>
 
           <div className="px-4 py-4 pb-24 lg:px-8 lg:pb-8 space-y-5">
             {/* Desktop title */}
-            <h1 className="hidden lg:block text-2xl font-bold text-gray-900">Poll Results</h1>
+            <h1 className="hidden lg:block text-2xl font-bold text-gray-900 dark:text-gray-100">Poll Results</h1>
 
             {/* Status badge */}
             <div>
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-                isEnded ? 'bg-gray-100 text-gray-600' : 'bg-green-50 text-green-700'
+                isEnded ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' : 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400'
               }`}>
                 {isEnded ? 'Final Results' : 'Live Results'}
               </span>
             </div>
 
             {/* Question */}
-            <h2 className="text-2xl font-bold text-gray-900 lg:text-3xl">{poll.question}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 lg:text-3xl">{poll.question}</h2>
 
             {/* Meta */}
-            <div className="flex items-center gap-3 text-xs text-gray-500 lg:text-sm">
+            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 lg:text-sm">
               {isEnded && endsAt ? (
                 <span className="flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5" />
@@ -250,7 +250,7 @@ export default function PollResults() {
                 {poll.type === 'standard' && poll.options && poll.options.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Voting Distribution</h3>
+                      <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 lg:text-lg">Voting Distribution</h3>
                     </div>
                     <div className="space-y-2">
                       {[...poll.options]
@@ -273,7 +273,7 @@ export default function PollResults() {
                 {poll.type === 'location' && poll.locations && (
                   <div>
                     <LocationViewMap locations={poll.locations} />
-                    <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-3 lg:text-lg">Voting Distribution</h3>
                     <div className="space-y-2">
                       {[...poll.locations]
                         .sort((a, b) => b.votes - a.votes)
@@ -294,14 +294,14 @@ export default function PollResults() {
                 {/* Schedule distribution */}
                 {poll.type === 'schedule' && poll.timeSlots && (
                   <div>
-                    <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Availability Overview</h3>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-3 lg:text-lg">Availability Overview</h3>
                     <div className="space-y-4">
                       {poll.timeSlots.map((slot) => {
                         const totalSlotVotes = slot.times.reduce((sum, t) => sum + (slot.votes?.[t] || 0), 0)
                         return (
-                          <div key={slot.date} className="rounded-2xl bg-white border border-gray-100 overflow-hidden">
-                            <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-                              <p className="text-xs font-semibold text-gray-700">
+                          <div key={slot.date} className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                                 {format(new Date(slot.date + 'T00:00:00'), 'EEEE, MMMM d')}
                               </p>
                             </div>
@@ -331,8 +331,8 @@ export default function PollResults() {
                 {poll.type === 'ranking' && poll.options && poll.options.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Borda Score Ranking</h3>
-                      <span className="text-xs text-gray-400">{poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}</span>
+                      <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 lg:text-lg">Borda Score Ranking</h3>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}</span>
                     </div>
                     <div className="space-y-2">
                       {[...poll.options]
@@ -348,7 +348,7 @@ export default function PollResults() {
                           />
                         ))}
                     </div>
-                    <p className="text-xs text-gray-400 mt-2 text-center">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
                       Scores calculated via Borda Count — higher rank = more points per voter
                     </p>
                   </div>
@@ -358,8 +358,8 @@ export default function PollResults() {
                 {poll.type === 'priority' && poll.options && poll.options.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-gray-900 lg:text-lg">Priority Ranking</h3>
-                      <span className="text-xs text-gray-400">{poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'} · {totalPriorityPoints} pts total</span>
+                      <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 lg:text-lg">Priority Ranking</h3>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'} · {totalPriorityPoints} pts total</span>
                     </div>
                     <div className="space-y-2">
                       {[...poll.options]
@@ -375,7 +375,7 @@ export default function PollResults() {
                           />
                         ))}
                     </div>
-                    <p className="text-xs text-gray-400 mt-2 text-center">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
                       Each voter had {poll.settings.votingPower ?? 5} points to distribute freely
                     </p>
                   </div>
@@ -418,7 +418,7 @@ export default function PollResults() {
                 {/* Custom poll distribution */}
                 {poll.type === 'custom' && poll.options && poll.options.length > 0 && (
                   <div>
-                    <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Voting Distribution</h3>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-3 lg:text-lg">Voting Distribution</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {[...poll.options]
                         .sort((a, b) => b.votes - a.votes)
@@ -429,7 +429,7 @@ export default function PollResults() {
                           return (
                             <div
                               key={opt.id}
-                              className={`rounded-2xl border-2 overflow-hidden ${isWinner ? 'border-primary-500' : 'border-gray-100'}`}
+                              className={`rounded-2xl border-2 overflow-hidden ${isWinner ? 'border-primary-500' : 'border-gray-100 dark:border-gray-700'}`}
                             >
                               {opt.customContent && (
                                 <iframe
@@ -440,20 +440,20 @@ export default function PollResults() {
                                   style={{ height: '160px' }}
                                 />
                               )}
-                              <div className={`px-4 py-3 border-t ${isWinner ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
+                              <div className={`px-4 py-3 border-t ${isWinner ? 'border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
                                 <div className="flex items-center justify-between mb-2">
-                                  <span className={`text-sm font-semibold ${isWinner ? 'text-primary-700' : 'text-gray-800'}`}>
+                                  <span className={`text-sm font-semibold ${isWinner ? 'text-primary-700 dark:text-primary-300' : 'text-gray-800 dark:text-gray-200'}`}>
                                     {opt.text}
                                   </span>
-                                  <span className="text-sm font-bold text-gray-700">{pct}%</span>
+                                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{pct}%</span>
                                 </div>
-                                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                                <div className="h-1.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
                                   <div
-                                    className={`h-full rounded-full transition-all duration-500 ${isWinner ? 'bg-primary-500' : isVoted ? 'bg-primary-300' : 'bg-gray-300'}`}
+                                    className={`h-full rounded-full transition-all duration-500 ${isWinner ? 'bg-primary-500' : isVoted ? 'bg-primary-300' : 'bg-gray-300 dark:bg-gray-500'}`}
                                     style={{ width: `${pct}%` }}
                                   />
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</p>
                               </div>
                             </div>
                           )
@@ -467,12 +467,12 @@ export default function PollResults() {
               <div className="space-y-5 mt-5 lg:mt-0">
                 {/* Quick Insight — Ranking poll */}
                 {poll.type === 'ranking' && rankingWinner && poll.totalVotes > 0 && (
-                  <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
+                  <div className="rounded-2xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-900/40 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Lightbulb className="h-5 w-5 text-yellow-500" />
-                      <span className="text-sm font-bold text-gray-800">Quick Insight</span>
+                      <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Quick Insight</span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       <strong>{rankingWinner.text}</strong> leads with {rankingWinner.bordaPoints || 0} Borda points
                       across {poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}.
                       {poll.options && poll.options.length > 1 && (() => {
@@ -486,12 +486,12 @@ export default function PollResults() {
 
                 {/* Quick Insight — Priority poll */}
                 {poll.type === 'priority' && priorityWinner && poll.totalVotes > 0 && (
-                  <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
+                  <div className="rounded-2xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-900/40 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Lightbulb className="h-5 w-5 text-yellow-500" />
-                      <span className="text-sm font-bold text-gray-800">Quick Insight</span>
+                      <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Quick Insight</span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       <strong>{priorityWinner.text}</strong> received {priorityWinner.priorityPoints || 0} of {totalPriorityPoints} total points
                       from {poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}.
                       {poll.options && poll.options.length > 1 && (() => {
@@ -505,12 +505,12 @@ export default function PollResults() {
 
                 {/* Quick Insight */}
                 {poll.type === 'standard' && winnerOption && poll.totalVotes > 0 && (
-                  <div className="rounded-2xl bg-yellow-50 border border-yellow-100 p-4">
+                  <div className="rounded-2xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-900/40 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Lightbulb className="h-5 w-5 text-yellow-500" />
-                      <span className="text-sm font-bold text-gray-800">Quick Insight</span>
+                      <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Quick Insight</span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       <strong>{winnerOption.text}</strong> leads with {winnerPct}%
                       {poll.options && poll.options.length > 1 ? `, ${winnerPct - runnerUpPct}% ahead of the runner-up` : ''}
                       . Total of {poll.totalVotes} {poll.totalVotes === 1 ? 'vote' : 'votes'} cast
@@ -521,17 +521,17 @@ export default function PollResults() {
 
                 {/* Stats summary */}
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
+                  <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">{poll.totalVotes}</p>
-                    <p className="text-xs text-gray-500 mt-1">Total Votes</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Votes</p>
                   </div>
-                  <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
+                  <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">
                       {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking' || poll.type === 'priority') && poll.options ? poll.options.length :
                        poll.type === 'location' && poll.locations ? poll.locations.length :
                        poll.type === 'schedule' && poll.timeSlots ? poll.timeSlots.length : '—'}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {poll.type === 'schedule' ? 'Dates' : 'Options'}
                     </p>
                   </div>
@@ -542,7 +542,7 @@ export default function PollResults() {
                   <button
                     type="button"
                     onClick={() => navigate(`/poll/${poll.id}`)}
-                    className="w-full rounded-2xl border border-primary-200 bg-primary-50 py-3.5 text-sm font-semibold text-primary-700 hover:bg-primary-100 transition-colors"
+                    className="w-full rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 py-3.5 text-sm font-semibold text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
                   >
                     Cast Your Vote
                   </button>

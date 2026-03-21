@@ -88,13 +88,13 @@ export default function CreatePriority() {
     <Layout title="Create Priority Poll" showBack>
       <div className="lg:max-w-2xl lg:mx-auto">
         <div className="hidden lg:block mb-6">
-          <p className="text-gray-500">Each voter distributes points across options. Results form a weighted ranking.</p>
+          <p className="text-gray-500 dark:text-gray-400">Each voter distributes points across options. Results form a weighted ranking.</p>
         </div>
 
         {/* Explanation banner */}
-        <div className="mb-6 rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3">
-          <p className="text-sm text-blue-800 font-medium">How it works</p>
-          <p className="text-xs text-blue-600 mt-0.5">
+        <div className="mb-6 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/40 px-4 py-3">
+          <p className="text-sm text-blue-800 dark:text-blue-300 font-medium">How it works</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
             Every voter gets a fixed number of points to distribute freely across options — e.g., put 3 on your top pick and 2 on a second. The option with the most accumulated points wins.
           </p>
         </div>
@@ -102,39 +102,39 @@ export default function CreatePriority() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Question */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Poll Question</label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Question</label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               rows={3}
               placeholder='e.g. "Which features should we build next quarter?"'
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
             />
             {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="Add more context for your voters..."
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
             />
           </div>
 
           {/* Options */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-gray-800">Options</label>
-              <span className="text-xs text-gray-400">Min. 2 options</span>
+              <label className="text-sm font-bold text-gray-800 dark:text-gray-200">Options</label>
+              <span className="text-xs text-gray-400 dark:text-gray-500">Min. 2 options</span>
             </div>
             <div className="space-y-2">
               {options.map((opt, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500 shrink-0">
+                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-xs font-bold text-gray-500 dark:text-gray-400 shrink-0">
                     {idx + 1}
                   </div>
                   <input
@@ -142,13 +142,13 @@ export default function CreatePriority() {
                     value={opt}
                     onChange={(e) => updateOption(idx, e.target.value)}
                     placeholder={`Option ${idx + 1}`}
-                    className="flex-1 text-sm outline-none bg-transparent"
+                    className="flex-1 text-sm outline-none bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                   />
                   {options.length > 2 && (
                     <button
                       type="button"
                       onClick={() => removeOption(idx)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      className="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -161,7 +161,7 @@ export default function CreatePriority() {
               <button
                 type="button"
                 onClick={addOption}
-                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-blue-200 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-blue-200 dark:border-blue-800 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Add Option
@@ -171,12 +171,12 @@ export default function CreatePriority() {
 
           {/* Settings */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Poll Settings</label>
-            <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100">
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Settings</label>
+            <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
               {/* Voting Power */}
               <div className="px-4 py-4">
-                <span className="text-sm font-medium text-gray-800 mb-1 block">Voting Power per Person</span>
-                <p className="text-xs text-gray-400 mb-3">Points each voter can distribute across options.</p>
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-1 block">Voting Power per Person</span>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">Points each voter can distribute across options.</p>
                 <div className="flex gap-2">
                   {VOTING_POWER_OPTIONS.map((pts) => (
                     <button
@@ -186,7 +186,7 @@ export default function CreatePriority() {
                       className={`rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors border ${
                         votingPower === pts
                           ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
+                          : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
                       }`}
                     >
                       {pts} pts
@@ -209,7 +209,7 @@ export default function CreatePriority() {
 
               {/* Duration */}
               <div className="px-4 py-4">
-                <span className="text-sm font-medium text-gray-800 mb-3 block">Poll Duration</span>
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3 block">Poll Duration</span>
                 <div className="flex flex-wrap gap-2">
                   {DURATION_OPTIONS.map((opt) => (
                     <button
@@ -219,7 +219,7 @@ export default function CreatePriority() {
                       className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors border ${
                         duration === opt.value
                           ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
+                          : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
                       }`}
                     >
                       {opt.label}

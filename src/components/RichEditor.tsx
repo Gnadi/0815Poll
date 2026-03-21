@@ -45,8 +45,8 @@ export default function RichEditor({ content, onChange, placeholder }: RichEdito
   ]
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-      <div className="flex flex-wrap gap-1 border-b border-gray-100 bg-gray-50 px-2 py-2">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+      <div className="flex flex-wrap gap-1 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 px-2 py-2">
         {toolbarBtns.map(({ icon: Icon, action, active, title }) => (
           <button
             key={title}
@@ -55,7 +55,7 @@ export default function RichEditor({ content, onChange, placeholder }: RichEdito
             title={title}
             aria-label={title}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-              active ? 'bg-primary-100 text-primary-600' : 'text-gray-500 hover:bg-gray-100'
+              active ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <Icon className="h-4 w-4" />
@@ -64,7 +64,7 @@ export default function RichEditor({ content, onChange, placeholder }: RichEdito
       </div>
       <div className="relative">
         {editor.isEmpty && placeholder && (
-          <p className="pointer-events-none absolute left-3 top-3 text-sm text-gray-400">{placeholder}</p>
+          <p className="pointer-events-none absolute left-3 top-3 text-sm text-gray-400 dark:text-gray-500">{placeholder}</p>
         )}
         <EditorContent editor={editor} className="min-h-[160px] max-h-[400px] overflow-y-auto" />
       </div>

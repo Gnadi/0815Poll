@@ -161,25 +161,25 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
             onChange={(e) => handleSearchInput(e.target.value)}
             onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
             placeholder="Search for a location..."
-            className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-9 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pl-9 pr-9 py-2 text-sm outline-none focus:border-primary-400"
           />
           {searching && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />
           )}
         </div>
         {showDropdown && searchResults.length > 0 && (
-          <ul className="absolute z-[1000] w-full mt-1 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+          <ul className="absolute z-[1000] w-full mt-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
             {searchResults.map((result, i) => (
               <li key={i}>
                 <button
                   type="button"
                   onMouseDown={() => handleSelectResult(result)}
-                  className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <MapPin className="h-4 w-4 text-primary-500 shrink-0 mt-0.5" />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{result.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{result.address}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{result.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{result.address}</p>
                   </div>
                 </button>
               </li>
@@ -190,16 +190,16 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
 
       {/* Pending location confirm dialog */}
       {pending && (
-        <div className="rounded-2xl border border-primary-200 bg-primary-50 p-4">
-          <p className="text-xs font-medium text-primary-700 mb-2">Add this location?</p>
+        <div className="rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 p-4">
+          <p className="text-xs font-medium text-primary-700 dark:text-primary-300 mb-2">Add this location?</p>
           <input
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm mb-1 outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm mb-1 outline-none focus:border-primary-400"
             placeholder="Location name"
           />
-          <p className="text-xs text-gray-500 mb-3">{pending.address}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{pending.address}</p>
           <div className="flex gap-2">
             <button
               type="button"
@@ -211,7 +211,7 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
             <button
               type="button"
               onClick={() => setPending(null)}
-              className="flex-1 rounded-xl bg-white border border-gray-200 py-2 text-sm font-medium text-gray-600"
+              className="flex-1 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2 text-sm font-medium text-gray-600 dark:text-gray-400"
             >
               Cancel
             </button>
@@ -219,7 +219,7 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
         </div>
       )}
 
-      <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 280 }}>
+      <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700" style={{ height: 280 }}>
         <MapContainer
           center={[20, 0]}
           zoom={2}
@@ -247,17 +247,17 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
         )}
       </div>
 
-      <p className="text-xs text-gray-500 text-center">Or click the map to add locations</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 text-center">Or click the map to add locations</p>
 
       {/* Location list */}
       {locations.length > 0 && (
         <ul className="space-y-2">
           {locations.map((loc) => (
-            <li key={loc.id} className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 border border-gray-100">
+            <li key={loc.id} className="flex items-center gap-3 rounded-xl bg-white dark:bg-gray-800 px-4 py-3 border border-gray-100 dark:border-gray-700">
               <MapPin className="h-4 w-4 text-primary-500 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{loc.name}</p>
-                {loc.address && <p className="text-xs text-gray-500 truncate">{loc.address}</p>}
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{loc.name}</p>
+                {loc.address && <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{loc.address}</p>}
               </div>
               <button
                 type="button"

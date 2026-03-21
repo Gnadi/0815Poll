@@ -55,11 +55,11 @@ export default function Profile() {
     return (
       <Layout title="Profile">
         <div className="flex flex-col items-center justify-center py-16 text-center lg:py-24">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
             <span className="text-4xl">👤</span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-2">Sign in to your account</h3>
-          <p className="text-sm text-gray-500 mb-6">Track your polls, vote history, and more.</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Sign in to your account</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Track your polls, vote history, and more.</p>
           <button
             type="button"
             onClick={() => navigate('/auth')}
@@ -70,7 +70,7 @@ export default function Profile() {
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="mt-3 text-sm text-gray-500 underline"
+            className="mt-3 text-sm text-gray-500 dark:text-gray-400 underline"
           >
             Continue without account
           </button>
@@ -112,37 +112,37 @@ export default function Profile() {
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-primary-400"
+                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-1.5 text-sm outline-none focus:border-primary-400"
                   autoFocus
                 />
                 <button type="button" aria-label="Save name" onClick={saveName} className="text-green-500 hover:text-green-600">
                   <Check className="h-4 w-4" />
                 </button>
-                <button type="button" aria-label="Cancel editing" onClick={() => setEditingName(false)} className="text-gray-400 hover:text-gray-600">
+                <button type="button" aria-label="Cancel editing" onClick={() => setEditingName(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2 justify-center lg:justify-start">
-                <h2 className="text-xl font-bold text-gray-900 lg:text-2xl">{displayName}</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 lg:text-2xl">{displayName}</h2>
                 <button
                   type="button"
                   aria-label="Edit display name"
                   onClick={() => { setNewName(displayName); setEditingName(true) }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <Edit2 className="h-4 w-4" />
                 </button>
               </div>
             )}
-            <p className="text-sm text-gray-500 mt-0.5">{email}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{email}</p>
           </div>
 
           {/* Desktop sign out */}
           <button
             type="button"
             onClick={handleSignOut}
-            className="hidden lg:flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors"
+            className="hidden lg:flex items-center gap-2 rounded-xl border border-red-100 dark:border-red-900/40 bg-red-50 dark:bg-red-900/20 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
@@ -151,24 +151,24 @@ export default function Profile() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 mb-6 lg:grid-cols-3">
-          <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
+          <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 text-center">
             <p className="text-3xl font-black text-primary-500">{myPolls.length}</p>
-            <p className="text-xs text-gray-500 mt-1">Total Polls</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Polls</p>
           </div>
-          <div className="rounded-2xl bg-white border border-gray-100 p-4 text-center">
+          <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 text-center">
             <p className="text-3xl font-black text-primary-500">{voteCount}</p>
-            <p className="text-xs text-gray-500 mt-1">Total Votes</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Votes</p>
           </div>
           <div className="hidden lg:block rounded-2xl bg-white border border-gray-100 p-4 text-center">
             <p className="text-3xl font-black text-primary-500">{activePolls.length}</p>
-            <p className="text-xs text-gray-500 mt-1">Active Polls</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Active Polls</p>
           </div>
         </div>
 
         {/* Active Polls */}
         {activePolls.length > 0 && (
           <section className="mb-8">
-            <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">Active Polls</h3>
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-3 lg:text-lg">Active Polls</h3>
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
               {activePolls.map((poll) => <PollCard key={poll.id} poll={poll} />)}
             </div>
@@ -177,7 +177,7 @@ export default function Profile() {
 
         {/* All Polls */}
         <section className="mb-8">
-          <h3 className="text-base font-bold text-gray-900 mb-3 lg:text-lg">My Polls</h3>
+          <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-3 lg:text-lg">My Polls</h3>
           {loading ? (
             <div className="flex justify-center py-8"><Spinner /></div>
           ) : myPolls.length === 0 ? (
@@ -198,7 +198,7 @@ export default function Profile() {
         <button
           type="button"
           onClick={handleSignOut}
-          className="w-full flex items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50 py-3.5 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors lg:hidden"
+          className="w-full flex items-center justify-center gap-2 rounded-2xl border border-red-100 dark:border-red-900/40 bg-red-50 dark:bg-red-900/20 py-3.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors lg:hidden"
         >
           <LogOut className="h-4 w-4" />
           Sign Out

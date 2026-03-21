@@ -85,13 +85,13 @@ export default function CreateRanking() {
     <Layout title="Create Ranking Poll" showBack>
       <div className="lg:max-w-2xl lg:mx-auto">
         <div className="hidden lg:block mb-6">
-          <p className="text-gray-500">Participants rank options by preference. Results are aggregated using Borda Count.</p>
+          <p className="text-gray-500 dark:text-gray-400">Participants rank options by preference. Results are aggregated using Borda Count.</p>
         </div>
 
         {/* Explanation banner */}
-        <div className="mb-6 rounded-2xl bg-rose-50 border border-rose-100 px-4 py-3">
-          <p className="text-sm text-rose-800 font-medium">How it works</p>
-          <p className="text-xs text-rose-600 mt-0.5">
+        <div className="mb-6 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/40 px-4 py-3">
+          <p className="text-sm text-rose-800 dark:text-rose-300 font-medium">How it works</p>
+          <p className="text-xs text-rose-600 dark:text-rose-400 mt-0.5">
             Voters drag options into their preferred order. Each position earns Borda points — 1st place earns the most. The option with the highest total score wins.
           </p>
         </div>
@@ -99,39 +99,39 @@ export default function CreateRanking() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Question */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Poll Question</label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Question</label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               rows={3}
               placeholder='e.g. "What is the best programming language?"'
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
             />
             {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="Add more context for your voters..."
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
             />
           </div>
 
           {/* Options */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-gray-800">Options to Rank</label>
-              <span className="text-xs text-gray-400">Min. 2 options</span>
+              <label className="text-sm font-bold text-gray-800 dark:text-gray-200">Options to Rank</label>
+              <span className="text-xs text-gray-400 dark:text-gray-500">Min. 2 options</span>
             </div>
             <div className="space-y-2">
               {options.map((opt, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500 shrink-0">
+                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-xs font-bold text-gray-500 dark:text-gray-400 shrink-0">
                     {idx + 1}
                   </div>
                   <input
@@ -139,13 +139,13 @@ export default function CreateRanking() {
                     value={opt}
                     onChange={(e) => updateOption(idx, e.target.value)}
                     placeholder={`Option ${idx + 1}`}
-                    className="flex-1 text-sm outline-none bg-transparent"
+                    className="flex-1 text-sm outline-none bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                   />
                   {options.length > 2 && (
                     <button
                       type="button"
                       onClick={() => removeOption(idx)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      className="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -158,7 +158,7 @@ export default function CreateRanking() {
               <button
                 type="button"
                 onClick={addOption}
-                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary-200 py-3 text-sm font-semibold text-primary-600 hover:bg-primary-50 transition-colors"
+                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary-200 dark:border-primary-800 py-3 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Add Option
@@ -168,8 +168,8 @@ export default function CreateRanking() {
 
           {/* Settings */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Poll Settings</label>
-            <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100">
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Settings</label>
+            <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
               <div className="px-4 py-4 flex items-center gap-3">
                 <div className="flex-1">
                   <Toggle
@@ -181,7 +181,7 @@ export default function CreateRanking() {
                 </div>
               </div>
               <div className="px-4 py-4">
-                <span className="text-sm font-medium text-gray-800 mb-3 block">Poll Duration</span>
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3 block">Poll Duration</span>
                 <div className="flex flex-wrap gap-2">
                   {DURATION_OPTIONS.map((opt) => (
                     <button
@@ -191,7 +191,7 @@ export default function CreateRanking() {
                       className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors border ${
                         duration === opt.value
                           ? 'bg-primary-500 text-white border-primary-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                          : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600'
                       }`}
                     >
                       {opt.label}

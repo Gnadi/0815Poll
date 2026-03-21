@@ -8,6 +8,10 @@
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+
+  .dark body {
+    background-color: #111121;
+  }
 }
 
 @layer utilities {
@@ -65,6 +69,10 @@
   padding-left: 1rem;
   margin: 0.5rem 0;
   color: #6b7280;
+}
+
+.dark .ProseMirror blockquote {
+  color: #9ca3af;
 }
 
 .ProseMirror hr {

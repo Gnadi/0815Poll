@@ -125,7 +125,7 @@ export default function CreateSchedule() {
         {/* Step indicator */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-500">Step {step} of 3</span>
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Step {step} of 3</span>
             <span className="text-xs text-gray-400">
               {step === 1 ? 'Basic Info' : step === 2 ? 'Date Selection' : 'Time Slots'}
             </span>
@@ -135,7 +135,7 @@ export default function CreateSchedule() {
               <div
                 key={s}
                 className={`h-1 flex-1 rounded-full transition-colors ${
-                  s <= step ? 'bg-primary-500' : 'bg-gray-200'
+                  s <= step ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
               />
             ))}
@@ -146,28 +146,28 @@ export default function CreateSchedule() {
         {step === 1 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-800 mb-2">Event Title</label>
+              <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Event Title</label>
               <textarea
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 rows={3}
                 placeholder="When should we meet?"
-                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
               />
               {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
+              <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
                 placeholder="Add context for your group..."
-                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-800 mb-2">Poll Duration</label>
+              <label className="block text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">Poll Duration</label>
               <div className="flex flex-wrap gap-2">
                 {DURATION_OPTIONS.map((opt) => (
                   <button
@@ -177,7 +177,7 @@ export default function CreateSchedule() {
                     className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
                       duration === opt.value
                         ? 'bg-primary-500 text-white border-primary-500'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                        : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600'
                     }`}
                   >
                     {opt.label}
@@ -192,17 +192,17 @@ export default function CreateSchedule() {
         {step === 2 && (
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Select Dates</h3>
-              <p className="text-sm text-gray-500 mb-4">Choose multiple dates for your meeting</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Select Dates</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose multiple dates for your meeting</p>
               <Calendar selectedDates={selectedDates} onToggleDate={toggleDate} />
             </div>
             {errors.dates && <p className="text-xs text-red-500">{errors.dates}</p>}
             {selectedDates.length > 0 && (
               <div>
-                <p className="text-xs text-gray-500 mb-2">Selected dates:</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Selected dates:</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedDates.map((d) => (
-                    <span key={d} className="rounded-lg bg-primary-100 px-2 py-1 text-xs font-medium text-primary-700">
+                    <span key={d} className="rounded-lg bg-primary-100 dark:bg-primary-900/40 px-2 py-1 text-xs font-medium text-primary-700 dark:text-primary-300">
                       {format(new Date(d + 'T00:00:00'), 'MMM d')}
                     </span>
                   ))}
@@ -216,8 +216,8 @@ export default function CreateSchedule() {
         {step === 3 && (
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Select Time Slots</h3>
-              <p className="text-sm text-gray-500 mb-4">Pick available times for each date</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Select Time Slots</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Pick available times for each date</p>
             </div>
 
             {/* Date tabs */}
@@ -234,8 +234,8 @@ export default function CreateSchedule() {
                       isActive
                         ? 'bg-primary-500 text-white border-primary-500'
                         : hasSlots
-                        ? 'bg-primary-50 text-primary-700 border-primary-200'
-                        : 'bg-white text-gray-600 border-gray-200'
+                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-primary-200 dark:border-primary-800'
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700'
                     }`}
                   >
                     <div className="text-xs font-semibold">
@@ -255,7 +255,7 @@ export default function CreateSchedule() {
             {activeDate && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {format(new Date(activeDate + 'T00:00:00'), 'EEEE, MMMM d')}
                   </p>
                   <button
@@ -275,16 +275,16 @@ export default function CreateSchedule() {
             )}
 
             {/* Summary */}
-            <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Selection Summary</p>
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-3">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Selection Summary</p>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-800">
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                   {selectedDates.length} dates, {totalSlots} time slots
                 </span>
                 <div className="flex gap-1">
                   {selectedDates.map((d) => (
                     <span key={d} className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                      (slotMap[d]?.length || 0) > 0 ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-600'
+                      (slotMap[d]?.length || 0) > 0 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                     }`}>
                       {format(new Date(d + 'T00:00:00'), 'd')}
                     </span>
@@ -293,8 +293,8 @@ export default function CreateSchedule() {
               </div>
             </div>
 
-            <div className="rounded-xl bg-primary-50 border border-primary-100 px-4 py-3">
-              <p className="text-sm text-primary-700">
+            <div className="rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 px-4 py-3">
+              <p className="text-sm text-primary-700 dark:text-primary-300">
                 Participants will be able to vote for their preferred time slots. Once everyone has voted, you can finalize the meeting.
               </p>
             </div>
@@ -307,7 +307,7 @@ export default function CreateSchedule() {
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-6 py-3.5 text-sm font-semibold text-gray-700"
+              className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-3.5 text-sm font-semibold text-gray-700 dark:text-gray-300"
             >
               <ChevronLeft className="h-4 w-4" />
               Back

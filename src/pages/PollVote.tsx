@@ -174,7 +174,7 @@ export default function PollVote() {
     return (
       <Layout title="Poll Not Found" showBack>
         <div className="text-center py-16">
-          <p className="text-gray-500">This poll doesn't exist or has been removed.</p>
+          <p className="text-gray-500 dark:text-gray-400">This poll doesn't exist or has been removed.</p>
         </div>
       </Layout>
     )
@@ -192,31 +192,31 @@ export default function PollVote() {
       title="Cast Your Vote"
       showBack
       headerRight={
-        <button type="button" onClick={share} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
-          <Share2 className="h-4 w-4 text-gray-600" />
+        <button type="button" onClick={share} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+          <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
         </button>
       }
     >
       <div className="lg:max-w-2xl lg:mx-auto">
         {/* LIVE badge */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 text-xs font-semibold text-gray-600 dark:text-gray-300">
             <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
             LIVE NOW
           </span>
         </div>
 
         {/* Question */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-3 lg:text-3xl">{poll.question}</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 lg:text-3xl">{poll.question}</h2>
         {poll.description && (
-          <p className="text-sm text-gray-500 mb-6 lg:text-base">{poll.description}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 lg:text-base">{poll.description}</p>
         )}
 
         {/* Standard poll options */}
         {poll.type === 'standard' && poll.options && (
           <div className="space-y-3 mb-6">
             {poll.settings?.allowMultipleChoices && !voted && (
-              <p className="text-xs text-gray-500 mb-1">You can select multiple options.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">You can select multiple options.</p>
             )}
             {poll.options.map((opt) => {
               const isMultiple = !!poll.settings?.allowMultipleChoices
@@ -297,9 +297,9 @@ export default function PollVote() {
         {poll.type === 'schedule' && poll.timeSlots && (
           <div className="space-y-4 mb-6">
             {poll.timeSlots.map((slot) => (
-              <div key={slot.date} className="rounded-2xl bg-white border border-gray-100 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-800">
+              <div key={slot.date} className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                     {format(new Date(slot.date + 'T00:00:00'), 'EEEE, MMMM d')}
                   </p>
                 </div>
@@ -319,8 +319,8 @@ export default function PollVote() {
                           isSelected
                             ? 'bg-primary-500 text-white border-primary-500'
                             : voted
-                            ? 'bg-gray-50 text-gray-500 border-gray-100 cursor-default'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300'
+                            ? 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-600 cursor-default'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600'
                         }`}
                       >
                         <div>{time}</div>
@@ -338,7 +338,7 @@ export default function PollVote() {
         {poll.type === 'ranking' && poll.options && (
           <div className="mb-6">
             {!voted && (
-              <p className="text-xs text-gray-500 mb-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                 Drag items or use the arrows to rank options from best (top) to worst (bottom).
               </p>
             )}
@@ -400,10 +400,10 @@ export default function PollVote() {
                   }}
                   className={`relative rounded-2xl border-2 overflow-hidden transition-all text-left ${
                     isActive
-                      ? 'border-primary-500 ring-2 ring-primary-200 shadow-md'
+                      ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800 shadow-md'
                       : voted
-                      ? 'border-gray-100 opacity-60 cursor-default'
-                      : 'border-gray-200 hover:border-primary-300 hover:shadow-sm'
+                      ? 'border-gray-100 dark:border-gray-700 opacity-60 cursor-default'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm'
                   }`}
                 >
                   {/* Rendered custom HTML in sandboxed iframe */}
@@ -417,9 +417,9 @@ export default function PollVote() {
                     />
                   )}
                   {/* Option label + vote info */}
-                  <div className={`px-4 py-3 border-t ${isActive ? 'border-primary-200 bg-primary-50' : 'border-gray-100 bg-white'}`}>
+                  <div className={`px-4 py-3 border-t ${isActive ? 'border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
                     <div className="flex items-center justify-between">
-                      <span className={`text-sm font-semibold ${isActive ? 'text-primary-700' : 'text-gray-800'}`}>
+                      <span className={`text-sm font-semibold ${isActive ? 'text-primary-700 dark:text-primary-300' : 'text-gray-800 dark:text-gray-200'}`}>
                         {opt.text}
                       </span>
                       {/* Radio or checkbox indicator */}
@@ -447,13 +447,13 @@ export default function PollVote() {
                     </div>
                     {voted && (
                       <div className="mt-2">
-                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                           <span>{getPercentage(opt.votes)}%</span>
                           <span>{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-500 ${isActive ? 'bg-primary-500' : 'bg-gray-300'}`}
+                            className={`h-full rounded-full transition-all duration-500 ${isActive ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-500'}`}
                             style={{ width: `${getPercentage(opt.votes)}%` }}
                           />
                         </div>
@@ -467,12 +467,12 @@ export default function PollVote() {
         )}
 
         {/* Poll Stats */}
-        <div className="mb-6 rounded-2xl bg-primary-50 border border-primary-100 p-4">
+        <div className="mb-6 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 p-4">
           <div className="flex items-center gap-2 mb-2">
             <BarChart2 className="h-5 w-5 text-primary-500" />
-            <span className="text-sm font-semibold text-gray-800">Poll Statistics</span>
+            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Poll Statistics</span>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             <span className="inline-flex items-center gap-1">
               <Users className="h-4 w-4" />
               {poll.totalVotes} {poll.totalVotes === 1 ? 'person has' : 'people have'} voted.
