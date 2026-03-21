@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
 
+const BLUE = '#1a56db'
+const BLUE_HOVER = '#1648c0'
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -9,13 +12,23 @@ export default function LandingPage() {
           <div className="flex items-center gap-8">
             <span className="text-lg font-bold text-gray-900">0815poll</span>
             <nav className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">Features</a>
+              <a href="#features" className="text-sm font-medium text-[#1a56db] border-b-2 border-[#1a56db] pb-0.5">Polls</a>
+              <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900">Templates</a>
               <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900">Pricing</a>
+              <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900">About</a>
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/auth" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5">Login</Link>
-            <Link to="/auth" className="rounded-lg bg-[#0d1b2a] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#162640] transition-colors">Signup</Link>
+            <Link to="/auth" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5">Log In</Link>
+            <Link
+              to="/auth"
+              className="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors"
+              style={{ backgroundColor: BLUE }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       </header>
@@ -38,7 +51,10 @@ export default function LandingPage() {
             <div className="mt-8 flex items-center gap-3 flex-wrap">
               <Link
                 to="/auth"
-                className="rounded-lg bg-[#0d1b2a] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#162640] transition-colors"
+                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+                style={{ backgroundColor: BLUE }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
               >
                 Get Started for Free
               </Link>
@@ -60,11 +76,16 @@ export default function LandingPage() {
                 <span className="h-3 w-3 rounded-full bg-yellow-400" />
                 <span className="h-3 w-3 rounded-full bg-green-400" />
                 <div className="ml-3 flex-1 rounded bg-gray-200 h-5 max-w-[200px]" />
-                <div className="ml-auto rounded-full bg-emerald-500 px-3 py-0.5 text-xs font-bold text-white">Poll live!</div>
+                <div
+                  className="ml-auto rounded-full px-3 py-0.5 text-xs font-bold text-white"
+                  style={{ backgroundColor: BLUE }}
+                >
+                  Poll live!
+                </div>
               </div>
               {/* Mock poll UI */}
-              <div className="p-5 bg-[#1a3a30]">
-                <div className="mb-4 h-2 w-24 rounded bg-emerald-400/40" />
+              <div className="p-5" style={{ background: 'linear-gradient(135deg, #1a3a8f 0%, #1a56db 100%)' }}>
+                <div className="mb-4 h-2 w-24 rounded bg-white/30" />
                 <div className="mb-3 h-4 w-3/4 rounded bg-white/20" />
                 <div className="h-16 rounded-xl bg-white/10 mb-4" />
                 <div className="space-y-2">
@@ -91,8 +112,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Classic Polls */}
             <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-md transition-shadow">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50">
-                <svg className="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
+                <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
@@ -102,8 +123,8 @@ export default function LandingPage() {
 
             {/* Location Polls */}
             <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-md transition-shadow">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50">
-                <svg className="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
+                <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -114,8 +135,8 @@ export default function LandingPage() {
 
             {/* Date Polls */}
             <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-md transition-shadow">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50">
-                <svg className="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
+                <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                   <line x1="16" y1="2" x2="16" y2="6" />
                   <line x1="8" y1="2" x2="8" y2="6" />
@@ -127,8 +148,8 @@ export default function LandingPage() {
             </div>
 
             {/* Sandbox Editor */}
-            <div className="rounded-2xl bg-[#0d1b2a] p-6 text-white">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+            <div className="rounded-2xl p-6 text-white" style={{ backgroundColor: BLUE }}>
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <rect x="3" y="3" width="7" height="7" />
                   <rect x="14" y="3" width="7" height="7" />
@@ -137,7 +158,7 @@ export default function LandingPage() {
                 </svg>
               </div>
               <h3 className="font-bold text-white mb-2">Sandbox Editor</h3>
-              <p className="text-sm text-white/60 leading-relaxed">Build your own from scratch. Infinite possibilities with a powerful drag-and-drop toolkit.</p>
+              <p className="text-sm text-white/70 leading-relaxed">Build your own from scratch. Infinite possibilities with a powerful drag-and-drop toolkit.</p>
             </div>
           </div>
         </div>
@@ -158,8 +179,8 @@ export default function LandingPage() {
                 </p>
                 <div className="mt-8 space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
-                      <svg className="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                      <svg className="h-4 w-4" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                       </svg>
                     </div>
@@ -169,8 +190,8 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
-                      <svg className="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                      <svg className="h-4 w-4" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                       </svg>
                     </div>
@@ -196,12 +217,12 @@ export default function LandingPage() {
                       <span className="text-gray-300 text-lg">+</span> Add New Question Block
                     </div>
                     {[
-                      { icon: '▦', label: 'Visual Selection', color: 'text-indigo-500' },
-                      { icon: '◉', label: 'Geofence Filter', color: 'text-teal-500' },
+                      { icon: '▦', label: 'Visual Selection', color: BLUE },
+                      { icon: '◉', label: 'Geofence Filter', color: '#0ea5e9' },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <span className={`text-base ${item.color}`}>{item.icon}</span>
+                          <span className="text-base" style={{ color: item.color }}>{item.icon}</span>
                           <span className="text-sm font-medium text-gray-700">{item.label}</span>
                         </div>
                         <div className="space-y-1">
@@ -210,7 +231,10 @@ export default function LandingPage() {
                         </div>
                       </div>
                     ))}
-                    <button className="w-full rounded-lg bg-[#c8ff45] py-2.5 text-sm font-bold text-gray-900 hover:bg-[#d4ff55] transition-colors">
+                    <button
+                      className="w-full rounded-lg py-2.5 text-sm font-bold text-white transition-colors"
+                      style={{ backgroundColor: BLUE }}
+                    >
                       Preview Component
                     </button>
                   </div>
@@ -249,7 +273,10 @@ export default function LandingPage() {
               />
               <Link
                 to="/auth"
-                className="w-full sm:w-auto rounded-lg bg-[#c8ff45] px-6 py-3 text-sm font-bold text-gray-900 hover:bg-[#d4ff55] transition-colors whitespace-nowrap"
+                className="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-bold text-white transition-colors whitespace-nowrap"
+                style={{ backgroundColor: BLUE }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
               >
                 Start Now
               </Link>
@@ -264,10 +291,10 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-sm font-bold text-gray-900">0815poll</span>
-            <p className="text-xs text-gray-400 mt-0.5">© 2024 0815poll. Precision Play in Every Vote.</p>
+            <p className="text-xs text-gray-400 mt-0.5">© 2024 0815poll. Architecting Opinions.</p>
           </div>
           <nav className="flex flex-wrap items-center gap-5">
-            {['Privacy Policy', 'Terms of Service', 'Contact', 'API Documentation', 'Help Center'].map((item) => (
+            {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Support'].map((item) => (
               <a key={item} href="#" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">{item}</a>
             ))}
           </nav>
