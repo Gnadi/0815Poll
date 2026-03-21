@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { PollProvider } from './contexts/PollContext'
 import { ToastProvider } from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
+import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
 
 const Auth = lazy(() => import('./pages/Auth'))
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               </Suspense>
+              <InstallPrompt />
             </ToastProvider>
           </PollProvider>
         </AuthProvider>
