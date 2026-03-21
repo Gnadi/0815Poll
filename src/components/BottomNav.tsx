@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart2, Compass, PlusCircle, User } from 'lucide-react'
+import { BarChart2, Compass, PlusCircle, User, Moon, Sun } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
 
 const navItems = [
   { to: '/', icon: BarChart2, label: 'Polls', exact: true },
@@ -9,6 +10,8 @@ const navItems = [
 ]
 
 export default function BottomNav() {
+  const { isDark, toggleTheme } = useTheme()
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 pb-safe lg:hidden">
       <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2">
@@ -44,6 +47,15 @@ export default function BottomNav() {
             )}
           </NavLink>
         ))}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          {isDark ? <Sun className="h-6 w-6" strokeWidth={1.5} /> : <Moon className="h-6 w-6" strokeWidth={1.5} />}
+          <span className="text-[10px] font-medium">{isDark ? 'Light' : 'Dark'}</span>
+        </button>
       </div>
     </nav>
   )
