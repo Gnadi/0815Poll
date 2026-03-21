@@ -15,6 +15,7 @@ function getErrorMessage(code: string): string {
     'auth/too-many-requests': 'Too many attempts. Please try again later.',
     'auth/popup-closed-by-user': 'Sign-in popup was closed.',
     'auth/invalid-credential': 'Invalid credentials. Please check your email and password.',
+    'auth/unauthorized-domain': 'This domain is not authorized for Google sign-in. Please check Firebase Console settings.',
   }
   return map[code] || 'An error occurred. Please try again.'
 }

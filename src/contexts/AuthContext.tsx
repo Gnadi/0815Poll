@@ -3,7 +3,8 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   updateProfile,
@@ -32,6 +33,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Handle the result when returning from Google redirect sign-in
+    getRedirectResult(auth).then(async (result) => {
+      if (result?.user) {
+        const existing = await getUserProfile(result.user.uid)
+        if (!existing) {
+          const profile: Omit<User, 'id'> = {
+            displayName: result.user.displayName || 'User',
+            email: result.user.email || '',
+            photoURL: result.user.photoURL || undefined,
+            createdAt: Timestamp.now(),
+          }
+          await createUserProfile(result.user.uid, profile)
+          setUserProfile({ id: result.user.uid, ...profile })
+        }
+      }
+    }).catch(() => {
+      // Redirect result errors are handled by onAuthStateChanged
+    })
+
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser)
       if (firebaseUser) {
@@ -63,20 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
-    const cred = await signInWithPopup(auth, provider)
-    const existing = await getUserProfile(cred.user.uid)
-    if (!existing) {
-      const profile: Omit<User, 'id'> = {
-        displayName: cred.user.displayName || 'User',
-        email: cred.user.email || '',
-        photoURL: cred.user.photoURL || undefined,
-        createdAt: Timestamp.now(),
-      }
-      await createUserProfile(cred.user.uid, profile)
-      setUserProfile({ id: cred.user.uid, ...profile })
-    } else {
-      setUserProfile(existing)
-    }
+    await signInWithRedirect(auth, provider)
   }
 
   const signOut = async () => {
