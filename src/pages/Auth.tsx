@@ -78,7 +78,8 @@ export default function Auth() {
       navigate(from, { replace: true })
     } catch (err: unknown) {
       const code = (err as { code?: string }).code || ''
-      setError(getErrorMessage(code))
+      console.error('[Google Auth Error]', err)
+      setError(getErrorMessage(code) + (code ? ` (${code})` : ''))
     } finally {
       setSubmitting(false)
     }
