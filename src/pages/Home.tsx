@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, BarChart2 } from 'lucide-react'
+import { BarChart2, Sun, Moon } from 'lucide-react'
 import Layout from '../components/Layout'
 import PollCard from '../components/PollCard'
 import Spinner from '../components/Spinner'
 import EmptyState from '../components/EmptyState'
 import { getPolls, getActivePolls, getUserPolls } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import type { Poll } from '../types'
 
 export default function Home() {
   const { user, userProfile } = useAuth()
   const navigate = useNavigate()
+  const { resolvedTheme, setTheme } = useTheme()
+  const toggleTheme = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   const [myPolls, setMyPolls] = useState<Poll[]>([])
   const [activePolls, setActivePolls] = useState<Poll[]>([])
   const [recentPolls, setRecentPolls] = useState<Poll[]>([])
@@ -58,11 +61,15 @@ export default function Home() {
         </div>
         <button
           type="button"
-          onClick={() => navigate('/create')}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white shadow-md hover:bg-primary-600 transition-colors lg:h-auto lg:w-auto lg:rounded-xl lg:px-5 lg:py-2.5 lg:gap-2"
+          onClick={toggleTheme}
+          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          <Plus className="h-5 w-5" />
-          <span className="hidden lg:inline text-sm font-semibold">New Poll</span>
+          {resolvedTheme === 'dark' ? (
+            <Sun className="h-5 w-5 text-gray-300" />
+          ) : (
+            <Moon className="h-5 w-5 text-gray-500" />
+          )}
         </button>
       </div>
 
