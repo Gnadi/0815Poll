@@ -145,21 +145,21 @@ function CodeEditorMockup() {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-6xl px-6 flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
-            <span className="text-lg font-bold text-gray-900">0815poll</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-white">0815poll</span>
             <nav className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-sm font-medium text-[#1a56db] border-b-2 border-[#1a56db] pb-0.5">Polls</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900">Templates</a>
-              <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900">Pricing</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900">About</a>
+              <a href="#" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Templates</a>
+              <a href="#pricing" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Pricing</a>
+              <a href="#" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">About</a>
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/auth" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5">Log In</Link>
+            <Link to="/auth" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-1.5">Log In</Link>
             <Link
               to="/auth"
               className="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors"
@@ -181,10 +181,10 @@ export default function LandingPage() {
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-xs font-semibold text-emerald-700">Live Opinion Engine</span>
             </div>
-            <h1 className="text-4xl font-extrabold leading-tight text-gray-900 md:text-5xl lg:text-[3.25rem]">
+            <h1 className="text-4xl font-extrabold leading-tight text-gray-900 dark:text-white md:text-5xl lg:text-[3.25rem]">
               Create and share<br />every kind of poll
             </h1>
-            <p className="mt-5 text-base text-gray-500 leading-relaxed max-w-md">
+            <p className="mt-5 text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-md">
               From classic rapid-fire questions to location-based voting and custom sandbox builds.
               The ultimate platform for precision data and spontaneous energy.
             </p>
@@ -200,7 +200,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 to="/explore"
-                className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 See Examples
               </Link>
@@ -212,38 +212,38 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="bg-gray-50 py-20">
+      <section id="features" className="bg-gray-50 dark:bg-gray-800/50 py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-extrabold text-gray-900 md:text-4xl">Engineered for every use case</h2>
-            <p className="mt-3 text-gray-500 text-base">Choose your canvas. Capture the pulse.</p>
+            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">Engineered for every use case</h2>
+            <p className="mt-3 text-gray-500 dark:text-gray-400 text-base">Choose your canvas. Capture the pulse.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Classic Polls */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-md transition-shadow">
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
                 <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Classic Polls</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Simple, fast, and effective. The standard for quick decision making and rapid feedback loops.</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Classic Polls</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Simple, fast, and effective. The standard for quick decision making and rapid feedback loops.</p>
             </div>
 
             {/* Location Polls */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-md transition-shadow">
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
                 <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Location Polls</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Map-based voting for events, local initiatives, or global trends. See where the world stands.</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Location Polls</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Map-based voting for events, local initiatives, or global trends. See where the world stands.</p>
             </div>
 
             {/* Date Polls */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-md transition-shadow">
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
                 <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -252,8 +252,8 @@ export default function LandingPage() {
                   <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Date Polls</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Scheduling made easy. Find the perfect time for meetings, parties, or launches without the back-and-forth.</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Date Polls</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Scheduling made easy. Find the perfect time for meetings, parties, or launches without the back-and-forth.</p>
             </div>
 
             {/* Sandbox Editor */}
@@ -274,15 +274,15 @@ export default function LandingPage() {
       </section>
 
       {/* Infinite Sandbox */}
-      <section className="bg-gray-50 py-20 border-t border-gray-100">
+      <section className="bg-gray-50 dark:bg-gray-800/50 py-20 border-t border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="rounded-3xl bg-white border border-gray-200 overflow-hidden">
+          <div className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="grid md:grid-cols-2 gap-0">
               <div className="p-10 md:p-14 flex flex-col justify-center">
-                <h2 className="text-3xl font-extrabold text-gray-900 md:text-4xl leading-tight">
+                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl leading-tight">
                   The Infinite<br />Sandbox
                 </h2>
-                <p className="mt-4 text-gray-500 leading-relaxed">
+                <p className="mt-4 text-gray-500 dark:text-gray-400 leading-relaxed">
                   Don't settle for templates. Our editor lets you snap components together—images,
                   rich text, nested logic—to create a polling experience that is uniquely yours.
                 </p>
@@ -294,19 +294,19 @@ export default function LandingPage() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">Drag-and-Drop Canvas</p>
-                      <p className="text-sm text-gray-500">Organize your data exactly how you want it.</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Drag-and-Drop Canvas</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Organize your data exactly how you want it.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20">
                       <svg className="h-4 w-4" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">Granular Customization</p>
-                      <p className="text-sm text-gray-500">Control colors, logic, and visibility rules.</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Granular Customization</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Control colors, logic, and visibility rules.</p>
                     </div>
                   </div>
                 </div>
@@ -348,15 +348,15 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 py-8">
+      <footer className="border-t border-gray-100 dark:border-gray-800 py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="text-sm font-bold text-gray-900">0815poll</span>
-            <p className="text-xs text-gray-400 mt-0.5">© 2026 Designed & Made by Johannes Gnadlinger</p>
+            <span className="text-sm font-bold text-gray-900 dark:text-white">0815poll</span>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed & Made by Johannes Gnadlinger</p>
           </div>
           <nav className="flex flex-wrap items-center gap-5">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Support'].map((item) => (
-              <a key={item} href="#" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">{item}</a>
+              <a key={item} href="#" className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">{item}</a>
             ))}
           </nav>
         </div>

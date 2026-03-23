@@ -62,7 +62,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
 
   if (!user) {
     return (
-      <div className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-6 text-center text-sm text-gray-400">
+      <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
         Sign in to invite contacts to your poll.
       </div>
     )
@@ -74,7 +74,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-primary-500" />
-          <span className="text-sm font-bold text-gray-800">Invite Contacts</span>
+          <span className="text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts</span>
           {selected.length > 0 && (
             <span className="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-700">
               {selected.length} selected
@@ -93,27 +93,27 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
 
       {/* Inline add-contact form */}
       {showAddForm && (
-        <div className="rounded-2xl border border-primary-200 bg-primary-50 p-3 space-y-2">
+        <div className="rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 p-3 space-y-2">
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Name"
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
           />
           <input
             type="email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
             placeholder="Email address"
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
           />
           <input
             type="tel"
             value={newPhone}
             onChange={(e) => setNewPhone(e.target.value)}
             placeholder="Phone number (optional, for SMS)"
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
           />
           <div className="flex gap-2">
             <button
@@ -127,7 +127,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-500 hover:bg-gray-50"
+              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Cancel
             </button>
@@ -144,7 +144,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search contacts…"
-            className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-9 pr-8 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 py-2 pl-9 pr-8 text-sm outline-none focus:border-primary-400"
           />
           {search && (
             <button
@@ -162,7 +162,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
       {loading ? (
         <p className="text-center text-xs text-gray-400 py-4">Loading contacts…</p>
       ) : contacts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-200 py-6 text-center text-sm text-gray-400">
+        <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
           No contacts yet.
           <button
             type="button"
@@ -175,7 +175,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
       ) : filtered.length === 0 ? (
         <p className="text-center text-xs text-gray-400 py-3">No contacts match "{search}"</p>
       ) : (
-        <div className="max-h-52 overflow-y-auto space-y-1 rounded-2xl border border-gray-100 bg-white p-1">
+        <div className="max-h-52 overflow-y-auto space-y-1 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1">
           {filtered.map((contact) => {
             const isSelected = selected.some((s) => s.id === contact.id)
             return (
@@ -185,13 +185,13 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
                 onClick={() => toggle(contact)}
                 className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors ${
                   isSelected
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'hover:bg-gray-50 text-gray-700'
+                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 <div
                   className={`flex h-5 w-5 items-center justify-center rounded-full border-2 shrink-0 transition-colors ${
-                    isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300'
+                    isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   {isSelected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}

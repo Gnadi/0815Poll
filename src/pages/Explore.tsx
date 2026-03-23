@@ -79,7 +79,7 @@ export default function Explore() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search polls..."
-            className="w-full rounded-2xl border border-gray-200 bg-white pl-10 pr-4 py-3 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 pl-10 pr-4 py-3 text-sm outline-none focus:border-primary-400"
           />
         </div>
 
@@ -94,7 +94,7 @@ export default function Explore() {
                 className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors border ${
                   typeFilter === f.value
                     ? 'bg-primary-500 text-white border-primary-500'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-300'
                 }`}
               >
                 {f.label}
@@ -111,8 +111,8 @@ export default function Explore() {
                 onClick={() => setStatusFilter(f.value)}
                 className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors border ${
                   statusFilter === f.value
-                    ? 'bg-gray-800 text-white border-gray-800'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                    ? 'bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 border-gray-800 dark:border-gray-200'
+                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
                 }`}
               >
                 {f.label}
@@ -143,7 +143,7 @@ export default function Explore() {
               type="button"
               onClick={() => loadPolls(false)}
               disabled={loadingMore}
-              className="mt-4 w-full rounded-2xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 lg:max-w-xs lg:mx-auto"
+              className="mt-4 w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 lg:max-w-xs lg:mx-auto"
             >
               {loadingMore ? <Spinner size="sm" /> : 'Load More'}
             </button>

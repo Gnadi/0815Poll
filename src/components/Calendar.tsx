@@ -36,25 +36,25 @@ export default function Calendar({ selectedDates, onToggleDate, minDate }: Calen
   const days = eachDayOfInterval({ start: calStart, end: calEnd })
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+    <div className="rounded-2xl bg-white dark:bg-gray-800 p-4 shadow-sm border border-gray-100 dark:border-gray-700">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-4">
         <button
           type="button"
           aria-label="Previous month"
           onClick={() => setDisplayMonth(subMonths(displayMonth, 1))}
-          className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
+          className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <span className="text-sm font-semibold text-gray-800">
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
           {format(displayMonth, 'MMMM yyyy')}
         </span>
         <button
           type="button"
           aria-label="Next month"
           onClick={() => setDisplayMonth(addMonths(displayMonth, 1))}
-          className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
+          className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -87,12 +87,12 @@ export default function Calendar({ selectedDates, onToggleDate, minDate }: Calen
                 !isCurrentMonth
                   ? 'invisible'
                   : isPast
-                  ? 'text-gray-300 cursor-not-allowed'
+                  ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
                   : isSelected
                   ? 'bg-primary-500 text-white font-semibold'
                   : isToday
-                  ? 'border-2 border-primary-300 text-primary-600 font-medium hover:bg-primary-50'
-                  : 'text-gray-700 hover:bg-primary-50'
+                  ? 'border-2 border-primary-300 text-primary-600 font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20'
               }`}
             >
               {format(day, 'd')}

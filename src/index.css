@@ -8,6 +8,15 @@
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+  .dark body {
+    background-color: #111121;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.dark):not([class]) body {
+    background-color: #f6f6f8;
+  }
 }
 
 @layer utilities {
@@ -36,6 +45,7 @@
 .ProseMirror {
   outline: none;
   min-height: 160px;
+  color: inherit;
 }
 
 .ProseMirror p {

@@ -95,6 +95,7 @@ export interface User {
   email: string
   photoURL?: string
   fcmToken?: string // FCM web push token
+  theme?: 'light' | 'dark' | 'system'
   createdAt: Timestamp
 }
 

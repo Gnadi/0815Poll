@@ -28,7 +28,7 @@ export default function TimeSlotPicker({ availableTimes, selectedTimes, onToggle
             className={`rounded-xl py-2.5 text-sm font-medium transition-colors border ${
               isSelected
                 ? 'bg-primary-500 text-white border-primary-500'
-                : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary-300'
             }`}
           >
             {time}
