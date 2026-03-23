@@ -125,7 +125,7 @@ export default function CreateSchedule() {
 
   return (
     <Layout title="Create Scheduling Poll" showBack hideNav>
-      <div className="lg:max-w-2xl lg:mx-auto">
+      <div className="lg:max-w-5xl lg:mx-auto">
         {/* Step indicator */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -148,45 +148,55 @@ export default function CreateSchedule() {
 
         {/* Step 1: Basic Info */}
         {step === 1 && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Event Title</label>
-              <textarea
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                rows={3}
-                placeholder="When should we meet?"
-                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
-              />
-              {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
+          <div className="lg:grid lg:grid-cols-5 lg:gap-8">
+            <div className="lg:col-span-3 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Event Title</label>
+                <textarea
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  rows={3}
+                  placeholder="When should we meet?"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                />
+                {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                  placeholder="Add context for your group..."
+                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={2}
-                placeholder="Add context for your group..."
-                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Duration</label>
-              <div className="flex flex-wrap gap-2">
-                {DURATION_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setDuration(opt.value)}
-                    className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
-                      duration === opt.value
-                        ? 'bg-primary-500 text-white border-primary-500'
-                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-300'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+            <div className="lg:col-span-2 space-y-4 mt-4 lg:mt-0">
+              <div>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Duration</label>
+                <div className="flex flex-wrap gap-2">
+                  {DURATION_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setDuration(opt.value)}
+                      className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
+                        duration === opt.value
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-300'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="hidden lg:block rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 p-4">
+                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200 mb-1">How it works</p>
+                <p className="text-xs text-emerald-700 dark:text-emerald-300 leading-relaxed">
+                  Create a scheduling poll in 3 steps: add your event details, pick the dates that work for you, then select the available time slots. Share with your group and find the best time automatically.
+                </p>
               </div>
             </div>
           </div>
@@ -194,119 +204,142 @@ export default function CreateSchedule() {
 
         {/* Step 2: Date Selection */}
         {step === 2 && (
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Select Dates</h3>
-              <p className="text-sm text-gray-500 mb-4">Choose multiple dates for your meeting</p>
-              <Calendar selectedDates={selectedDates} onToggleDate={toggleDate} />
-            </div>
-            {errors.dates && <p className="text-xs text-red-500">{errors.dates}</p>}
-            {selectedDates.length > 0 && (
+          <div className="lg:grid lg:grid-cols-5 lg:gap-8">
+            <div className="lg:col-span-3 space-y-4">
               <div>
-                <p className="text-xs text-gray-500 mb-2">Selected dates:</p>
-                <div className="flex flex-wrap gap-2">
-                  {selectedDates.map((d) => (
-                    <span key={d} className="rounded-lg bg-primary-100 px-2 py-1 text-xs font-medium text-primary-700">
-                      {format(new Date(d + 'T00:00:00'), 'MMM d')}
-                    </span>
-                  ))}
-                </div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Select Dates</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose multiple dates for your meeting</p>
+                <Calendar selectedDates={selectedDates} onToggleDate={toggleDate} />
               </div>
-            )}
+              {errors.dates && <p className="text-xs text-red-500">{errors.dates}</p>}
+            </div>
+            <div className="lg:col-span-2 space-y-4 mt-4 lg:mt-0">
+              <div className="lg:pt-8">
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-3">
+                  Selected dates {selectedDates.length > 0 && <span className="text-primary-500">({selectedDates.length})</span>}
+                </p>
+                {selectedDates.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 py-8 text-center">
+                    <p className="text-sm text-gray-400 dark:text-gray-500">No dates selected yet</p>
+                    <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">Click dates on the calendar</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDates.map((d) => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => toggleDate(d)}
+                        className="flex items-center gap-1.5 rounded-xl bg-primary-100 dark:bg-primary-900/30 px-3 py-1.5 text-xs font-semibold text-primary-700 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+                      >
+                        {format(new Date(d + 'T00:00:00'), 'MMM d')}
+                        <span className="text-primary-400 dark:text-primary-500">×</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
         {/* Step 3: Time Slots */}
         {step === 3 && (
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Select Time Slots</h3>
-              <p className="text-sm text-gray-500 mb-4">Pick available times for each date</p>
-            </div>
-
-            {/* Date tabs */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {selectedDates.map((d) => {
-                const isActive = activeDate === d
-                const hasSlots = (slotMap[d]?.length || 0) > 0
-                return (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setActiveDate(d)}
-                    className={`shrink-0 rounded-xl px-3 py-2 text-center transition-colors border ${
-                      isActive
-                        ? 'bg-primary-500 text-white border-primary-500'
-                        : hasSlots
-                        ? 'bg-primary-50 text-primary-700 border-primary-200'
-                        : 'bg-white text-gray-600 border-gray-200'
-                    }`}
-                  >
-                    <div className="text-xs font-semibold">
-                      {format(new Date(d + 'T00:00:00'), 'EEE').toUpperCase()}
-                    </div>
-                    <div className="text-sm font-bold">
-                      {format(new Date(d + 'T00:00:00'), 'd')}
-                    </div>
-                    <div className="text-xs">
-                      {format(new Date(d + 'T00:00:00'), 'MMM').toUpperCase()}
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-
-            {activeDate && (
+          <div className="lg:grid lg:grid-cols-5 lg:gap-8">
+            <div className="lg:col-span-3 space-y-4">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-gray-700">
-                    {format(new Date(activeDate + 'T00:00:00'), 'EEEE, MMMM d')}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => applyToAll(slotMap[activeDate] || [])}
-                    className="text-xs text-primary-600 font-medium"
-                  >
-                    Apply to all dates
-                  </button>
-                </div>
-                <TimeSlotPicker
-                  availableTimes={DEFAULT_TIMES}
-                  selectedTimes={slotMap[activeDate] || []}
-                  onToggle={(time) => toggleTime(activeDate, time)}
-                />
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Select Time Slots</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Pick available times for each date</p>
               </div>
-            )}
 
-            {/* Summary */}
-            <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Selection Summary</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-800">
-                  {selectedDates.length} dates, {totalSlots} time slots
-                </span>
-                <div className="flex gap-1">
-                  {selectedDates.map((d) => (
-                    <span key={d} className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                      (slotMap[d]?.length || 0) > 0 ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-600'
-                    }`}>
-                      {format(new Date(d + 'T00:00:00'), 'd')}
+              {/* Date tabs */}
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {selectedDates.map((d) => {
+                  const isActive = activeDate === d
+                  const hasSlots = (slotMap[d]?.length || 0) > 0
+                  return (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => setActiveDate(d)}
+                      className={`shrink-0 rounded-xl px-3 py-2 text-center transition-colors border ${
+                        isActive
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : hasSlots
+                          ? 'bg-primary-50 text-primary-700 border-primary-200'
+                          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <div className="text-xs font-semibold">
+                        {format(new Date(d + 'T00:00:00'), 'EEE').toUpperCase()}
+                      </div>
+                      <div className="text-sm font-bold">
+                        {format(new Date(d + 'T00:00:00'), 'd')}
+                      </div>
+                      <div className="text-xs">
+                        {format(new Date(d + 'T00:00:00'), 'MMM').toUpperCase()}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {activeDate && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {format(new Date(activeDate + 'T00:00:00'), 'EEEE, MMMM d')}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => applyToAll(slotMap[activeDate] || [])}
+                      className="text-xs text-primary-600 dark:text-primary-400 font-medium"
+                    >
+                      Apply to all dates
+                    </button>
+                  </div>
+                  <TimeSlotPicker
+                    availableTimes={DEFAULT_TIMES}
+                    selectedTimes={slotMap[activeDate] || []}
+                    onToggle={(time) => toggleTime(activeDate, time)}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="lg:col-span-2 space-y-4 mt-4 lg:mt-0">
+              <div className="lg:pt-8">
+                {/* Summary */}
+                <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-3 mb-4">
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Selection Summary</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                      {selectedDates.length} dates · {totalSlots} time slots
                     </span>
-                  ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedDates.map((d) => (
+                      <span key={d} className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                        (slotMap[d]?.length || 0) > 0 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      }`}>
+                        {format(new Date(d + 'T00:00:00'), 'd')}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 px-4 py-3 mb-4">
+                  <p className="text-sm text-primary-700 dark:text-primary-300">
+                    Participants vote for their preferred time slots. You'll see the best time at a glance.
+                  </p>
+                </div>
+
+                {/* Invite contacts */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
+                  <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
                 </div>
               </div>
-            </div>
-
-            <div className="rounded-xl bg-primary-50 border border-primary-100 px-4 py-3">
-              <p className="text-sm text-primary-700">
-                Participants will be able to vote for their preferred time slots. Once everyone has voted, you can finalize the meeting.
-              </p>
-            </div>
-
-            {/* Invite contacts */}
-            <div className="space-y-3">
-              <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
-              <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
             </div>
           </div>
         )}
@@ -317,7 +350,7 @@ export default function CreateSchedule() {
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-6 py-3.5 text-sm font-semibold text-gray-700"
+              className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-3.5 text-sm font-semibold text-gray-700 dark:text-gray-300"
             >
               <ChevronLeft className="h-4 w-4" />
               Back

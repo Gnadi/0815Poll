@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import Spinner from '../components/Spinner'
-import { BarChart2 } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, GripVertical, Target } from 'lucide-react'
 
 function getErrorMessage(code: string): string {
   const map: Record<string, string> = {
@@ -84,7 +84,46 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-app-bg dark:bg-dark-bg flex items-center justify-center px-4">
+    <div className="min-h-screen bg-app-bg dark:bg-dark-bg flex">
+      {/* Desktop marketing panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-primary-600 dark:bg-primary-700 flex-col justify-center px-16">
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20">
+              <BarChart2 className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold text-white">0815Poll</span>
+          </div>
+          <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
+            Create and share<br />every kind of poll
+          </h2>
+          <p className="text-primary-100 text-base leading-relaxed">
+            From quick questions to location-based voting and scheduling. The platform for real-time insights.
+          </p>
+        </div>
+        <div className="space-y-4">
+          {[
+            { icon: BarChart2, label: 'Standard polls', desc: 'Classic multiple-choice questions' },
+            { icon: Calendar, label: 'Schedule meetings', desc: 'Find the best time for everyone' },
+            { icon: MapPin, label: 'Pick a location', desc: 'Map-based venue voting' },
+            { icon: GripVertical, label: 'Ranking polls', desc: 'Drag & drop preference ranking' },
+            { icon: Target, label: 'Priority voting', desc: 'Distribute points across options' },
+          ].map(({ icon: Icon, label, desc }) => (
+            <div key={label} className="flex items-center gap-4">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                <Icon className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">{label}</p>
+                <p className="text-xs text-primary-200">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Auth form */}
+      <div className="flex flex-1 items-center justify-center px-4 lg:w-1/2">
       <div className="w-full max-w-sm lg:max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -221,6 +260,7 @@ export default function Auth() {
             Continue without account
           </button>
         </div>
+      </div>
       </div>
     </div>
   )

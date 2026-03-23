@@ -90,164 +90,210 @@ export default function CreatePriority() {
 
   return (
     <Layout title="Create Priority Poll" showBack>
-      <div className="lg:max-w-2xl lg:mx-auto">
+      <div className="lg:max-w-5xl lg:mx-auto">
         <div className="hidden lg:block mb-6">
-          <p className="text-gray-500">Each voter distributes points across options. Results form a weighted ranking.</p>
+          <p className="text-gray-500 dark:text-gray-400">Each voter distributes points across options. Results form a weighted ranking.</p>
         </div>
 
-        {/* Explanation banner */}
-        <div className="mb-6 rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3">
-          <p className="text-sm text-blue-800 font-medium">How it works</p>
-          <p className="text-xs text-blue-600 mt-0.5">
-            Every voter gets a fixed number of points to distribute freely across options — e.g., put 3 on your top pick and 2 on a second. The option with the most accumulated points wins.
-          </p>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="lg:grid lg:grid-cols-5 lg:gap-8">
+            {/* Left column: question + options */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* Explanation banner (mobile only) */}
+              <div className="lg:hidden mb-2 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 px-4 py-3">
+                <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">How it works</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                  Every voter gets a fixed number of points to distribute freely across options. The option with the most accumulated points wins.
+                </p>
+              </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Question */}
-          <div>
-            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Question</label>
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              rows={3}
-              placeholder='e.g. "Which features should we build next quarter?"'
-              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
-            />
-            {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
-          </div>
+              {/* Question */}
+              <div>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Question</label>
+                <textarea
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  rows={3}
+                  placeholder='e.g. "Which features should we build next quarter?"'
+                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
+                />
+                {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
+              </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={2}
-              placeholder="Add more context for your voters..."
-              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
-            />
-          </div>
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                  placeholder="Add more context for your voters..."
+                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
+                />
+              </div>
 
-          {/* Options */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-gray-800 dark:text-gray-100">Options</label>
-              <span className="text-xs text-gray-400">Min. 2 options</span>
-            </div>
-            <div className="space-y-2">
-              {options.map((opt, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500 shrink-0">
-                    {idx + 1}
+              {/* Options */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-bold text-gray-800 dark:text-gray-100">Options</label>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">Min. 2 options</span>
+                </div>
+                <div className="space-y-2">
+                  {options.map((opt, idx) => (
+                    <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-xs font-bold text-gray-500 dark:text-gray-400 shrink-0">
+                        {idx + 1}
+                      </div>
+                      <input
+                        type="text"
+                        value={opt}
+                        onChange={(e) => updateOption(idx, e.target.value)}
+                        placeholder={`Option ${idx + 1}`}
+                        className="flex-1 text-sm outline-none bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      />
+                      {options.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => removeOption(idx)}
+                          className="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {errors.options && <p className="mt-1 text-xs text-red-500">{errors.options}</p>}
+                {options.length < 10 && (
+                  <button
+                    type="button"
+                    onClick={addOption}
+                    className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-blue-200 dark:border-blue-800 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Option
+                  </button>
+                )}
+              </div>
+
+              {/* Mobile: settings + submit */}
+              <div className="lg:hidden space-y-6">
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Settings</label>
+                  <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                    <div className="px-4 py-4">
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1 block">Voting Power per Person</span>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">Points each voter can distribute.</p>
+                      <div className="flex gap-2">
+                        {VOTING_POWER_OPTIONS.map((pts) => (
+                          <button key={pts} type="button" onClick={() => setVotingPower(pts)}
+                            className={`rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors border ${votingPower === pts ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}>
+                            {pts} pts
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="px-4 py-4"><Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous Results" description="Hide voter identities" /></div>
+                    <div className="px-4 py-4">
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-100 mb-3 block">Poll Duration</span>
+                      <div className="flex flex-wrap gap-2">
+                        {DURATION_OPTIONS.map((opt) => (
+                          <button key={opt.value} type="button" onClick={() => setDuration(opt.value)}
+                            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors border ${duration === opt.value ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}>
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <input
-                    type="text"
-                    value={opt}
-                    onChange={(e) => updateOption(idx, e.target.value)}
-                    placeholder={`Option ${idx + 1}`}
-                    className="flex-1 text-sm outline-none bg-transparent"
-                  />
-                  {options.length > 2 && (
-                    <button
-                      type="button"
-                      onClick={() => removeOption(idx)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
                 </div>
-              ))}
+                <div className="space-y-3">
+                  <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
+                  <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
+                </div>
+                <button type="submit" disabled={submitting} className="w-full rounded-2xl bg-blue-500 py-4 text-base font-bold text-white hover:bg-blue-600 disabled:opacity-50 transition-colors">
+                  {submitting ? <Spinner size="sm" /> : 'Create Priority Poll'}
+                </button>
+              </div>
             </div>
-            {errors.options && <p className="mt-1 text-xs text-red-500">{errors.options}</p>}
-            {options.length < 10 && (
+
+            {/* Right column: explanation + settings + submit (desktop only) */}
+            <div className="hidden lg:block lg:col-span-2 space-y-6">
+              {/* How it works */}
+              <div className="rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4">
+                <p className="text-sm text-blue-800 dark:text-blue-200 font-medium mb-1">How it works</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
+                  Every voter gets a fixed number of points to distribute freely across options — e.g., put 3 on your top pick and 2 on a second. The option with the most accumulated points wins.
+                </p>
+              </div>
+
+              {/* Settings */}
+              <div>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Settings</label>
+                <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                  <div className="px-4 py-4">
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1 block">Voting Power per Person</span>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">Points each voter can distribute across options.</p>
+                    <div className="flex gap-2">
+                      {VOTING_POWER_OPTIONS.map((pts) => (
+                        <button
+                          key={pts}
+                          type="button"
+                          onClick={() => setVotingPower(pts)}
+                          className={`rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors border ${
+                            votingPower === pts
+                              ? 'bg-blue-500 text-white border-blue-500'
+                              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                          }`}
+                        >
+                          {pts} pts
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="px-4 py-4 flex items-center gap-3">
+                    <div className="flex-1">
+                      <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous Results" description="Hide voter identities" />
+                    </div>
+                  </div>
+                  <div className="px-4 py-4">
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-100 mb-3 block">Poll Duration</span>
+                    <div className="flex flex-wrap gap-2">
+                      {DURATION_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setDuration(opt.value)}
+                          className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors border ${
+                            duration === opt.value
+                              ? 'bg-blue-500 text-white border-blue-500'
+                              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Invite contacts */}
+              <div className="space-y-3">
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
+                <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
+              </div>
+
+              {/* Submit */}
               <button
-                type="button"
-                onClick={addOption}
-                className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-blue-200 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+                type="submit"
+                disabled={submitting}
+                className="w-full rounded-2xl bg-blue-500 py-4 text-base font-bold text-white hover:bg-blue-600 disabled:opacity-50 transition-colors"
               >
-                <Plus className="h-4 w-4" />
-                Add Option
+                {submitting ? <Spinner size="sm" /> : 'Create Priority Poll'}
               </button>
-            )}
-          </div>
-
-          {/* Settings */}
-          <div>
-            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Settings</label>
-            <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
-              {/* Voting Power */}
-              <div className="px-4 py-4">
-                <span className="text-sm font-medium text-gray-800 mb-1 block">Voting Power per Person</span>
-                <p className="text-xs text-gray-400 mb-3">Points each voter can distribute across options.</p>
-                <div className="flex gap-2">
-                  {VOTING_POWER_OPTIONS.map((pts) => (
-                    <button
-                      key={pts}
-                      type="button"
-                      onClick={() => setVotingPower(pts)}
-                      className={`rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors border ${
-                        votingPower === pts
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
-                      }`}
-                    >
-                      {pts} pts
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Anonymous */}
-              <div className="px-4 py-4 flex items-center gap-3">
-                <div className="flex-1">
-                  <Toggle
-                    checked={anonymous}
-                    onChange={setAnonymous}
-                    label="Anonymous Results"
-                    description="Hide voter identities"
-                  />
-                </div>
-              </div>
-
-              {/* Duration */}
-              <div className="px-4 py-4">
-                <span className="text-sm font-medium text-gray-800 dark:text-gray-100 mb-3 block">Poll Duration</span>
-                <div className="flex flex-wrap gap-2">
-                  {DURATION_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setDuration(opt.value)}
-                      className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors border ${
-                        duration === opt.value
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
-
-          {/* Invite contacts */}
-          <div className="space-y-3">
-            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
-            <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-2xl bg-blue-500 py-4 text-base font-bold text-white hover:bg-blue-600 disabled:opacity-50 transition-colors"
-          >
-            {submitting ? <Spinner size="sm" /> : 'Create Priority Poll'}
-          </button>
         </form>
       </div>
     </Layout>

@@ -1,16 +1,20 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart2, Compass, PlusCircle, User, Settings } from 'lucide-react'
+import { BarChart2, Compass, PlusCircle, User, Settings, Users, Bell } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { useNotifications } from '../contexts/NotificationContext'
 
 const navItems = [
   { to: '/home', icon: BarChart2, label: 'Dashboard', exact: true },
   { to: '/explore', icon: Compass, label: 'Explore', exact: false },
   { to: '/create', icon: PlusCircle, label: 'Create', exact: false },
+  { to: '/contacts', icon: Users, label: 'Contacts', exact: false },
+  { to: '/notifications', icon: Bell, label: 'Notifications', exact: false },
   { to: '/profile', icon: User, label: 'Profile', exact: false },
 ]
 
 export default function Sidebar() {
   const { user, userProfile } = useAuth()
+  const { unreadCount } = useNotifications()
   const displayName = userProfile?.displayName || user?.displayName || 'Guest'
   const email = userProfile?.email || user?.email || ''
   const initial = displayName.charAt(0).toUpperCase()
@@ -40,7 +44,14 @@ export default function Sidebar() {
               }`
             }
           >
-            <Icon className="h-5 w-5" />
+            <span className="relative">
+              <Icon className="h-5 w-5" />
+              {to === '/notifications' && unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </span>
             {label}
           </NavLink>
         ))}

@@ -247,7 +247,9 @@ export default function PollVote() {
         </button>
       }
     >
-      <div className="lg:max-w-2xl lg:mx-auto">
+      <div className="lg:max-w-none lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
+        {/* LEFT column: vote content */}
+        <div className="lg:col-span-2">
         {/* LIVE badge */}
         <div className="flex items-center gap-2 mb-4">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1 text-xs font-semibold text-gray-600 dark:text-gray-300">
@@ -516,8 +518,8 @@ export default function PollVote() {
           </div>
         )}
 
-        {/* Poll Stats */}
-        <div className="mb-6 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 p-4">
+        {/* Poll Stats — mobile only */}
+        <div className="lg:hidden mb-6 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 p-4">
           <div className="flex items-center gap-2 mb-2">
             <BarChart2 className="h-5 w-5 text-primary-500" />
             <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">Poll Statistics</span>
@@ -562,59 +564,150 @@ export default function PollVote() {
           </button>
         )}
 
-        {/* Notify Contacts Panel — shown to creator after poll creation */}
-        {!notified && user?.uid === poll.createdBy && (
-          <div className="mt-4 rounded-2xl border border-primary-100 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-primary-100 dark:border-primary-800">
-              <Bell className="h-4 w-4 text-primary-500" />
-              <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">Notify your contacts</span>
-            </div>
-            <div className="px-4 pt-3 pb-4 space-y-3">
-              <ContactSelector selected={notifyContacts} onChange={setNotifyContacts} />
-              <NotifyMethodPicker
-                contacts={notifyContacts}
-                byEmail={notifyByEmail}
-                bySms={notifyBySms}
-                onEmailChange={setNotifyByEmail}
-                onSmsChange={setNotifyBySms}
-              />
-              <div className="flex gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={handleNotify}
-                  disabled={notifying || notifyContacts.length === 0}
-                  className="flex-1 rounded-xl bg-primary-500 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
-                >
-                  {notifying ? <Spinner size="sm" /> : 'Send Notifications'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setNotified(true)}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Skip
-                </button>
+        {/* Mobile only: Notify Contacts Panel + Share Panel */}
+        <div className="lg:hidden">
+          {/* Notify Contacts Panel — shown to creator after poll creation */}
+          {!notified && user?.uid === poll.createdBy && (
+            <div className="mt-4 rounded-2xl border border-primary-100 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-primary-100 dark:border-primary-800">
+                <Bell className="h-4 w-4 text-primary-500" />
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">Notify your contacts</span>
+              </div>
+              <div className="px-4 pt-3 pb-4 space-y-3">
+                <ContactSelector selected={notifyContacts} onChange={setNotifyContacts} />
+                <NotifyMethodPicker
+                  contacts={notifyContacts}
+                  byEmail={notifyByEmail}
+                  bySms={notifyBySms}
+                  onEmailChange={setNotifyByEmail}
+                  onSmsChange={setNotifyBySms}
+                />
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleNotify}
+                    disabled={notifying || notifyContacts.length === 0}
+                    className="flex-1 rounded-xl bg-primary-500 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
+                  >
+                    {notifying ? <Spinner size="sm" /> : 'Send Notifications'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNotified(true)}
+                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Skip
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Share Panel */}
-        <div className="mt-4 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setShowSharePanel((v) => !v)}
-            className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <span className="flex items-center gap-2">
+          {/* Share Panel (collapsible on mobile) */}
+          <div className="mt-4 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowSharePanel((v) => !v)}
+              className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Share2 className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                Share this poll
+              </span>
+              {showSharePanel ? <ChevronUp className="h-4 w-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
+            </button>
+            {showSharePanel && poll && (
+              <div className="px-4 pb-4 pt-2 space-y-4 border-t border-gray-100 dark:border-gray-700">
+                <button
+                  type="button"
+                  onClick={share}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Share2 className="h-4 w-4" />
+                  Copy / Share Link
+                </button>
+                <a
+                  href={buildWhatsAppShareLink(poll.question, poll.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-green-500 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Share via WhatsApp
+                </a>
+                <PollQRCode pollId={poll.id} size={140} />
+              </div>
+            )}
+          </div>
+        </div>
+        </div>{/* end left column */}
+
+        {/* RIGHT column: stats + notify + share (desktop only) */}
+        <div className="hidden lg:block space-y-4">
+          {/* Poll Stats */}
+          <div className="rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <BarChart2 className="h-5 w-5 text-primary-500" />
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">Poll Statistics</span>
+            </div>
+            <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4 shrink-0" />
+                <span>{poll.totalVotes} {poll.totalVotes === 1 ? 'person has' : 'people have'} voted.</span>
+              </div>
+              {endsAt && (
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-4 w-4 shrink-0" />
+                  <span>Ends {timeRemaining}.</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Notify Contacts Panel — shown to creator after poll creation */}
+          {!notified && user?.uid === poll.createdBy && (
+            <div className="rounded-2xl border border-primary-100 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-primary-100 dark:border-primary-800">
+                <Bell className="h-4 w-4 text-primary-500" />
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">Notify your contacts</span>
+              </div>
+              <div className="px-4 pt-3 pb-4 space-y-3">
+                <ContactSelector selected={notifyContacts} onChange={setNotifyContacts} />
+                <NotifyMethodPicker
+                  contacts={notifyContacts}
+                  byEmail={notifyByEmail}
+                  bySms={notifyBySms}
+                  onEmailChange={setNotifyByEmail}
+                  onSmsChange={setNotifyBySms}
+                />
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleNotify}
+                    disabled={notifying || notifyContacts.length === 0}
+                    className="flex-1 rounded-xl bg-primary-500 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
+                  >
+                    {notifying ? <Spinner size="sm" /> : 'Send Notifications'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNotified(true)}
+                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Skip
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Share Panel — always expanded on desktop */}
+          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 dark:border-gray-700">
               <Share2 className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-              Share this poll
-            </span>
-            {showSharePanel ? <ChevronUp className="h-4 w-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
-          </button>
-          {showSharePanel && poll && (
-            <div className="px-4 pb-4 pt-2 space-y-4 border-t border-gray-100 dark:border-gray-700">
-              {/* Copy link */}
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Share this poll</span>
+            </div>
+            <div className="px-4 pb-4 pt-3 space-y-3">
               <button
                 type="button"
                 onClick={share}
@@ -623,7 +716,6 @@ export default function PollVote() {
                 <Share2 className="h-4 w-4" />
                 Copy / Share Link
               </button>
-              {/* WhatsApp */}
               <a
                 href={buildWhatsAppShareLink(poll.question, poll.id)}
                 target="_blank"
@@ -633,10 +725,9 @@ export default function PollVote() {
                 <MessageCircle className="h-4 w-4" />
                 Share via WhatsApp
               </a>
-              {/* QR Code */}
               <PollQRCode pollId={poll.id} size={140} />
             </div>
-          )}
+          </div>
         </div>
       </div>
     </Layout>
