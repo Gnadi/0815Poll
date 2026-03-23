@@ -31,6 +31,22 @@ export function buildWhatsAppContactLink(
   return `https://wa.me/${cleaned}?text=${text}`
 }
 
+/**
+ * Builds an sms: URI to open the native SMS app on mobile with multiple recipients
+ * and a pre-filled poll invitation message.
+ * phones: international format without + e.g. ["4917612345678", "4915198765432"]
+ */
+export function buildSmsLink(phones: string[], pollQuestion: string, pollId: string): string {
+  const link = `${window.location.origin}/poll/${pollId}`
+  const body = encodeURIComponent(
+    `You've been invited to vote!\n\n"${pollQuestion}"\n\n${link}`
+  )
+  const recipients = phones
+    .map((p) => '+' + p.replace(/[\s+\-()]/g, ''))
+    .join(',')
+  return `sms:${recipients}?body=${body}`
+}
+
 /** Copy text to clipboard, returns true on success. */
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {

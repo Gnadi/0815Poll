@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Users, Plus, Search, X, Check, UserPlus } from 'lucide-react'
+import { Users, Search, X, Check, UserPlus, Phone } from 'lucide-react'
 import { getContacts, addContact } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
 import type { Contact } from '../types'
@@ -190,18 +190,15 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
                   <p className="text-sm font-medium truncate">{contact.name}</p>
                   <p className="text-xs text-gray-400 truncate">{contact.email}</p>
                 </div>
+                {contact.phone && (
+                  <Phone className="h-3.5 w-3.5 text-green-400 shrink-0" title="Has phone number — can receive SMS" />
+                )}
               </button>
             )
           })}
         </div>
       )}
 
-      {selected.length > 0 && (
-        <p className="text-xs text-gray-500 flex items-center gap-1">
-          <Plus className="h-3 w-3" />
-          {selected.length} contact{selected.length > 1 ? 's' : ''} will receive an email invite after the poll is created.
-        </p>
-      )}
     </div>
   )
 }

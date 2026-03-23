@@ -12,6 +12,8 @@ import { nanoid } from '../lib/nanoid'
 import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
 import { writeNotificationsForEmails, enqueuePushNotification, getUserByEmail } from '../lib/firestore'
 import { filterFCMTokens } from '../lib/fcm'
+import { buildSmsLink } from '../lib/share'
+import NotifyMethodPicker from '../components/NotifyMethodPicker'
 import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
@@ -30,6 +32,8 @@ export default function CreateStandard() {
   const [duration, setDuration] = useState(24)
   const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
   const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
+  const [notifyByEmail, setNotifyByEmail] = useState(true)
+  const [notifyBySms, setNotifyBySms] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -81,7 +85,7 @@ export default function CreateStandard() {
       })
 
       // Send email invitations
-      if (invitedContacts.length > 0 && isEmailJsConfigured()) {
+      if (notifyByEmail && invitedContacts.length > 0 && isEmailJsConfigured()) {
         const expiresAt = new Date(Date.now() + duration * 3600 * 1000)
         const { sent, failed } = await sendPollInvites(
           invitedContacts,
@@ -95,10 +99,22 @@ export default function CreateStandard() {
         } else {
           showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent.`, 'success')
         }
-      } else if (invitedContacts.length > 0 && !isEmailJsConfigured()) {
+      } else if (notifyByEmail && invitedContacts.length > 0 && !isEmailJsConfigured()) {
         showToast('Poll created! (Email invites require EmailJS setup — see NOTIFICATION_ANALYSIS.md)', 'info')
       } else {
         showToast('Poll created!', 'success')
+      }
+
+      // SMS notification — opens native SMS app on mobile with all recipients pre-filled
+      if (notifyBySms) {
+        const contactsWithPhone = invitedContacts.filter((c) => c.phone)
+        if (contactsWithPhone.length > 0) {
+          window.location.href = buildSmsLink(
+            contactsWithPhone.map((c) => c.phone!),
+            question.trim(),
+            id
+          )
+        }
       }
 
       // In-app notifications for registered contacts
@@ -245,9 +261,16 @@ export default function CreateStandard() {
           </div>
 
           {/* Invite contacts */}
-          <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-gray-800">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
             <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
+            <NotifyMethodPicker
+              contacts={invitedContacts}
+              byEmail={notifyByEmail}
+              bySms={notifyBySms}
+              onEmailChange={setNotifyByEmail}
+              onSmsChange={setNotifyBySms}
+            />
           </div>
 
           {/* Submit */}
