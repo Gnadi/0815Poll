@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { PollProvider } from './contexts/PollContext'
 import { ToastProvider } from './components/Toast'
 import { NotificationProvider } from './contexts/NotificationContext'
@@ -29,6 +30,7 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
+          <ThemeProvider>
           <NotificationProvider>
           <PollProvider>
             <ToastProvider>
@@ -57,6 +59,7 @@ export default function App() {
             </ToastProvider>
           </PollProvider>
           </NotificationProvider>
+          </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>

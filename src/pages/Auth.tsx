@@ -84,19 +84,19 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-app-bg flex items-center justify-center px-4">
+    <div className="min-h-screen bg-app-bg dark:bg-dark-bg flex items-center justify-center px-4">
       <div className="w-full max-w-sm lg:max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-500 shadow-lg">
             <BarChart2 className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">0815Poll</h1>
-          <p className="mt-1 text-sm text-gray-500">The place to put a poll</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">0815Poll</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">The place to put a poll</p>
         </div>
 
         {/* Tab switcher */}
-        <div className="mb-6 flex rounded-2xl bg-white p-1 shadow-sm border border-gray-100">
+        <div className="mb-6 flex rounded-2xl bg-white dark:bg-gray-800 p-1 shadow-sm border border-gray-100 dark:border-gray-700">
           {(['login', 'register'] as const).map((m) => (
             <button
               key={m}
@@ -105,7 +105,7 @@ export default function Auth() {
               className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 mode === m
                   ? 'bg-primary-500 text-white shadow'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               {m === 'login' ? 'Sign In' : 'Register'}
@@ -116,51 +116,51 @@ export default function Auth() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'register' && (
             <div>
-              <label htmlFor="auth-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label htmlFor="auth-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
               <input
                 id="auth-name"
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
                 placeholder="Your name"
                 autoComplete="name"
               />
             </div>
           )}
           <div>
-            <label htmlFor="auth-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="auth-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
             <input
               id="auth-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
               placeholder="you@example.com"
               autoComplete="email"
             />
           </div>
           <div>
-            <label htmlFor="auth-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="auth-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
             <input
               id="auth-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
               placeholder="••••••••"
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             />
           </div>
           {mode === 'register' && (
             <div>
-              <label htmlFor="auth-confirm" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <label htmlFor="auth-confirm" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
               <input
                 id="auth-confirm"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
                 placeholder="••••••••"
                 autoComplete="new-password"
               />
@@ -168,8 +168,8 @@ export default function Auth() {
           )}
 
           {error && (
-            <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 px-4 py-3">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
@@ -184,10 +184,10 @@ export default function Auth() {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200" />
+            <div className="w-full border-t border-gray-200 dark:border-gray-700" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-app-bg px-3 text-xs text-gray-500">or continue with</span>
+            <span className="bg-app-bg dark:bg-dark-bg px-3 text-xs text-gray-500 dark:text-gray-400">or continue with</span>
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export default function Auth() {
           type="button"
           onClick={handleGoogle}
           disabled={submitting}
-          className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors shadow-sm"
+          className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors shadow-sm"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -206,7 +206,7 @@ export default function Auth() {
           Google
         </button>
 
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
           By continuing, you agree to our{' '}
           <span className="text-primary-600 font-medium cursor-pointer">Terms</span> and{' '}
           <span className="text-primary-600 font-medium cursor-pointer">Privacy Policy</span>.
@@ -216,7 +216,7 @@ export default function Auth() {
           <button
             type="button"
             onClick={() => navigate('/home')}
-            className="text-sm text-gray-500 hover:text-gray-700 underline"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
           >
             Continue without account
           </button>

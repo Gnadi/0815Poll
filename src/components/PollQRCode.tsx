@@ -25,9 +25,9 @@ export default function PollQRCode({ pollId, size = 160 }: PollQRCodeProps) {
     <div className="flex flex-col items-center gap-3">
       <div className="flex items-center gap-2 self-start">
         <QrCode className="h-4 w-4 text-primary-500" />
-        <span className="text-sm font-bold text-gray-800">QR Code</span>
+        <span className="text-sm font-bold text-gray-800 dark:text-gray-100">QR Code</span>
       </div>
-      <div className="rounded-2xl border border-gray-100 bg-white p-4 flex flex-col items-center gap-3">
+      <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 flex flex-col items-center gap-3">
         <QRCodeCanvas
           id={`qr-${pollId}`}
           value={pollUrl}
@@ -40,7 +40,7 @@ export default function PollQRCode({ pollId, size = 160 }: PollQRCodeProps) {
         <button
           type="button"
           onClick={download}
-          className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
         >
           <Download className="h-3.5 w-3.5" />
           Download PNG

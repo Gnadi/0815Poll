@@ -109,11 +109,11 @@ export default function Contacts() {
     return (
       <Layout title="Contacts">
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
-            <Users className="h-10 w-10 text-gray-400" />
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+            <Users className="h-10 w-10 text-gray-400 dark:text-gray-500" />
           </div>
-          <h2 className="text-lg font-bold text-gray-800 mb-2">Sign in to manage contacts</h2>
-          <p className="text-sm text-gray-500 mb-6">Save contacts and invite them to your polls with one click.</p>
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Sign in to manage contacts</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Save contacts and invite them to your polls with one click.</p>
           <button
             onClick={() => navigate('/auth')}
             className="rounded-2xl bg-primary-500 px-6 py-3 text-sm font-bold text-white hover:bg-primary-600 transition-colors"
@@ -129,7 +129,7 @@ export default function Contacts() {
     <Layout title="Contacts">
       <div className="lg:max-w-2xl lg:mx-auto space-y-4">
         {/* Intro */}
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Save contacts here and invite them to your polls — they'll receive an email with the voting link.
         </p>
 
@@ -138,7 +138,7 @@ export default function Contacts() {
           <button
             type="button"
             onClick={() => setShowAddForm(true)}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary-200 py-3 text-sm font-semibold text-primary-600 hover:bg-primary-50 transition-colors"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary-200 dark:border-primary-800 py-3 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
           >
             <UserPlus className="h-4 w-4" />
             Add Contact
@@ -147,28 +147,28 @@ export default function Contacts() {
 
         {/* Add contact form */}
         {showAddForm && (
-          <div className="rounded-2xl border border-primary-200 bg-primary-50 p-4 space-y-3">
-            <p className="text-sm font-bold text-gray-800">New Contact</p>
+          <div className="rounded-2xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 p-4 space-y-3">
+            <p className="text-sm font-bold text-gray-800 dark:text-gray-100">New Contact</p>
             <input
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Full name"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-400"
             />
             <input
               type="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder="Email address"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-400"
             />
             <input
               type="tel"
               value={newPhone}
               onChange={(e) => setNewPhone(e.target.value)}
               placeholder="Phone for WhatsApp (optional, e.g. +49 176 …)"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-400"
             />
             <div className="flex gap-2">
               <button
@@ -182,7 +182,7 @@ export default function Contacts() {
               <button
                 type="button"
                 onClick={() => { setShowAddForm(false); setNewName(''); setNewEmail(''); setNewPhone('') }}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
+                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>
@@ -196,13 +196,13 @@ export default function Contacts() {
             <Spinner />
           </div>
         ) : contacts.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-200 py-12 text-center">
-            <Users className="mx-auto h-10 w-10 text-gray-300 mb-3" />
-            <p className="text-sm text-gray-400">No contacts yet.</p>
-            <p className="text-xs text-gray-300 mt-1">Add your first contact above.</p>
+          <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 py-12 text-center">
+            <Users className="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600 mb-3" />
+            <p className="text-sm text-gray-400 dark:text-gray-500">No contacts yet.</p>
+            <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">Add your first contact above.</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-gray-100 bg-white divide-y divide-gray-100 overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
             {contacts.map((contact) => (
               <div key={contact.id} className="px-4 py-3">
                 {editingId === contact.id ? (
@@ -211,20 +211,20 @@ export default function Contacts() {
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary-400"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 text-sm outline-none focus:border-primary-400"
                     />
                     <input
                       type="email"
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary-400"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 text-sm outline-none focus:border-primary-400"
                     />
                     <input
                       type="tel"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
                       placeholder="Phone for WhatsApp (optional)"
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary-400"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
                     />
                     <div className="flex gap-2">
                       <button
@@ -237,7 +237,7 @@ export default function Contacts() {
                       <button
                         type="button"
                         onClick={() => setEditingId(null)}
-                        className="flex items-center gap-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-50"
+                        className="flex items-center gap-1 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         <X className="h-3.5 w-3.5" /> Cancel
                       </button>
@@ -245,16 +245,16 @@ export default function Contacts() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold text-sm shrink-0">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-bold text-sm shrink-0">
                       {contact.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">{contact.name}</p>
-                      <p className="text-xs text-gray-400 truncate flex items-center gap-1">
+                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{contact.name}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 truncate flex items-center gap-1">
                         <Mail className="h-3 w-3" /> {contact.email}
                       </p>
                       {contact.phone && (
-                        <p className="text-xs text-green-600 truncate flex items-center gap-1 mt-0.5">
+                        <p className="text-xs text-green-600 dark:text-green-400 truncate flex items-center gap-1 mt-0.5">
                           <Phone className="h-3 w-3" /> {contact.phone}
                         </p>
                       )}
@@ -263,7 +263,7 @@ export default function Contacts() {
                       <button
                         type="button"
                         onClick={() => startEdit(contact)}
-                        className="text-gray-400 hover:text-primary-500 transition-colors"
+                        className="text-gray-400 dark:text-gray-500 hover:text-primary-500 transition-colors"
                         aria-label="Edit"
                       >
                         <Edit2 className="h-4 w-4" />
@@ -271,7 +271,7 @@ export default function Contacts() {
                       <button
                         type="button"
                         onClick={() => handleDelete(contact.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
+                        className="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
                         aria-label="Delete"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -284,7 +284,7 @@ export default function Contacts() {
           </div>
         )}
 
-        <p className="text-xs text-gray-400 text-center pb-2">
+        <p className="text-xs text-gray-400 dark:text-gray-500 text-center pb-2">
           {contacts.length} contact{contacts.length !== 1 ? 's' : ''} saved
         </p>
       </div>

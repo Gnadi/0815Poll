@@ -106,38 +106,38 @@ export default function CreatePriority() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Question */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Poll Question</label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Question</label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               rows={3}
               placeholder='e.g. "Which features should we build next quarter?"'
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
             />
             {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Description <span className="font-normal text-gray-400">(optional)</span></label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Description <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="Add more context for your voters..."
-              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-none focus:border-blue-400 resize-none"
             />
           </div>
 
           {/* Options */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-gray-800">Options</label>
+              <label className="text-sm font-bold text-gray-800 dark:text-gray-100">Options</label>
               <span className="text-xs text-gray-400">Min. 2 options</span>
             </div>
             <div className="space-y-2">
               {options.map((opt, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3">
+                <div key={idx} className="flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
                   <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500 shrink-0">
                     {idx + 1}
                   </div>
@@ -175,8 +175,8 @@ export default function CreatePriority() {
 
           {/* Settings */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Poll Settings</label>
-            <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100">
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Settings</label>
+            <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
               {/* Voting Power */}
               <div className="px-4 py-4">
                 <span className="text-sm font-medium text-gray-800 mb-1 block">Voting Power per Person</span>
@@ -213,7 +213,7 @@ export default function CreatePriority() {
 
               {/* Duration */}
               <div className="px-4 py-4">
-                <span className="text-sm font-medium text-gray-800 mb-3 block">Poll Duration</span>
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-100 mb-3 block">Poll Duration</span>
                 <div className="flex flex-wrap gap-2">
                   {DURATION_OPTIONS.map((opt) => (
                     <button
@@ -236,7 +236,7 @@ export default function CreatePriority() {
 
           {/* Invite contacts */}
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-gray-800">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+            <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">Invite Contacts <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span></label>
             <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
           </div>
 

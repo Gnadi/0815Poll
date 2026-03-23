@@ -28,7 +28,6 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
     setDragIndex(index)
     dragNode.current = e.currentTarget
     e.dataTransfer.effectAllowed = 'move'
-    // Small delay so the ghost image shows the item before it becomes transparent
     setTimeout(() => {
       if (dragNode.current) dragNode.current.style.opacity = '0.4'
     }, 0)
@@ -75,12 +74,12 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
             onDragOver={!disabled ? (e) => handleDragOver(e, index) : undefined}
             onDrop={!disabled ? (e) => handleDrop(e, index) : undefined}
             onDragEnd={!disabled ? handleDragEnd : undefined}
-            className={`flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 transition-all select-none ${
+            className={`flex items-center gap-3 rounded-2xl border bg-white dark:bg-gray-800 px-4 py-3 transition-all select-none ${
               isDragging
                 ? 'border-primary-300 shadow-md opacity-40'
                 : isDropTarget
                 ? 'border-primary-400 ring-2 ring-primary-200 shadow-sm'
-                : 'border-gray-200'
+                : 'border-gray-200 dark:border-gray-700'
             } ${!disabled ? 'cursor-grab active:cursor-grabbing' : ''}`}
           >
             {/* Rank badge */}
@@ -88,19 +87,19 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
               index === 0
                 ? 'bg-primary-500 text-white'
                 : index === 1
-                ? 'bg-primary-100 text-primary-700'
-                : 'bg-gray-100 text-gray-500'
+                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
             }`}>
               {index + 1}
             </div>
 
             {/* Drag handle */}
             {!disabled && (
-              <GripVertical className="h-4 w-4 text-gray-300 shrink-0" />
+              <GripVertical className="h-4 w-4 text-gray-300 dark:text-gray-600 shrink-0" />
             )}
 
             {/* Option text */}
-            <span className="flex-1 text-sm font-medium text-gray-800">{opt.text}</span>
+            <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-100">{opt.text}</span>
 
             {/* Arrow buttons */}
             {!disabled && (
@@ -109,7 +108,7 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
                   type="button"
                   onClick={() => moveItem(index, index - 1)}
                   disabled={index === 0}
-                  className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="flex h-5 w-5 items-center justify-center rounded text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Move up"
                 >
                   <ChevronUp className="h-3.5 w-3.5" />
@@ -118,7 +117,7 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
                   type="button"
                   onClick={() => moveItem(index, index + 1)}
                   disabled={index === order.length - 1}
-                  className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="flex h-5 w-5 items-center justify-center rounded text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Move down"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />
@@ -130,7 +129,7 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
       })}
 
       {!disabled && (
-        <p className="text-xs text-gray-400 text-center pt-1">
+        <p className="text-xs text-gray-400 dark:text-gray-500 text-center pt-1">
           Drag items or use arrows to reorder &mdash; top = best
         </p>
       )}

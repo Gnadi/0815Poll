@@ -288,20 +288,20 @@ ${optHtml}
 
       <div className="px-4 py-4 pb-24 space-y-6">
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title</label>
+          <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Title</label>
           <input
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What's the topic of this poll?"
-            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-none focus:border-primary-400"
           />
           {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
         </div>
 
         {/* Options list */}
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Options ({options.length})</label>
+          <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Options ({options.length})</label>
           <div className="space-y-2 mb-3">
             {options.map((opt, idx) => (
               <div
@@ -377,7 +377,7 @@ ${optHtml}
 
         {/* Mobile preview */}
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Preview: {activeOption.name}</label>
+          <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Preview: {activeOption.name}</label>
           <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white h-48">
             <iframe
               key={`${previewKey}-${activeOption.id}`}
@@ -391,8 +391,8 @@ ${optHtml}
 
         {/* Mobile settings */}
         <div>
-          <label className="block text-sm font-bold text-gray-800 mb-2">Settings</label>
-          <div className="rounded-2xl bg-white border border-gray-100 divide-y divide-gray-100">
+          <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Settings</label>
+          <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
             <div className="px-4 py-4">
               <Toggle checked={anonymous} onChange={setAnonymous} label="Anonymous" description="Hide who viewed this poll" />
             </div>
@@ -410,7 +410,7 @@ ${optHtml}
                     className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
                       duration === opt.value
                         ? 'bg-primary-500 text-white border-primary-500'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-300'
                     }`}
                   >
                     {opt.label}
@@ -478,7 +478,7 @@ ${optHtml}
           <div className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="max-w-4xl mx-auto grid grid-cols-4 gap-6">
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">Poll Title / Question</label>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Title / Question</label>
                 <input
                   type="text"
                   value={question}
@@ -489,7 +489,7 @@ ${optHtml}
                 {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">Duration</label>
+                <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Duration</label>
                 <div className="flex flex-wrap gap-2">
                   {DURATION_OPTIONS.map((opt) => (
                     <button
@@ -499,7 +499,7 @@ ${optHtml}
                       className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
                         duration === opt.value
                           ? 'bg-primary-500 text-white border-primary-500'
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-primary-300'
+                          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-300'
                       }`}
                     >
                       {opt.label}
