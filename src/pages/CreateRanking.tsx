@@ -9,11 +9,6 @@ import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
-import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
-import { writeNotificationsForEmails, enqueuePushNotification, getUserByEmail } from '../lib/firestore'
-import { filterFCMTokens } from '../lib/fcm'
-import { buildSmsLink } from '../lib/share'
-import NotifyMethodPicker from '../components/NotifyMethodPicker'
 import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
@@ -31,8 +26,6 @@ export default function CreateRanking() {
   const [anonymous, setAnonymous] = useState(true)
   const [duration, setDuration] = useState(24)
   const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
-  const [notifyByEmail, setNotifyByEmail] = useState(true)
-  const [notifyBySms, setNotifyBySms] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -83,30 +76,8 @@ export default function CreateRanking() {
         createdBy: user?.uid || null,
         invitedContactEmails: invitedContacts.map((c) => c.email),
       })
-      if (notifyByEmail && invitedContacts.length > 0 && isEmailJsConfigured()) {
-        const expiresAt = new Date(Date.now() + duration * 3600 * 1000)
-        const { sent, failed } = await sendPollInvites(invitedContacts, question.trim(), id, user?.displayName || 'Someone', expiresAt)
-        if (failed > 0) showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent, ${failed} failed.`, 'info')
-        else showToast(`Poll created! ${sent} invite${sent !== 1 ? 's' : ''} sent.`, 'success')
-      } else if (notifyByEmail && invitedContacts.length > 0) {
-        showToast('Poll created! (Email invites require EmailJS setup)', 'info')
-      } else {
-        showToast('Ranking poll created!', 'success')
-      }
-      if (notifyBySms) {
-        const contactsWithPhone = invitedContacts.filter((c) => c.phone)
-        if (contactsWithPhone.length > 0) {
-          window.location.href = buildSmsLink(contactsWithPhone.map((c) => c.phone!), question.trim(), id)
-        }
-      }
-      if (invitedContacts.length > 0) {
-        const emails = invitedContacts.map((c) => c.email)
-        writeNotificationsForEmails(emails, id, question.trim(), user?.displayName || 'Someone')
-        const users = await Promise.all(emails.map((e) => getUserByEmail(e)))
-        const tokens = filterFCMTokens(users.filter(Boolean) as { fcmToken?: string }[])
-        if (tokens.length > 0) enqueuePushNotification(tokens, `${user?.displayName || 'Someone'} invited you to vote`, question.trim(), id)
-      }
-      navigate(`/poll/${id}`)
+      showToast('Poll created!', 'success')
+      navigate(`/poll/${id}`, { state: { contacts: invitedContacts } })
     } catch {
       showToast('Failed to create poll. Please try again.', 'error')
     } finally {
@@ -239,13 +210,6 @@ export default function CreateRanking() {
           <div className="space-y-3">
             <label className="block text-sm font-bold text-gray-800">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
             <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
-            <NotifyMethodPicker
-              contacts={invitedContacts}
-              byEmail={notifyByEmail}
-              bySms={notifyBySms}
-              onEmailChange={setNotifyByEmail}
-              onSmsChange={setNotifyBySms}
-            />
           </div>
 
           {/* Submit */}
