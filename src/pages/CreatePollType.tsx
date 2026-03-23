@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Calendar, MapPin, Sliders, GripVertical, ChevronRight, Target } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, Sliders, GripVertical, ChevronRight, Target, Image } from 'lucide-react'
 import Layout from '../components/Layout'
 
 const pollTypes = [
@@ -56,6 +56,15 @@ const pollTypes = [
     color: 'bg-blue-50 dark:bg-blue-900/20',
     iconColor: 'text-blue-600 dark:text-blue-400',
     route: '/create/priority',
+  },
+  {
+    type: 'image',
+    icon: Image,
+    title: 'Image Vote',
+    description: 'Upload photos as options and let your audience vote for their favorite.',
+    color: 'bg-pink-50 dark:bg-pink-900/20',
+    iconColor: 'text-pink-600 dark:text-pink-400',
+    route: '/create/image',
   },
 ]
 

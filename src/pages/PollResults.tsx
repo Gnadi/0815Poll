@@ -115,6 +115,17 @@ export default function PollResults() {
     priorityWinner = sorted[0]
   }
 
+  // Image poll: winner by most votes
+  let imageWinner = null
+  let imageWinnerPct = 0
+  let imageRunnerUpPct = 0
+  if (poll.type === 'image' && poll.options && poll.totalVotes > 0) {
+    const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
+    imageWinner = sorted[0]
+    imageWinnerPct = Math.round((imageWinner.votes / poll.totalVotes) * 100)
+    imageRunnerUpPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
+  }
+
   return (
     <div className="min-h-screen bg-app-bg dark:bg-dark-bg">
       {/* Desktop sidebar */}
@@ -244,6 +255,33 @@ export default function PollResults() {
                       <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
                         {totalPriorityPoints > 0 ? Math.round(((priorityWinner.priorityPoints || 0) / totalPriorityPoints) * 100) : 0}% of all points
                       </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Winner card — Image poll */}
+                {poll.type === 'image' && imageWinner && poll.totalVotes > 0 && (
+                  <div className="rounded-2xl bg-primary-500 relative overflow-hidden">
+                    {imageWinner.imageUrl && (
+                      <img
+                        src={imageWinner.imageUrl}
+                        alt={imageWinner.text}
+                        className="w-full object-cover"
+                        style={{ height: '200px' }}
+                      />
+                    )}
+                    <div className="p-5 lg:p-6">
+                      <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                      <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Photo</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">{imageWinner.text}</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl font-black text-white">{imageWinnerPct}%</span>
+                        {imageRunnerUpPct > 0 && (
+                          <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white">
+                            +{imageWinnerPct - imageRunnerUpPct}% vs runner-up
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -463,6 +501,57 @@ export default function PollResults() {
                     </div>
                   </div>
                 )}
+                {/* Image poll distribution */}
+                {poll.type === 'image' && poll.options && poll.options.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3 lg:text-lg">Voting Distribution</h3>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                      {[...poll.options]
+                        .sort((a, b) => b.votes - a.votes)
+                        .map((opt, idx) => {
+                          const pct = poll.totalVotes > 0 ? Math.round((opt.votes / poll.totalVotes) * 100) : 0
+                          const isWinner = idx === 0 && opt.votes > 0
+                          const isVoted = votedOptionId === opt.id
+                          return (
+                            <div
+                              key={opt.id}
+                              className={`rounded-2xl border-2 overflow-hidden ${isWinner ? 'border-primary-500' : 'border-gray-100 dark:border-gray-700'}`}
+                            >
+                              {opt.imageUrl && (
+                                <div className="relative h-32 bg-gray-100 dark:bg-gray-700">
+                                  <img
+                                    src={opt.imageUrl}
+                                    alt={opt.text}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                  />
+                                  {isWinner && (
+                                    <div className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500 shadow">
+                                      <Trophy className="h-3.5 w-3.5 text-white" />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              <div className={`px-3 py-2 border-t ${isWinner ? 'border-primary-200 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className={`text-xs font-semibold truncate ${isWinner ? 'text-primary-700 dark:text-primary-400' : 'text-gray-800 dark:text-gray-100'}`}>
+                                    {opt.text}
+                                  </span>
+                                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300 ml-1 shrink-0">{pct}%</span>
+                                </div>
+                                <div className="h-1 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-500 ${isWinner ? 'bg-primary-500' : isVoted ? 'bg-primary-300' : 'bg-gray-300 dark:bg-gray-600'}`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</p>
+                              </div>
+                            </div>
+                          )
+                        })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Side column - stats and insights */}
@@ -529,7 +618,7 @@ export default function PollResults() {
                   </div>
                   <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 text-center">
                     <p className="text-2xl font-black text-primary-500">
-                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking' || poll.type === 'priority') && poll.options ? poll.options.length :
+                      {(poll.type === 'standard' || poll.type === 'custom' || poll.type === 'ranking' || poll.type === 'priority' || poll.type === 'image') && poll.options ? poll.options.length :
                        poll.type === 'location' && poll.locations ? poll.locations.length :
                        poll.type === 'schedule' && poll.timeSlots ? poll.timeSlots.length : '—'}
                     </p>

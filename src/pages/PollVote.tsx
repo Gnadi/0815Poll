@@ -516,6 +516,96 @@ export default function PollVote() {
           </div>
         )}
 
+        {/* Image poll options */}
+        {poll.type === 'image' && poll.options && (
+          <div className="mb-6">
+            {poll.settings?.allowMultipleChoices && !voted && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">You can select multiple photos.</p>
+            )}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {poll.options.map((opt) => {
+                const isMultiple = !!poll.settings?.allowMultipleChoices
+                const isSelected = isMultiple
+                  ? selectedOptions.includes(opt.id)
+                  : selectedOption === opt.id
+                const isVoted = isMultiple
+                  ? votedOptionIds.includes(opt.id)
+                  : votedOptionId === opt.id
+                const isActive = isSelected || isVoted
+                const pct = voted ? getPercentage(opt.votes) : 0
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      if (voted) return
+                      if (isMultiple) {
+                        setSelectedOptions((prev) =>
+                          prev.includes(opt.id) ? prev.filter((id) => id !== opt.id) : [...prev, opt.id]
+                        )
+                      } else {
+                        setSelectedOption(opt.id)
+                      }
+                    }}
+                    className={`relative rounded-2xl border-2 overflow-hidden transition-all text-left ${
+                      isActive
+                        ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800 shadow-md'
+                        : voted
+                        ? 'border-gray-100 dark:border-gray-700 cursor-default'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:shadow-sm'
+                    }`}
+                  >
+                    {/* Photo */}
+                    <div className="relative h-36 bg-gray-100 dark:bg-gray-700">
+                      {opt.imageUrl && (
+                        <img
+                          src={opt.imageUrl}
+                          alt={opt.text}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      )}
+                      {/* Selection indicator overlay */}
+                      {isActive && (
+                        <div className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500 shadow">
+                          {isMultiple ? (
+                            <svg className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 12 12">
+                              <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                          ) : (
+                            <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
+                              <circle cx="6" cy="6" r="3" />
+                            </svg>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {/* Caption + vote info */}
+                    <div className={`px-3 py-2 border-t ${isActive ? 'border-primary-200 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
+                      <span className={`text-xs font-semibold block truncate ${isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-800 dark:text-gray-100'}`}>
+                        {opt.text}
+                      </span>
+                      {voted && (
+                        <div className="mt-1.5">
+                          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            <span>{pct}%</span>
+                            <span>{opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}</span>
+                          </div>
+                          <div className="h-1 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${isActive ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Poll Stats */}
         <div className="mb-6 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -545,7 +635,7 @@ export default function PollVote() {
               submitting ||
               (poll.type === 'schedule' && selectedSlots.length === 0) ||
               (poll.type === 'priority' && Object.values(priorityDistribution).every((v) => v === 0)) ||
-              (poll.type !== 'schedule' && poll.type !== 'ranking' && poll.type !== 'priority' &&
+              ((poll.type === 'standard' || poll.type === 'custom' || poll.type === 'image' || poll.type === 'location') &&
                 (poll.settings?.allowMultipleChoices ? selectedOptions.length === 0 : !selectedOption))
             }
             className="w-full rounded-2xl bg-primary-500 py-4 text-base font-bold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
