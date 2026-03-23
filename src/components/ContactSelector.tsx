@@ -191,7 +191,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
                   <p className="text-xs text-gray-400 truncate">{contact.email}</p>
                 </div>
                 {contact.phone && (
-                  <Phone className="h-3.5 w-3.5 text-green-400 shrink-0" title="Has phone number — can receive SMS" />
+                  <Phone className="h-3.5 w-3.5 text-green-400 shrink-0" />
                 )}
               </button>
             )
