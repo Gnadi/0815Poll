@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { Sun, Moon } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
 
 const BLUE = '#1a56db'
 const BLUE_HOVER = '#1648c0'
@@ -144,6 +146,9 @@ function CodeEditorMockup() {
 }
 
 export default function LandingPage() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const toggleTheme = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
       {/* Navbar */}
@@ -159,6 +164,18 @@ export default function LandingPage() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {resolvedTheme === 'dark' ? (
+                <Sun className="h-4 w-4 text-gray-300" />
+              ) : (
+                <Moon className="h-4 w-4 text-gray-600" />
+              )}
+            </button>
             <Link to="/auth" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-1.5">Log In</Link>
             <Link
               to="/auth"
