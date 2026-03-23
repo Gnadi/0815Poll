@@ -34,6 +34,8 @@ export default function Home() {
         const mine = await getUserPolls(user.uid)
         setMyPolls(mine)
       }
+    } catch (err) {
+      console.error('Failed to load polls:', err)
     } finally {
       setLoading(false)
     }
