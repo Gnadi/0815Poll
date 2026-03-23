@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Sun, Moon } from 'lucide-react'
+import { BarChart2, Sun, Moon, Plus } from 'lucide-react'
 import Layout from '../components/Layout'
 import PollCard from '../components/PollCard'
 import Spinner from '../components/Spinner'
@@ -34,6 +34,8 @@ export default function Home() {
         const mine = await getUserPolls(user.uid)
         setMyPolls(mine)
       }
+    } catch (err) {
+      console.error('Failed to load polls:', err)
     } finally {
       setLoading(false)
     }
@@ -59,19 +61,42 @@ export default function Home() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white lg:text-2xl">{greeting}</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 lg:text-base">Find and create polls</p>
         </div>
+        <div className="flex items-center gap-1">
+          {user && (
+            <button
+              type="button"
+              onClick={() => navigate('/create')}
+              className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 hover:bg-primary-600 transition-colors"
+              aria-label="Create poll"
+            >
+              <Plus className="h-5 w-5 text-white" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {resolvedTheme === 'dark' ? (
+              <Sun className="h-5 w-5 text-gray-300" />
+            ) : (
+              <Moon className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {user && (
         <button
           type="button"
-          onClick={toggleTheme}
-          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          onClick={() => navigate('/create')}
+          className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 hover:bg-primary-600 px-4 py-3 text-sm font-semibold text-white transition-colors"
         >
-          {resolvedTheme === 'dark' ? (
-            <Sun className="h-5 w-5 text-gray-300" />
-          ) : (
-            <Moon className="h-5 w-5 text-gray-500" />
-          )}
+          <Plus className="h-4 w-4" />
+          Create Poll
         </button>
-      </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-16">

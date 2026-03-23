@@ -87,21 +87,19 @@ export async function getActivePolls(limitCount = 10): Promise<Poll[]> {
   const q = query(
     collection(db, 'polls'),
     where('status', '==', 'active'),
-    orderBy('createdAt', 'desc'),
     limit(limitCount)
   )
   const snap = await getDocs(q)
-  return snap.docs.map(docToPoll)
+  return snap.docs.map(docToPoll).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
 }
 
 export async function getUserPolls(userId: string): Promise<Poll[]> {
   const q = query(
     collection(db, 'polls'),
-    where('createdBy', '==', userId),
-    orderBy('createdAt', 'desc')
+    where('createdBy', '==', userId)
   )
   const snap = await getDocs(q)
-  return snap.docs.map(docToPoll)
+  return snap.docs.map(docToPoll).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
 }
 
 export function subscribeToPoll(
