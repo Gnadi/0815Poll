@@ -4,11 +4,12 @@ import Layout from '../components/Layout'
 import MapPicker from '../components/MapPicker'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
+import ContactSelector from '../components/ContactSelector'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
-import type { LocationOption } from '../types'
+import type { LocationOption, Contact } from '../types'
 
 const DURATION_OPTIONS = [
   { label: '24 hours', value: 24 },
@@ -22,6 +23,7 @@ export default function CreateLocation() {
   const [locations, setLocations] = useState<LocationOption[]>([])
   const [duration, setDuration] = useState(24)
   const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
+  const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -54,9 +56,10 @@ export default function CreateLocation() {
         locations,
         settings: { anonymous: true, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
+        invitedContactEmails: invitedContacts.map((c) => c.email),
       })
-      showToast('Location poll created!', 'success')
-      navigate(`/poll/${id}`)
+      showToast('Poll created!', 'success')
+      navigate(`/poll/${id}`, { state: { contacts: invitedContacts } })
     } catch {
       showToast('Failed to create poll. Please try again.', 'error')
     } finally {
@@ -158,6 +161,11 @@ export default function CreateLocation() {
               <MapPicker locations={locations} onAddLocation={addLocation} onRemoveLocation={removeLocation} />
               {errors.locations && <p className="mt-1 text-xs text-red-500">{errors.locations}</p>}
             </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-gray-800">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+            <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
           </div>
 
           <button

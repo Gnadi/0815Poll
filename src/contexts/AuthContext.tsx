@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { createUserProfile, getUserProfile } from '../lib/firestore'
+import { initFCM } from '../lib/fcm'
 import type { User } from '../types'
 import { Timestamp } from 'firebase/firestore'
 
@@ -37,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         const profile = await getUserProfile(firebaseUser.uid)
         setUserProfile(profile)
+        initFCM(firebaseUser.uid) // request push permission + store token (no-op if not configured)
       } else {
         setUserProfile(null)
       }

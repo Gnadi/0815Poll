@@ -53,6 +53,7 @@ export interface Poll {
   endsAt: Timestamp
   status: PollStatus
   totalVotes: number
+  invitedContactEmails?: string[] // emails notified when poll was created
 }
 
 export interface Vote {
@@ -93,7 +94,25 @@ export interface User {
   displayName: string
   email: string
   photoURL?: string
+  fcmToken?: string // FCM web push token
   createdAt: Timestamp
 }
 
 export type CreatePollPayload = Omit<Poll, 'id' | 'createdAt' | 'endsAt' | 'status' | 'totalVotes'>
+
+export interface Contact {
+  id: string
+  name: string
+  email: string
+  phone?: string // optional, international format without + e.g. "4917612345678"
+  createdAt: Timestamp
+}
+
+export interface AppNotification {
+  id: string
+  title: string
+  body: string
+  pollId: string
+  read: boolean
+  createdAt: Timestamp
+}

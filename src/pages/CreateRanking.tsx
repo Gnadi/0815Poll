@@ -4,10 +4,12 @@ import { Plus, X } from 'lucide-react'
 import Layout from '../components/Layout'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
+import ContactSelector from '../components/ContactSelector'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
+import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
   { label: '1 hour', value: 1 },
@@ -23,6 +25,7 @@ export default function CreateRanking() {
   const [options, setOptions] = useState(['', '', ''])
   const [anonymous, setAnonymous] = useState(true)
   const [duration, setDuration] = useState(24)
+  const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -71,9 +74,10 @@ export default function CreateRanking() {
         })),
         settings: { anonymous, duration },
         createdBy: user?.uid || null,
+        invitedContactEmails: invitedContacts.map((c) => c.email),
       })
-      showToast('Ranking poll created!', 'success')
-      navigate(`/poll/${id}`)
+      showToast('Poll created!', 'success')
+      navigate(`/poll/${id}`, { state: { contacts: invitedContacts } })
     } catch {
       showToast('Failed to create poll. Please try again.', 'error')
     } finally {
@@ -200,6 +204,12 @@ export default function CreateRanking() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Invite contacts */}
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-gray-800">Invite Contacts <span className="font-normal text-gray-400">(optional)</span></label>
+            <ContactSelector selected={invitedContacts} onChange={setInvitedContacts} />
           </div>
 
           {/* Submit */}

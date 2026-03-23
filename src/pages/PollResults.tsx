@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, format } from 'date-fns'
-import { Trophy, Share2, Users, Clock, Lightbulb, ArrowLeft } from 'lucide-react'
+import { Trophy, Share2, Users, Clock, Lightbulb, ArrowLeft, MessageCircle } from 'lucide-react'
 import ResultBar from '../components/ResultBar'
 import Spinner from '../components/Spinner'
 import Sidebar from '../components/Sidebar'
 import LocationViewMap from '../components/LocationViewMap'
+import PollQRCode from '../components/PollQRCode'
 import { subscribeToPoll } from '../lib/firestore'
+import { buildWhatsAppShareLink, copyToClipboard } from '../lib/share'
 import { usePoll } from '../contexts/PollContext'
 import { useToast } from '../components/Toast'
 import type { Poll } from '../types'
@@ -35,8 +37,8 @@ export default function PollResults() {
     if (navigator.share) {
       await navigator.share({ title: poll?.question, url })
     } else {
-      await navigator.clipboard.writeText(url)
-      showToast('Link copied!', 'success')
+      const ok = await copyToClipboard(url)
+      if (ok) showToast('Link copied!', 'success')
     }
   }
 
@@ -547,6 +549,29 @@ export default function PollResults() {
                     Cast Your Vote
                   </button>
                 )}
+
+                {/* Share section */}
+                <div className="rounded-2xl border border-gray-100 bg-white p-4 space-y-3">
+                  <p className="text-sm font-bold text-gray-800">Share Results</p>
+                  <button
+                    type="button"
+                    onClick={share}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Copy / Share Link
+                  </button>
+                  <a
+                    href={buildWhatsAppShareLink(poll.question, poll.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-green-500 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Share via WhatsApp
+                  </a>
+                  <PollQRCode pollId={poll.id} size={140} />
+                </div>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { PollProvider } from './contexts/PollContext'
 import { ToastProvider } from './components/Toast'
+import { NotificationProvider } from './contexts/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
@@ -20,12 +21,15 @@ const CreatePriority = lazy(() => import('./pages/CreatePriority'))
 const PollVote = lazy(() => import('./pages/PollVote'))
 const PollResults = lazy(() => import('./pages/PollResults'))
 const Profile = lazy(() => import('./pages/Profile'))
+const Contacts = lazy(() => import('./pages/Contacts'))
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
 
 export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
+          <NotificationProvider>
           <PollProvider>
             <ToastProvider>
               <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-500" /></div>}>
@@ -44,12 +48,15 @@ export default function App() {
                 <Route path="/poll/:id" element={<PollVote />} />
                 <Route path="/poll/:id/results" element={<PollResults />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/contacts" element={<Contacts />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               </Suspense>
               <InstallPrompt />
             </ToastProvider>
           </PollProvider>
+          </NotificationProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>

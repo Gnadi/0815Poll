@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Bell } from 'lucide-react'
 import BottomNav from './BottomNav'
 import Sidebar from './Sidebar'
+import { useAuth } from '../contexts/AuthContext'
+import { useNotifications } from '../contexts/NotificationContext'
 import type { ReactNode } from 'react'
 
 interface LayoutProps {
@@ -22,6 +24,8 @@ export default function Layout({
   noPadding,
 }: LayoutProps) {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const { unreadCount } = useNotifications()
 
   return (
     <div className="min-h-screen bg-app-bg">
@@ -46,7 +50,24 @@ export default function Layout({
                 )}
               </div>
               <h1 className="text-base font-bold text-gray-900 lg:text-xl lg:hidden">{title}</h1>
-              <div className="w-10 flex justify-end lg:w-auto">{headerRight}</div>
+              <div className="flex items-center gap-1">
+                {user && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/notifications')}
+                    className="relative flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="h-4 w-4 text-gray-600" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </button>
+                )}
+                {headerRight && <div className="w-10 flex justify-end lg:w-auto">{headerRight}</div>}
+              </div>
             </header>
           )}
           {/* Desktop page title */}

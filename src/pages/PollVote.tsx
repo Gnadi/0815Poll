@@ -1,22 +1,29 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { formatDistanceToNow, format, isPast } from 'date-fns'
-import { BarChart2, Users, Clock, Share2 } from 'lucide-react'
+import { BarChart2, Users, Clock, Share2, ChevronDown, ChevronUp, MessageCircle, Bell } from 'lucide-react'
 import Layout from '../components/Layout'
 import VoteOption from '../components/VoteOption'
 import RankingList from '../components/RankingList'
 import PriorityVoteInput from '../components/PriorityVoteInput'
 import Spinner from '../components/Spinner'
 import LocationViewMap from '../components/LocationViewMap'
-import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote, getUserPriorityVote } from '../lib/firestore'
+import PollQRCode from '../components/PollQRCode'
+import ContactSelector from '../components/ContactSelector'
+import NotifyMethodPicker from '../components/NotifyMethodPicker'
+import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote, getUserPriorityVote, writeNotificationsForEmails, enqueuePushNotification, getUserByEmail } from '../lib/firestore'
+import { buildWhatsAppShareLink, copyToClipboard, buildSmsLink } from '../lib/share'
+import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
+import { filterFCMTokens } from '../lib/fcm'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
-import type { Poll } from '../types'
+import type { Poll, Contact } from '../types'
 
 export default function PollVote() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { castVote, castMultipleVote, castScheduleVote, castRankingVote, castPriorityVote, getLocalVote } = usePoll()
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -32,6 +39,14 @@ export default function PollVote() {
   const [votedOptionId, setVotedOptionId] = useState<string | null>(null)
   const [votedOptionIds, setVotedOptionIds] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
+  const [showSharePanel, setShowSharePanel] = useState(false)
+
+  // Notify panel state (shown after poll creation)
+  const [notifyContacts, setNotifyContacts] = useState<Contact[]>((location.state as { contacts?: Contact[] })?.contacts ?? [])
+  const [notifyByEmail, setNotifyByEmail] = useState(true)
+  const [notifyBySms, setNotifyBySms] = useState(false)
+  const [notified, setNotified] = useState(false)
+  const [notifying, setNotifying] = useState(false)
 
   // Check if already voted
   const checkVoted = useCallback(async (poll: Poll) => {
@@ -152,13 +167,48 @@ export default function PollVote() {
     }
   }
 
+  const handleNotify = async () => {
+    if (!poll || notifyContacts.length === 0) return
+    setNotifying(true)
+    try {
+      if (notifyByEmail && isEmailJsConfigured()) {
+        const expiresAt = poll.endsAt?.toDate?.() ?? new Date()
+        const { sent, failed } = await sendPollInvites(notifyContacts, poll.question, poll.id, user?.displayName || 'Someone', expiresAt)
+        if (failed > 0) {
+          showToast(`${sent} invite${sent !== 1 ? 's' : ''} sent, ${failed} failed.`, 'info')
+        } else {
+          showToast(`${sent} invite${sent !== 1 ? 's' : ''} sent!`, 'success')
+        }
+      } else if (notifyByEmail && !isEmailJsConfigured()) {
+        showToast('Email invites require EmailJS setup.', 'info')
+      }
+      if (notifyBySms) {
+        const phones = notifyContacts.filter((c) => c.phone).map((c) => c.phone!)
+        if (phones.length > 0) window.location.href = buildSmsLink(phones, poll.question, poll.id)
+      }
+      const emails = notifyContacts.map((c) => c.email)
+      writeNotificationsForEmails(emails, poll.id, poll.question, user?.displayName || 'Someone')
+      const users = await Promise.all(emails.map((e) => getUserByEmail(e)))
+      const tokens = filterFCMTokens(users.filter(Boolean) as { fcmToken?: string }[])
+      if (tokens.length > 0) {
+        enqueuePushNotification(tokens, `${user?.displayName || 'Someone'} invited you to vote`, poll.question, poll.id)
+      }
+      if (!notifyBySms) showToast('Notifications sent!', 'success')
+    } catch {
+      showToast('Failed to send notifications.', 'error')
+    } finally {
+      setNotifying(false)
+      setNotified(true)
+    }
+  }
+
   const share = async () => {
     const url = window.location.href
     if (navigator.share) {
       await navigator.share({ title: poll?.question, url })
     } else {
-      await navigator.clipboard.writeText(url)
-      showToast('Link copied!', 'success')
+      const ok = await copyToClipboard(url)
+      if (ok) showToast('Link copied!', 'success')
     }
   }
 
@@ -511,6 +561,83 @@ export default function PollVote() {
             View Results
           </button>
         )}
+
+        {/* Notify Contacts Panel — shown to creator after poll creation */}
+        {!notified && user?.uid === poll.createdBy && (
+          <div className="mt-4 rounded-2xl border border-primary-100 bg-primary-50 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-primary-100">
+              <Bell className="h-4 w-4 text-primary-500" />
+              <span className="text-sm font-semibold text-gray-800">Notify your contacts</span>
+            </div>
+            <div className="px-4 pt-3 pb-4 space-y-3">
+              <ContactSelector selected={notifyContacts} onChange={setNotifyContacts} />
+              <NotifyMethodPicker
+                contacts={notifyContacts}
+                byEmail={notifyByEmail}
+                bySms={notifyBySms}
+                onEmailChange={setNotifyByEmail}
+                onSmsChange={setNotifyBySms}
+              />
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleNotify}
+                  disabled={notifying || notifyContacts.length === 0}
+                  className="flex-1 rounded-xl bg-primary-500 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-40 transition-colors"
+                >
+                  {notifying ? <Spinner size="sm" /> : 'Send Notifications'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNotified(true)}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                >
+                  Skip
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Share Panel */}
+        <div className="mt-4 rounded-2xl border border-gray-100 bg-white overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowSharePanel((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Share2 className="h-4 w-4 text-gray-400" />
+              Share this poll
+            </span>
+            {showSharePanel ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+          </button>
+          {showSharePanel && poll && (
+            <div className="px-4 pb-4 pt-2 space-y-4 border-t border-gray-100">
+              {/* Copy link */}
+              <button
+                type="button"
+                onClick={share}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Share2 className="h-4 w-4" />
+                Copy / Share Link
+              </button>
+              {/* WhatsApp */}
+              <a
+                href={buildWhatsAppShareLink(poll.question, poll.id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-green-500 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Share via WhatsApp
+              </a>
+              {/* QR Code */}
+              <PollQRCode pollId={poll.id} size={140} />
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   )

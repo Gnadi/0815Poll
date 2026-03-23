@@ -6,6 +6,7 @@ import {
   getDocs,
   setDoc,
   updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
   where,
@@ -19,7 +20,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote, PriorityVote } from '../types'
+import type { Poll, Vote, User, CreatePollPayload, PollStatus, ScheduleVote, RankingVote, PriorityVote, Contact, AppNotification } from '../types'
 
 // ─── Polls ───────────────────────────────────────────────────────────────────
 
@@ -367,4 +368,119 @@ export async function getUserVoteCount(userId: string): Promise<number> {
   const q = query(collection(db, 'votes'), where('userId', '==', userId))
   const snap = await getDocs(q)
   return snap.size
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const q = query(collection(db, 'users'), where('email', '==', email), limit(1))
+  const snap = await getDocs(q)
+  return snap.empty ? null : ({ id: snap.docs[0].id, ...snap.docs[0].data() } as User)
+}
+
+export async function updateUserFCMToken(userId: string, fcmToken: string): Promise<void> {
+  await updateDoc(doc(db, 'users', userId), { fcmToken })
+}
+
+// ─── Contacts ─────────────────────────────────────────────────────────────────
+
+function contactsRef(userId: string) {
+  return collection(db, 'users', userId, 'contacts')
+}
+
+export async function getContacts(userId: string): Promise<Contact[]> {
+  const q = query(contactsRef(userId), orderBy('name', 'asc'))
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Contact)
+}
+
+export async function addContact(
+  userId: string,
+  data: Omit<Contact, 'id' | 'createdAt'>
+): Promise<Contact> {
+  const ref = await addDoc(contactsRef(userId), {
+    ...data,
+    createdAt: Timestamp.now(),
+  })
+  const snap = await getDoc(ref)
+  return { id: snap.id, ...snap.data() } as Contact
+}
+
+export async function updateContact(
+  userId: string,
+  contactId: string,
+  data: Partial<Pick<Contact, 'name' | 'email' | 'phone'>>
+): Promise<void> {
+  await updateDoc(doc(db, 'users', userId, 'contacts', contactId), data)
+}
+
+export async function deleteContact(userId: string, contactId: string): Promise<void> {
+  await deleteDoc(doc(db, 'users', userId, 'contacts', contactId))
+}
+
+// ─── In-App Notifications ─────────────────────────────────────────────────────
+
+function notificationsRef(userId: string) {
+  return collection(db, 'notifications', userId, 'items')
+}
+
+export async function writeNotificationsForEmails(
+  emails: string[],
+  pollId: string,
+  pollQuestion: string,
+  creatorName: string
+): Promise<void> {
+  await Promise.allSettled(
+    emails.map(async (email) => {
+      const user = await getUserByEmail(email)
+      if (!user) return
+      await addDoc(notificationsRef(user.id), {
+        title: `${creatorName} invited you to vote`,
+        body: pollQuestion,
+        pollId,
+        read: false,
+        createdAt: Timestamp.now(),
+      })
+    })
+  )
+}
+
+export async function getNotifications(userId: string): Promise<AppNotification[]> {
+  const q = query(notificationsRef(userId), orderBy('createdAt', 'desc'), limit(50))
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as AppNotification)
+}
+
+export function subscribeToUnreadCount(
+  userId: string,
+  callback: (count: number) => void
+): Unsubscribe {
+  const q = query(notificationsRef(userId), where('read', '==', false))
+  return onSnapshot(q, (snap) => callback(snap.size))
+}
+
+export async function markNotificationRead(userId: string, notifId: string): Promise<void> {
+  await updateDoc(doc(db, 'notifications', userId, 'items', notifId), { read: true })
+}
+
+export async function markAllNotificationsRead(userId: string): Promise<void> {
+  const q = query(notificationsRef(userId), where('read', '==', false))
+  const snap = await getDocs(q)
+  await Promise.all(snap.docs.map((d) => updateDoc(d.ref, { read: true })))
+}
+
+// ─── FCM Push Queue ────────────────────────────────────────────────────────────
+
+export async function enqueuePushNotification(
+  tokens: string[],
+  title: string,
+  body: string,
+  pollId: string
+): Promise<void> {
+  if (tokens.length === 0) return
+  await addDoc(collection(db, 'push_queue'), {
+    tokens,
+    title,
+    body,
+    pollId,
+    createdAt: Timestamp.now(),
+  })
 }
