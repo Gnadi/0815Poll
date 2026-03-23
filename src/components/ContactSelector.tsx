@@ -17,6 +17,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
   const [showAddForm, setShowAddForm] = useState(false)
   const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
+  const [newPhone, setNewPhone] = useState('')
   const [adding, setAdding] = useState(false)
 
   useEffect(() => {
@@ -46,11 +47,13 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
       const created = await addContact(user.uid, {
         name: newName.trim(),
         email: newEmail.trim(),
+        ...(newPhone.trim() ? { phone: newPhone.trim() } : {}),
       })
       setContacts((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)))
       onChange([...selected, created])
       setNewName('')
       setNewEmail('')
+      setNewPhone('')
       setShowAddForm(false)
     } finally {
       setAdding(false)
@@ -103,6 +106,13 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
             placeholder="Email address"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
+          />
+          <input
+            type="tel"
+            value={newPhone}
+            onChange={(e) => setNewPhone(e.target.value)}
+            placeholder="Phone number (optional, for SMS)"
             className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary-400"
           />
           <div className="flex gap-2">
