@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Sun, Moon } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
+import { useAuth } from '../contexts/AuthContext'
+import Spinner from '../components/Spinner'
 
 const BLUE = '#1a56db'
 const BLUE_HOVER = '#1648c0'
@@ -148,6 +151,16 @@ function CodeEditorMockup() {
 export default function LandingPage() {
   const { resolvedTheme, setTheme } = useTheme()
   const toggleTheme = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+  const { user, loading } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!loading && user) navigate('/home', { replace: true })
+  }, [user, loading, navigate])
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center"><Spinner /></div>
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
