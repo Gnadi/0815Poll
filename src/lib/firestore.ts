@@ -128,7 +128,7 @@ export async function castVote(
     if (!pollSnap.exists()) throw new Error('Poll not found')
     const poll = { id: pollSnap.id, ...pollSnap.data() } as Poll
 
-    if ((poll.type === 'standard' || poll.type === 'custom') && poll.options) {
+    if ((poll.type === 'standard' || poll.type === 'custom' || poll.type === 'image') && poll.options) {
       const idx = poll.options.findIndex((o) => o.id === optionId)
       if (idx === -1) throw new Error('Option not found')
       const updatedOptions = poll.options.map((o, i) =>
@@ -166,7 +166,7 @@ export async function castMultipleVote(
     if (!pollSnap.exists()) throw new Error('Poll not found')
     const poll = { id: pollSnap.id, ...pollSnap.data() } as Poll
 
-    if ((poll.type === 'standard' || poll.type === 'custom') && poll.options) {
+    if ((poll.type === 'standard' || poll.type === 'custom' || poll.type === 'image') && poll.options) {
       const updatedOptions = poll.options.map((o) =>
         optionIds.includes(o.id) ? { ...o, votes: o.votes + 1 } : o
       )

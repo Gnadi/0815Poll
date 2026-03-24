@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
-export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking' | 'priority'
+export type PollType = 'standard' | 'schedule' | 'location' | 'custom' | 'ranking' | 'priority' | 'image'
 export type PollStatus = 'active' | 'ended'
 
 export interface PollOption {
@@ -10,6 +10,7 @@ export interface PollOption {
   bordaPoints?: number // Accumulated Borda Count points for ranking polls
   priorityPoints?: number // Accumulated priority points for priority polls
   customContent?: string // Full HTML document for custom poll options
+  imageUrl?: string // Firebase Storage download URL for image poll options
 }
 
 export interface TimeSlot {

@@ -19,6 +19,7 @@ const CreateLocation = lazy(() => import('./pages/CreateLocation'))
 const CreateCustom = lazy(() => import('./pages/CreateCustom'))
 const CreateRanking = lazy(() => import('./pages/CreateRanking'))
 const CreatePriority = lazy(() => import('./pages/CreatePriority'))
+const CreateImage = lazy(() => import('./pages/CreateImage'))
 const PollVote = lazy(() => import('./pages/PollVote'))
 const PollResults = lazy(() => import('./pages/PollResults'))
 const Profile = lazy(() => import('./pages/Profile'))
@@ -47,6 +48,7 @@ export default function App() {
                 <Route path="/create/custom" element={<CreateCustom />} />
                 <Route path="/create/ranking" element={<CreateRanking />} />
                 <Route path="/create/priority" element={<CreatePriority />} />
+                <Route path="/create/image" element={<CreateImage />} />
                 <Route path="/poll/:id" element={<PollVote />} />
                 <Route path="/poll/:id/results" element={<PollResults />} />
                 <Route path="/profile" element={<Profile />} />
