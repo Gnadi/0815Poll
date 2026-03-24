@@ -53,6 +53,7 @@ export interface Poll {
   endsAt: Timestamp
   status: PollStatus
   totalVotes: number
+  isPrivate?: boolean // if true, poll is hidden from public listings; only accessible via direct link
   invitedContactEmails?: string[] // emails notified when poll was created
 }
 

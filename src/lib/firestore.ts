@@ -56,7 +56,7 @@ export async function getPolls(limitCount = 20): Promise<Poll[]> {
     limit(limitCount)
   )
   const snap = await getDocs(q)
-  return snap.docs.map(docToPoll)
+  return snap.docs.map(docToPoll).filter((p) => !p.isPrivate)
 }
 
 export async function getPollsPage(
@@ -78,7 +78,7 @@ export async function getPollsPage(
   }
   const snap = await getDocs(q)
   return {
-    polls: snap.docs.map(docToPoll),
+    polls: snap.docs.map(docToPoll).filter((p) => !p.isPrivate),
     lastDoc: snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null,
   }
 }
@@ -90,7 +90,7 @@ export async function getActivePolls(limitCount = 10): Promise<Poll[]> {
     limit(limitCount)
   )
   const snap = await getDocs(q)
-  return snap.docs.map(docToPoll).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
+  return snap.docs.map(docToPoll).filter((p) => !p.isPrivate).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
 }
 
 export async function getUserPolls(userId: string): Promise<Poll[]> {

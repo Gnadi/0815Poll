@@ -8,6 +8,7 @@ import ContactSelector from '../components/ContactSelector'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
+import { Lock } from 'lucide-react'
 import { nanoid } from '../lib/nanoid'
 import type { LocationOption, Contact } from '../types'
 
@@ -23,6 +24,7 @@ export default function CreateLocation() {
   const [locations, setLocations] = useState<LocationOption[]>([])
   const [duration, setDuration] = useState(24)
   const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
+  const [isPrivate, setIsPrivate] = useState(true)
   const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -54,6 +56,7 @@ export default function CreateLocation() {
         question: question.trim(),
         description: description.trim(),
         locations,
+        isPrivate,
         settings: { anonymous: true, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
         invitedContactEmails: invitedContacts.map((c) => c.email),
@@ -107,6 +110,17 @@ export default function CreateLocation() {
                       label="Multiple Choice"
                       description="Voters can select more than one location"
                     />
+                  </div>
+                  <div className="px-4 py-4 flex items-center gap-3">
+                    <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                    <div className="flex-1">
+                      <Toggle
+                        checked={isPrivate}
+                        onChange={setIsPrivate}
+                        label="Private Poll"
+                        description="Only people with the link can join"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
