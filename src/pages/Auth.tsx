@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
@@ -28,11 +28,15 @@ export default function Auth() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  const { signIn, signUp, signInWithGoogle } = useAuth()
+  const { signIn, signUp, signInWithGoogle, user, loading } = useAuth()
   const { showToast } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home'
+
+  useEffect(() => {
+    if (!loading && user) navigate('/home', { replace: true })
+  }, [user, loading, navigate])
 
   const validate = () => {
     if (!email) return 'Email is required.'
