@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, X, Lock, ImageIcon } from 'lucide-react'
+import { updateDoc, doc } from 'firebase/firestore'
+import { db } from '../lib/firebase'
 import Layout from '../components/Layout'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
@@ -9,6 +11,7 @@ import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
+import { uploadPollImage } from '../lib/storage'
 import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
@@ -20,35 +23,13 @@ const DURATION_OPTIONS = [
 ]
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB input limit
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
 
 interface ImageOption {
   id: string
   file: File | null
   previewUrl: string
   caption: string
-}
-
-/** Compress an image file to a JPEG data URL, resized to fit within maxDim px. */
-function compressImage(file: File, maxDim = 600, quality = 0.8): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => {
-      const scale = Math.min(1, maxDim / Math.max(img.width, img.height))
-      const w = Math.round(img.width * scale)
-      const h = Math.round(img.height * scale)
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d')
-      if (!ctx) { reject(new Error('Canvas unavailable')); return }
-      ctx.drawImage(img, 0, 0, w, h)
-      resolve(canvas.toDataURL('image/jpeg', quality))
-      URL.revokeObjectURL(img.src)
-    }
-    img.onerror = () => reject(new Error('Failed to load image'))
-    img.src = URL.createObjectURL(file)
-  })
 }
 
 export default function CreateImage() {
@@ -90,7 +71,7 @@ export default function CreateImage() {
       return
     }
     if (file.size > MAX_FILE_SIZE) {
-      showToast('Image must be under 10 MB.', 'error')
+      showToast('Image must be under 5 MB.', 'error')
       return
     }
     const previewUrl = URL.createObjectURL(file)
@@ -120,30 +101,41 @@ export default function CreateImage() {
     try {
       const filled = imageOptions.filter((o) => o.file !== null)
 
-      // Compress each image in-browser and get a base64 data URL
-      const options = await Promise.all(
-        filled.map(async (o) => {
-          const imageUrl = await compressImage(o.file!)
-          return { id: o.id, text: o.caption.trim(), votes: 0, imageUrl }
-        })
-      )
-
+      // Step 1: Create poll document (images will be patched in after upload)
       const pollId = await createPoll({
         type: 'image',
         question: question.trim(),
         description: description.trim(),
-        options,
+        options: filled.map((o) => ({
+          id: o.id,
+          text: o.caption.trim(),
+          votes: 0,
+          imageUrl: '',
+        })),
         isPrivate,
         settings: { anonymous, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
         invitedContactEmails: invitedContacts.map((c) => c.email),
       })
 
+      // Step 2: Upload images to Firebase Storage in parallel
+      const uploaded = await Promise.all(
+        filled.map(async (o) => ({
+          id: o.id,
+          text: o.caption.trim(),
+          votes: 0,
+          imageUrl: await uploadPollImage(o.file!, pollId, o.id),
+        }))
+      )
+
+      // Step 3: Patch poll document with storage download URLs
+      await updateDoc(doc(db, 'polls', pollId), { options: uploaded })
+
       showToast('Poll created!', 'success')
       navigate(`/poll/${pollId}`, { state: { contacts: invitedContacts } })
     } catch (err) {
-      console.error('Failed to create image poll:', err)
-      showToast('Failed to create poll. Please try again.', 'error')
+      console.error('Image poll creation failed:', err)
+      showToast('Failed to create poll. Check Firebase Storage rules.', 'error')
     } finally {
       setSubmitting(false)
     }
@@ -194,7 +186,6 @@ export default function CreateImage() {
                   key={opt.id}
                   className="relative rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
                 >
-                  {/* Remove button */}
                   {imageOptions.length > 2 && (
                     <button
                       type="button"
@@ -205,7 +196,6 @@ export default function CreateImage() {
                     </button>
                   )}
 
-                  {/* Image preview / upload trigger */}
                   <button
                     type="button"
                     onClick={() => fileInputRefs.current[opt.id]?.click()}
@@ -221,7 +211,7 @@ export default function CreateImage() {
                       <>
                         <ImageIcon className="h-8 w-8 mb-2" />
                         <span className="text-xs font-medium">Tap to upload</span>
-                        <span className="text-xs opacity-60">JPEG, PNG, WEBP</span>
+                        <span className="text-xs opacity-60">JPEG, PNG, WEBP · 5 MB max</span>
                       </>
                     )}
                   </button>
@@ -236,7 +226,6 @@ export default function CreateImage() {
                     }}
                   />
 
-                  {/* Caption */}
                   <div className="px-3 py-2 border-t border-gray-100 dark:border-gray-700">
                     <input
                       type="text"
