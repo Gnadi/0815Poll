@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
-import { BarChart2, Calendar, MapPin, Sliders, GripVertical, Users, Target } from 'lucide-react'
+import { BarChart2, Calendar, MapPin, Sliders, GripVertical, Users, Target, Lock } from 'lucide-react'
 import type { Poll } from '../types'
 
 const typeConfig = {
@@ -31,10 +31,18 @@ export default function PollCard({ poll }: { poll: Poll }) {
       className="w-full rounded-2xl bg-white dark:bg-gray-800 p-4 text-left shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
     >
       <div className="flex items-start justify-between gap-2 mb-3">
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${cfg.color}`}>
-          <Icon className="h-3 w-3" />
-          {cfg.label}
-        </span>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${cfg.color}`}>
+            <Icon className="h-3 w-3" />
+            {cfg.label}
+          </span>
+          {poll.isPrivate && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+              <Lock className="h-3 w-3" />
+              Private
+            </span>
+          )}
+        </div>
         {isActive ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-900/30 px-2 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">
             <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />

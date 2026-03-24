@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Lock } from 'lucide-react'
 import Layout from '../components/Layout'
 import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
@@ -27,6 +27,7 @@ export default function CreatePriority() {
   const [options, setOptions] = useState(['', '', ''])
   const [votingPower, setVotingPower] = useState(5)
   const [anonymous, setAnonymous] = useState(true)
+  const [isPrivate, setIsPrivate] = useState(true)
   const [duration, setDuration] = useState(24)
   const [invitedContacts, setInvitedContacts] = useState<Contact[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -75,6 +76,7 @@ export default function CreatePriority() {
           votes: 0,
           priorityPoints: 0,
         })),
+        isPrivate,
         settings: { anonymous, duration, votingPower },
         createdBy: user?.uid || null,
         invitedContactEmails: invitedContacts.map((c) => c.email),
@@ -207,6 +209,19 @@ export default function CreatePriority() {
                     onChange={setAnonymous}
                     label="Anonymous Results"
                     description="Hide voter identities"
+                  />
+                </div>
+              </div>
+
+              {/* Private */}
+              <div className="px-4 py-4 flex items-center gap-3">
+                <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                <div className="flex-1">
+                  <Toggle
+                    checked={isPrivate}
+                    onChange={setIsPrivate}
+                    label="Private Poll"
+                    description="Only people with the link can join"
                   />
                 </div>
               </div>

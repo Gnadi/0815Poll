@@ -8,6 +8,7 @@ import {
   GitBranch,
   Webhook,
   Settings,
+  Lock,
   Rocket,
   Monitor,
   Smartphone,
@@ -149,6 +150,7 @@ export default function CreateCustom() {
   const [jsCode, setJsCode] = useState(DEFAULT_JS)
   const [activeTab, setActiveTab] = useState<TabId>('html')
   const [anonymous, setAnonymous] = useState(true)
+  const [isPrivate, setIsPrivate] = useState(true)
   const [duration, setDuration] = useState(24)
   const [allowMultipleChoices, setAllowMultipleChoices] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -258,6 +260,7 @@ ${optHtml}
         question: question.trim(),
         description: '',
         options: pollOptions,
+        isPrivate,
         settings: { anonymous, duration, allowMultipleChoices },
         createdBy: user?.uid || null,
       })
@@ -399,6 +402,12 @@ ${optHtml}
             <div className="px-4 py-4">
               <Toggle checked={allowMultipleChoices} onChange={setAllowMultipleChoices} label="Multiple Choice" description="Voters can select more than one option" />
             </div>
+            <div className="px-4 py-4 flex items-center gap-3">
+              <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500 shrink-0" />
+              <div className="flex-1">
+                <Toggle checked={isPrivate} onChange={setIsPrivate} label="Private Poll" description="Only people with the link can join" />
+              </div>
+            </div>
             <div className="px-4 py-4">
               <p className="text-sm font-medium text-gray-800 mb-2">Duration</p>
               <div className="flex flex-wrap gap-2">
@@ -512,6 +521,12 @@ ${optHtml}
               </div>
               <div>
                 <Toggle checked={allowMultipleChoices} onChange={setAllowMultipleChoices} label="Multiple Choice" description="Voters can select more than one option" />
+              </div>
+              <div className="flex items-center gap-3">
+                <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                <div className="flex-1">
+                  <Toggle checked={isPrivate} onChange={setIsPrivate} label="Private Poll" description="Only people with the link can join" />
+                </div>
               </div>
             </div>
           </div>
