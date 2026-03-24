@@ -1,31 +1,29 @@
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { storage } from './firebase'
-
 /**
- * Upload an image file to Firebase Storage and return its download URL.
- * Uses uploadBytesResumable so permission/network errors surface immediately
- * rather than hanging silently like uploadBytes can under bad rules/CORS.
+ * Upload an image file to Cloudinary and return its secure URL.
+ * Uses an unsigned upload preset — no backend required.
  */
-export function uploadPollImage(
+export async function uploadPollImage(
   file: File,
-  pollId: string,
-  optionId: string
+  _pollId: string,
+  _optionId: string
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const storageRef = ref(storage, `polls/${pollId}/options/${optionId}`)
-    const task = uploadBytesResumable(storageRef, file)
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 
-    task.on(
-      'state_changed',
-      null,
-      (error) => reject(error),
-      async () => {
-        try {
-          resolve(await getDownloadURL(task.snapshot.ref))
-        } catch (err) {
-          reject(err)
-        }
-      }
-    )
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', uploadPreset)
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: 'POST',
+    body: formData,
   })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err?.error?.message ?? `Cloudinary upload failed (${res.status})`)
+  }
+
+  const data = await res.json()
+  return data.secure_url as string
 }

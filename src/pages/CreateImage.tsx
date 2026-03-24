@@ -135,7 +135,7 @@ export default function CreateImage() {
       navigate(`/poll/${pollId}`, { state: { contacts: invitedContacts } })
     } catch (err) {
       console.error('Image poll creation failed:', err)
-      showToast('Failed to create poll. Check Firebase Storage rules.', 'error')
+      showToast('Failed to create poll. Check your Cloudinary configuration.', 'error')
     } finally {
       setSubmitting(false)
     }
