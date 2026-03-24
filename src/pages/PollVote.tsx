@@ -516,6 +516,113 @@ export default function PollVote() {
           </div>
         )}
 
+        {/* Image poll options */}
+        {poll.type === 'image' && poll.options && (
+          <div className="mb-6">
+            {poll.settings?.allowMultipleChoices && !voted && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">You can select multiple images.</p>
+            )}
+            <div className="grid grid-cols-2 gap-3">
+              {poll.options.map((opt) => {
+                const isMultiple = !!poll.settings?.allowMultipleChoices
+                const isSelected = isMultiple
+                  ? selectedOptions.includes(opt.id)
+                  : selectedOption === opt.id
+                const isVoted = isMultiple
+                  ? votedOptionIds.includes(opt.id)
+                  : votedOptionId === opt.id
+                const isActive = isSelected || isVoted
+                const pct = getPercentage(opt.votes)
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      if (voted) return
+                      if (isMultiple) {
+                        setSelectedOptions((prev) =>
+                          prev.includes(opt.id) ? prev.filter((id) => id !== opt.id) : [...prev, opt.id]
+                        )
+                      } else {
+                        setSelectedOption(opt.id)
+                      }
+                    }}
+                    className={`relative rounded-2xl border-2 overflow-hidden transition-all text-left ${
+                      isActive
+                        ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800 shadow-md'
+                        : voted
+                        ? 'border-gray-100 dark:border-gray-700 cursor-default'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:shadow-sm'
+                    }`}
+                  >
+                    {/* Image */}
+                    <div className="aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                      {opt.imageUrl ? (
+                        <img
+                          src={opt.imageUrl}
+                          alt={opt.text || `Option ${opt.id}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-600">
+                          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Vote percentage overlay when voted */}
+                    {voted && (
+                      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gray-100 dark:bg-gray-700">
+                        <div
+                          className={`h-full transition-all duration-500 ${isActive ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Caption + selector indicator */}
+                    <div className={`px-3 py-2 border-t ${isActive ? 'border-primary-200 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
+                      <div className="flex items-center justify-between gap-1">
+                        {opt.text ? (
+                          <span className={`text-xs font-medium truncate ${isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                            {opt.text}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400 dark:text-gray-500 truncate">No caption</span>
+                        )}
+                        {isMultiple ? (
+                          <div className={`h-4 w-4 shrink-0 rounded-sm border-2 flex items-center justify-center ${
+                            isActive ? 'border-primary-500 bg-primary-500' : 'border-gray-300 dark:border-gray-600'
+                          }`}>
+                            {isActive && (
+                              <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 12 12">
+                                <polyline points="2,6 5,9 10,3" />
+                              </svg>
+                            )}
+                          </div>
+                        ) : (
+                          <div className={`h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center ${
+                            isActive ? 'border-primary-500 bg-primary-500' : 'border-gray-300 dark:border-gray-600'
+                          }`}>
+                            {isActive && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                          </div>
+                        )}
+                      </div>
+                      {voted && (
+                        <p className={`text-xs mt-0.5 font-semibold ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {pct}% · {opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Poll Stats */}
         <div className="mb-6 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 p-4">
           <div className="flex items-center gap-2 mb-2">
