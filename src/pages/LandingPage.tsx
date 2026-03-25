@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Sun, Moon, BarChart2, GripVertical, Calendar, MapPin, Sliders, Target, ImageIcon, Github, Code2, Eye, Layers, ExternalLink } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
-import Spinner from '../components/Spinner'
 
 const BLUE = '#1a56db'
 const BLUE_HOVER = '#1648c0'
@@ -217,10 +216,6 @@ export default function LandingPage() {
   useEffect(() => {
     if (!loading && user) navigate('/home', { replace: true })
   }, [user, loading, navigate])
-
-  if (loading) {
-    return <div className="flex h-screen items-center justify-center"><Spinner /></div>
-  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">

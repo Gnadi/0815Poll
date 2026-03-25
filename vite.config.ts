@@ -78,6 +78,7 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          'vendor-firebase-msg': ['firebase/messaging'],
           'vendor-editor': ['@tiptap/react', '@tiptap/starter-kit'],
           'vendor-leaflet': ['leaflet', 'react-leaflet'],
         },
