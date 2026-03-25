@@ -35,6 +35,9 @@
     <meta name="twitter:image" content="https://0815poll.vercel.app/og-image.png" />
     <meta name="twitter:image:alt" content="PollFlex — Create and share every kind of poll" />
 
+    <!-- Prevent dark-mode flash: apply class before React mounts -->
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();</script>
+
     <!-- Google Fonts: preload + non-blocking load (weights 400/600/700 cover all landing page usage) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
