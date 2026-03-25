@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
-import { AuthContext } from './AuthContext'
-import { updateUserProfile } from '../lib/firestore'
+import { AuthContext } from './AuthContextDef'
 
 export type Theme = 'light' | 'dark' | 'system'
 export type ResolvedTheme = 'light' | 'dark'
@@ -76,8 +75,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       setThemeState(userProfile.theme)
       try { localStorage.setItem(STORAGE_KEY, userProfile.theme) } catch { /* ignore */ }
     } else {
-      // Push local theme to Firestore for this user
-      updateUserProfile(currentUserId, { theme: themeRef.current }).catch(() => {})
+      // Push local theme to Firestore for this user (load firestore lazily)
+      const t = themeRef.current
+      import('../lib/firestore').then(({ updateUserProfile }) => {
+        updateUserProfile(currentUserId, { theme: t }).catch(() => {})
+      })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile])
@@ -86,7 +88,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(newTheme)
     try { localStorage.setItem(STORAGE_KEY, newTheme) } catch { /* ignore */ }
     if (user?.uid) {
-      updateUserProfile(user.uid, { theme: newTheme }).catch(() => {})
+      // Load firestore lazily — only needed for logged-in users
+      const uid = user.uid
+      import('../lib/firestore').then(({ updateUserProfile }) => {
+        updateUserProfile(uid, { theme: newTheme }).catch(() => {})
+      })
     }
   }
 

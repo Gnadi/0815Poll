@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useContext, useEffect, useState, type ReactNode } from 'react'
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -14,18 +14,9 @@ import { createUserProfile, getUserProfile } from '../lib/firestore'
 import { initFCM } from '../lib/fcm'
 import type { User } from '../types'
 import { Timestamp } from 'firebase/firestore'
+import { AuthContext } from './AuthContextDef'
 
-interface AuthContextValue {
-  user: FirebaseUser | null
-  userProfile: User | null
-  loading: boolean
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string, displayName: string) => Promise<void>
-  signInWithGoogle: () => Promise<void>
-  signOut: () => Promise<void>
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null)
+export { AuthContext }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseUser | null>(null)
