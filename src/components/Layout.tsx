@@ -82,7 +82,7 @@ export default function Layout({
                     )}
                   </button>
                 )}
-                {headerRight && <div className="w-10 flex justify-end lg:w-auto">{headerRight}</div>}
+                {headerRight && <div className="flex justify-end whitespace-nowrap">{headerRight}</div>}
               </div>
             </header>
           )}
