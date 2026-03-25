@@ -289,7 +289,7 @@ export default function LandingPage() {
             </div>
             <h1 className="text-4xl font-extrabold leading-tight text-gray-900 dark:text-white md:text-5xl lg:text-[3.25rem]">
               Every kind of poll.<br />
-              <span style={{ color: BLUE }}>Completely free.</span>
+              <span className="dark:text-blue-400" style={{ color: BLUE }}>Completely free.</span>
             </h1>
             <p className="mt-5 text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-md">
               7 poll types — from classic multiple choice to map-based voting, ranking, scheduling, and fully custom HTML/CSS/JS builds. Free forever, open source always.
