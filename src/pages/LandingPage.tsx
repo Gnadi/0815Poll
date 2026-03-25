@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Sun, Moon } from 'lucide-react'
+import { Sun, Moon, BarChart2, GripVertical, Calendar, MapPin, Sliders, Target, ImageIcon, Github, Code2, Eye, Layers, ExternalLink } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
 import Spinner from '../components/Spinner'
@@ -25,15 +25,15 @@ function PhoneMockup() {
             </div>
             {/* Poll title */}
             <div className="px-4 pb-2">
-              <p className="text-xs font-bold text-gray-900">Ffff</p>
+              <p className="text-xs font-bold text-gray-900">Best lunch spot?</p>
               <p className="text-[9px] text-gray-400 mt-0.5">Ended 29 minutes ago</p>
             </div>
             {/* Top location card */}
             <div className="mx-3 mb-2 rounded-xl px-3 py-2.5 flex items-center gap-2" style={{ backgroundColor: BLUE }}>
               <div className="flex flex-col">
                 <span className="text-[8px] font-bold text-white/70 tracking-widest uppercase">Top Location</span>
-                <span className="text-sm font-bold text-white leading-tight">Arlit</span>
-                <span className="text-[9px] text-white/70">Agadez Region, Niger</span>
+                <span className="text-sm font-bold text-white leading-tight">Central Park</span>
+                <span className="text-[9px] text-white/70">New York, USA</span>
               </div>
               <div className="ml-auto">
                 <svg className="h-6 w-6 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -43,9 +43,7 @@ function PhoneMockup() {
             </div>
             {/* Map placeholder */}
             <div className="mx-3 mb-2 rounded-xl overflow-hidden relative" style={{ height: 120 }}>
-              {/* Tile grid to simulate a map */}
               <div className="absolute inset-0" style={{ backgroundColor: '#e8eedc' }}>
-                {/* Map grid lines */}
                 <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 100" preserveAspectRatio="none">
                   <line x1="0" y1="25" x2="200" y2="25" stroke="#aab" strokeWidth="0.5"/>
                   <line x1="0" y1="50" x2="200" y2="50" stroke="#aab" strokeWidth="0.5"/>
@@ -53,17 +51,14 @@ function PhoneMockup() {
                   <line x1="50" y1="0" x2="50" y2="100" stroke="#aab" strokeWidth="0.5"/>
                   <line x1="100" y1="0" x2="100" y2="100" stroke="#aab" strokeWidth="0.5"/>
                   <line x1="150" y1="0" x2="150" y2="100" stroke="#aab" strokeWidth="0.5"/>
-                  {/* Road lines */}
                   <path d="M20 30 Q60 20 80 50 Q100 75 140 60 Q170 50 190 55" stroke="#c8c8a0" strokeWidth="1.5" fill="none"/>
                   <path d="M0 60 Q40 55 70 65 Q110 75 150 50 Q170 40 200 45" stroke="#c8c8a0" strokeWidth="1" fill="none"/>
                 </svg>
-                {/* Map pin */}
                 <div className="absolute" style={{ top: '35%', left: '55%', transform: 'translate(-50%,-50%)' }}>
                   <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center shadow-md" style={{ backgroundColor: BLUE }}>
                     <div className="w-2 h-2 bg-white rounded-full" />
                   </div>
                 </div>
-                {/* Second smaller pin */}
                 <div className="absolute" style={{ top: '60%', left: '30%', transform: 'translate(-50%,-50%)' }}>
                   <div className="w-3.5 h-3.5 rounded-full border-2 border-white flex items-center justify-center shadow" style={{ backgroundColor: BLUE + 'aa' }}>
                     <div className="w-1.5 h-1.5 bg-white rounded-full" />
@@ -77,13 +72,21 @@ function PhoneMockup() {
               <div className="space-y-1.5">
                 <div>
                   <div className="flex justify-between items-center mb-0.5">
-                    <span className="text-[10px] font-semibold text-gray-700">Arlit</span>
-                    <span className="text-[10px] text-gray-500">100%</span>
+                    <span className="text-[10px] font-semibold text-gray-700">Central Park</span>
+                    <span className="text-[10px] text-gray-500">68%</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: '100%', backgroundColor: BLUE }} />
+                    <div className="h-full rounded-full" style={{ width: '68%', backgroundColor: BLUE }} />
                   </div>
-                  <p className="text-[8px] text-gray-400 mt-0.5">1 vote</p>
+                </div>
+                <div>
+                  <div className="flex justify-between items-center mb-0.5">
+                    <span className="text-[10px] font-semibold text-gray-700">Times Square</span>
+                    <span className="text-[10px] text-gray-500">32%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: '32%', backgroundColor: BLUE + '88' }} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,53 +103,110 @@ function PhoneMockup() {
   )
 }
 
-function CodeEditorMockup() {
+function CustomEditorMockup() {
+  const tabs = ['option.html', 'styles.css', 'script.js']
   return (
-    <div className="bg-gray-100 border-l border-gray-200 p-8 flex items-center justify-center">
+    <div className="bg-gray-100 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 p-8 flex items-center justify-center">
       <div className="w-full max-w-md rounded-xl overflow-hidden shadow-xl" style={{ backgroundColor: '#1e2030' }}>
         {/* Title bar */}
         <div className="flex items-center gap-1.5 px-4 py-3 border-b" style={{ backgroundColor: '#161827', borderColor: '#2a2d45' }}>
           <span className="h-3 w-3 rounded-full bg-red-500" />
           <span className="h-3 w-3 rounded-full bg-yellow-400" />
           <span className="h-3 w-3 rounded-full bg-green-500" />
-          <span className="ml-3 text-[11px] font-mono text-gray-400 tracking-wide">poll-config.json</span>
+          {/* Tabs */}
+          <div className="ml-3 flex items-center gap-1">
+            {tabs.map((tab, i) => (
+              <span
+                key={tab}
+                className="px-2.5 py-0.5 rounded text-[10px] font-mono"
+                style={
+                  i === 0
+                    ? { backgroundColor: '#1e2030', color: '#e2e8f0' }
+                    : { color: '#6b7280' }
+                }
+              >
+                {tab}
+              </span>
+            ))}
+          </div>
         </div>
         {/* Code content */}
         <div className="px-5 py-4 font-mono text-[11px] leading-relaxed overflow-x-auto">
-          <p><span className="text-gray-500">{'{'}</span></p>
-          <p className="ml-4"><span className="text-red-400">"id"</span><span className="text-gray-400">: </span><span className="text-green-400">"live-event-0815"</span><span className="text-gray-500">,</span></p>
-          <p className="ml-4"><span className="text-red-400">"type"</span><span className="text-gray-400">: </span><span className="text-green-400">"sandbox"</span><span className="text-gray-500">,</span></p>
-          <p className="ml-4"><span className="text-red-400">"theme"</span><span className="text-gray-400">: </span><span className="text-gray-500">{'{'}</span></p>
-          <p className="ml-8"><span className="text-red-400">"primary"</span><span className="text-gray-400">: </span><span className="text-green-400">"#0052FF"</span><span className="text-gray-500">,</span></p>
-          <p className="ml-8"><span className="text-red-400">"borderRadius"</span><span className="text-gray-400">: </span><span className="text-green-400">"12px"</span></p>
-          <p className="ml-4"><span className="text-gray-500">{'}'}</span><span className="text-gray-500">,</span></p>
-          <p className="ml-4"><span className="text-red-400">"components"</span><span className="text-gray-400">: </span><span className="text-gray-500">{'['}</span></p>
-          <p className="ml-8"><span className="text-gray-500">{'{'}</span></p>
-          <p className="ml-12"><span className="text-red-400">"type"</span><span className="text-gray-400">: </span><span className="text-green-400">"visual-select"</span><span className="text-gray-500">,</span></p>
-          <p className="ml-12"><span className="text-red-400">"options"</span><span className="text-gray-400">: </span><span className="text-gray-500">['</span><span className="text-yellow-300">"A"</span><span className="text-gray-500">, </span><span className="text-yellow-300">"B"</span><span className="text-gray-500">, </span><span className="text-yellow-300">"C"</span><span className="text-gray-500">]</span></p>
-          <p className="ml-8"><span className="text-gray-500">{'}'}</span><span className="text-gray-500">,</span></p>
-          <p className="ml-8"><span className="text-gray-500">{'{'}</span></p>
-          <p className="ml-12"><span className="text-red-400">"type"</span><span className="text-gray-400">: </span><span className="text-green-400">"geofence"</span><span className="text-gray-500">,</span></p>
-          <p className="ml-12"><span className="text-red-400">"radius"</span><span className="text-gray-400">: </span><span className="text-blue-400">500</span></p>
-          <p className="ml-8"><span className="text-gray-500">{'}'}</span></p>
-          <p className="ml-4"><span className="text-gray-500">{']'}</span><span className="text-gray-500">,</span></p>
-          <p className="ml-4"><span className="text-red-400">"logic"</span><span className="text-gray-400">: </span><span className="text-green-400">"on_complete =&gt; trigger_webhook"</span></p>
-          <p><span className="text-gray-500">{'}'}</span></p>
+          <p><span className="text-blue-400">{'<'}</span><span className="text-red-400">div</span> <span className="text-yellow-300">class</span><span className="text-gray-400">=</span><span className="text-green-400">"option-card"</span><span className="text-blue-400">{'>'}</span></p>
+          <p className="ml-4"><span className="text-blue-400">{'<'}</span><span className="text-red-400">div</span> <span className="text-yellow-300">class</span><span className="text-gray-400">=</span><span className="text-green-400">"option-icon"</span><span className="text-blue-400">{'>'}</span><span className="text-gray-300">🎨</span><span className="text-blue-400">{'</'}</span><span className="text-red-400">div</span><span className="text-blue-400">{'>'}</span></p>
+          <p className="ml-4"><span className="text-blue-400">{'<'}</span><span className="text-red-400">h4</span><span className="text-blue-400">{'>'}</span><span className="text-gray-300">Option Title</span><span className="text-blue-400">{'</'}</span><span className="text-red-400">h4</span><span className="text-blue-400">{'>'}</span></p>
+          <p className="ml-4"><span className="text-blue-400">{'<'}</span><span className="text-red-400">p</span><span className="text-blue-400">{'>'}</span><span className="text-gray-300">Describe this option here</span><span className="text-blue-400">{'</'}</span><span className="text-red-400">p</span><span className="text-blue-400">{'>'}</span></p>
+          <p className="mt-2 ml-4"><span className="text-blue-400">{'<'}</span><span className="text-red-400">button</span> <span className="text-yellow-300">class</span><span className="text-gray-400">=</span><span className="text-green-400">"vote-btn"</span><span className="text-blue-400">{'>'}</span></p>
+          <p className="ml-8"><span className="text-gray-300">Vote for this</span></p>
+          <p className="ml-4"><span className="text-blue-400">{'</'}</span><span className="text-red-400">button</span><span className="text-blue-400">{'>'}</span></p>
+          <p><span className="text-blue-400">{'</'}</span><span className="text-red-400">div</span><span className="text-blue-400">{'>'}</span></p>
         </div>
         {/* Footer bar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-t" style={{ backgroundColor: '#161827', borderColor: '#2a2d45' }}>
-          <span className="text-[10px] font-mono font-semibold tracking-widest" style={{ color: '#6b7280' }}>TERMINAL ACTIVE</span>
+          <span className="text-[10px] font-mono font-semibold tracking-widest" style={{ color: '#6b7280' }}>LIVE PREVIEW</span>
           <button
             className="rounded-md px-3 py-1 text-[11px] font-bold text-white"
             style={{ backgroundColor: BLUE }}
           >
-            Deploy Config
+            Preview
           </button>
         </div>
       </div>
     </div>
   )
 }
+
+const POLL_TYPES = [
+  {
+    label: 'Classic Polls',
+    description: 'Simple, fast multiple-choice questions. The standard for quick decisions and rapid feedback loops.',
+    icon: BarChart2,
+    bg: 'bg-indigo-50 dark:bg-indigo-900/20',
+    iconColor: 'text-indigo-600 dark:text-indigo-400',
+  },
+  {
+    label: 'Ranking Polls',
+    description: 'Drag-and-drop ranking with Borda Count scoring. Perfect when order matters, not just the winner.',
+    icon: GripVertical,
+    bg: 'bg-rose-50 dark:bg-rose-900/20',
+    iconColor: 'text-rose-600 dark:text-rose-400',
+  },
+  {
+    label: 'Schedule Polls',
+    description: 'Find the perfect time for meetings, events, or launches without the endless back-and-forth.',
+    icon: Calendar,
+    bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
+  },
+  {
+    label: 'Location Polls',
+    description: 'Map-based voting for events, local initiatives, or global trends. See where the world stands.',
+    icon: MapPin,
+    bg: 'bg-amber-50 dark:bg-amber-900/20',
+    iconColor: 'text-amber-600 dark:text-amber-400',
+  },
+  {
+    label: 'Custom Polls',
+    description: 'Write your own HTML, CSS & JS for each option. Full creative control — no limits.',
+    icon: Sliders,
+    bg: 'bg-purple-50 dark:bg-purple-900/20',
+    iconColor: 'text-purple-600 dark:text-purple-400',
+  },
+  {
+    label: 'Priority Polls',
+    description: 'Point-distribution voting. Voters allocate a budget of points to show how much each option matters.',
+    icon: Target,
+    bg: 'bg-blue-50 dark:bg-blue-900/20',
+    iconColor: 'text-blue-600 dark:text-blue-400',
+  },
+  {
+    label: 'Image Polls',
+    description: 'Photo-based voting for designs, products, or any visual choice. Let the images speak.',
+    icon: ImageIcon,
+    bg: 'bg-pink-50 dark:bg-pink-900/20',
+    iconColor: 'text-pink-600 dark:text-pink-400',
+  },
+]
 
 export default function LandingPage() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -164,16 +224,26 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
+
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-6xl px-6 flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
             <span className="text-lg font-bold text-gray-900 dark:text-white">PollFlex</span>
             <nav className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm font-medium text-[#1a56db] border-b-2 border-[#1a56db] pb-0.5">Polls</a>
-              <a href="#" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Templates</a>
-              <a href="#pricing" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Pricing</a>
-              <a href="#" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">About</a>
+              <a href="#poll-types" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Poll Types</a>
+              <a href="#custom-editor" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Custom Editor</a>
+              <a href="#open-source" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Open Source</a>
+              <a
+                href="https://github.com/gnadi/0815poll"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <Github className="h-4 w-4" />
+                GitHub
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </a>
             </nav>
           </div>
           <div className="flex items-center gap-3">
@@ -189,7 +259,7 @@ export default function LandingPage() {
                 <Moon className="h-4 w-4 text-gray-600" />
               )}
             </button>
-            <Link to="/auth" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-1.5">Log In</Link>
+            <Link to="/auth" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-1.5 transition-colors">Log In</Link>
             <Link
               to="/auth"
               className="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors"
@@ -207,16 +277,22 @@ export default function LandingPage() {
       <section className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:pt-24 md:pb-28">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="text-xs font-semibold text-emerald-700">Live Opinion Engine</span>
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-3 py-1">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Live Opinion Engine</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 px-3 py-1">
+                <Github className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <span className="text-xs font-semibold text-blue-700 dark:text-blue-400">100% Free &amp; Open Source</span>
+              </div>
             </div>
             <h1 className="text-4xl font-extrabold leading-tight text-gray-900 dark:text-white md:text-5xl lg:text-[3.25rem]">
-              Create and share<br />every kind of poll
+              Every kind of poll.<br />
+              <span style={{ color: BLUE }}>Completely free.</span>
             </h1>
             <p className="mt-5 text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-md">
-              From classic rapid-fire questions to location-based voting and custom sandbox builds.
-              The ultimate platform for precision data and spontaneous energy.
+              7 poll types — from classic multiple choice to map-based voting, ranking, scheduling, and fully custom HTML/CSS/JS builds. Free forever, open source always.
             </p>
             <div className="mt-8 flex items-center gap-3 flex-wrap">
               <Link
@@ -226,163 +302,223 @@ export default function LandingPage() {
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
               >
-                Get Started for Free
+                Start Creating — It's Free
               </Link>
               <Link
                 to="/explore"
                 className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                See Examples
+                Browse Examples
               </Link>
             </div>
+            <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">No credit card. No account required to browse. Always free.</p>
           </div>
 
           <PhoneMockup />
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="bg-gray-50 dark:bg-gray-800/50 py-20">
+      {/* Poll Types */}
+      <section id="poll-types" className="bg-gray-50 dark:bg-gray-800/50 py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">Engineered for every use case</h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 text-base">Choose your canvas. Capture the pulse.</p>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1 mb-4">
+              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">7 Poll Types</span>
+            </div>
+            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">The right format for every question</h2>
+            <p className="mt-3 text-gray-500 dark:text-gray-400 text-base max-w-xl mx-auto">Don't force your question into the wrong format. PollFlex has a dedicated poll type for every situation — all included, all free.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* Classic Polls */}
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
-                <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+            {POLL_TYPES.map(({ label, description, icon: Icon, bg, iconColor }) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow"
+              >
+                <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${bg}`}>
+                  <Icon className={`h-5 w-5 ${iconColor}`} />
+                </div>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{label}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{description}</p>
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Classic Polls</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Simple, fast, and effective. The standard for quick decision making and rapid feedback loops.</p>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Location Polls */}
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
-                <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+      {/* Custom Editor */}
+      <section id="custom-editor" className="bg-gray-50 dark:bg-gray-800/50 py-20 border-t border-gray-100 dark:border-gray-800">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-0">
+              <div className="p-10 md:p-14 flex flex-col justify-center">
+                <div className="inline-flex items-center gap-2 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 px-3 py-1 mb-5 self-start">
+                  <Sliders className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                  <span className="text-xs font-semibold text-purple-700 dark:text-purple-400">Custom Poll Editor</span>
+                </div>
+                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl leading-tight">
+                  Your poll,<br />your rules.
+                </h2>
+                <p className="mt-4 text-gray-500 dark:text-gray-400 leading-relaxed">
+                  Write real HTML, CSS, and JavaScript for each answer option. Fully customize how every choice looks and behaves — no restrictions, no templates required.
+                </p>
+                <div className="mt-8 space-y-4">
+                  {[
+                    {
+                      icon: Code2,
+                      title: 'HTML, CSS & JS per option',
+                      body: 'Write custom markup and styles for every single answer option individually.',
+                    },
+                    {
+                      icon: Eye,
+                      title: 'Live preview',
+                      body: 'See your changes render instantly in the built-in preview panel as you type.',
+                    },
+                    {
+                      icon: Layers,
+                      title: 'Code snippets library',
+                      body: 'Jump-start with image cards, stat cards, emoji cards, list cards and more.',
+                    },
+                    {
+                      icon: Sliders,
+                      title: 'Zero limits',
+                      body: 'Colors, fonts, animations, layout — if a browser can render it, you can build it.',
+                    },
+                  ].map(({ icon: Icon, title, body }) => (
+                    <div key={title} className="flex items-start gap-3">
+                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-900/20">
+                        <Icon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{title}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Location Polls</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Map-based voting for events, local initiatives, or global trends. See where the world stands.</p>
-            </div>
 
-            {/* Date Polls */}
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-shadow">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
-                <svg className="h-5 w-5" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Date Polls</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Scheduling made easy. Find the perfect time for meetings, parties, or launches without the back-and-forth.</p>
-            </div>
-
-            {/* Sandbox Editor */}
-            <div className="rounded-2xl p-6 text-white" style={{ backgroundColor: BLUE }}>
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <rect x="3" y="3" width="7" height="7" />
-                  <rect x="14" y="3" width="7" height="7" />
-                  <rect x="14" y="14" width="7" height="7" />
-                  <rect x="3" y="14" width="7" height="7" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-white mb-2">Sandbox Editor</h3>
-              <p className="text-sm text-white/70 leading-relaxed">Build your own from scratch. Infinite possibilities with a powerful drag-and-drop toolkit.</p>
+              <CustomEditorMockup />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Infinite Sandbox */}
-      <section className="bg-gray-50 dark:bg-gray-800/50 py-20 border-t border-gray-100 dark:border-gray-800">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="grid md:grid-cols-2 gap-0">
-              <div className="p-10 md:p-14 flex flex-col justify-center">
-                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl leading-tight">
-                  The Infinite<br />Sandbox
-                </h2>
-                <p className="mt-4 text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Don't settle for templates. Our editor lets you snap components together—images,
-                  rich text, nested logic—to create a polling experience that is uniquely yours.
-                </p>
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                      <svg className="h-4 w-4" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Drag-and-Drop Canvas</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Organize your data exactly how you want it.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                      <svg className="h-4 w-4" style={{ color: BLUE }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Granular Customization</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Control colors, logic, and visibility rules.</p>
-                    </div>
-                  </div>
-                </div>
+      {/* Free & Open Source */}
+      <section id="open-source" className="py-20 px-6 bg-[#0d1b2a]">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left */}
+            <div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 mb-6">
+                <Github className="h-6 w-6 text-white" />
               </div>
+              <h2 className="text-3xl font-extrabold text-white md:text-4xl leading-tight">
+                Free forever.<br />Open source always.
+              </h2>
+              <p className="mt-4 text-white/60 leading-relaxed">
+                PollFlex is completely free — no hidden fees, no premium tiers, no paywalls. The entire codebase is open source. Inspect it, fork it, self-host it, or contribute back.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  href="https://github.com/gnadi/0815poll"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition-colors"
+                >
+                  <Github className="h-4 w-4" />
+                  View on GitHub
+                  <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+                </a>
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+                  style={{ backgroundColor: BLUE }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
+                >
+                  Get Started Free
+                </Link>
+              </div>
+            </div>
 
-              <CodeEditorMockup />
+            {/* Right — trust cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-4">
+              {[
+                {
+                  title: '100% Free',
+                  body: 'No credit card. No trial. No paywall. Free to use forever with all features included.',
+                  icon: '🆓',
+                },
+                {
+                  title: 'Open Source',
+                  body: 'MIT licensed. Full codebase on GitHub. Inspect every line, self-host, or fork it.',
+                  icon: '🔓',
+                },
+                {
+                  title: '7 Poll Types',
+                  body: 'Classic, ranking, schedule, location, custom, priority, and image polls — all free.',
+                  icon: '🗳️',
+                },
+              ].map(({ title, body, icon }) => (
+                <div key={title} className="rounded-2xl bg-white/5 border border-white/10 p-5">
+                  <div className="text-2xl mb-3">{icon}</div>
+                  <p className="font-bold text-white text-sm mb-1.5">{title}</p>
+                  <p className="text-xs text-white/50 leading-relaxed">{body}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section id="pricing" className="py-16 px-6">
-        <div className="mx-auto max-w-6xl">
-          <div className="rounded-3xl bg-[#0d1b2a] px-8 py-14 md:px-16 text-center">
-            <h2 className="text-3xl font-extrabold text-white md:text-4xl">Join thousands of creators</h2>
-            <p className="mt-3 text-white/60 text-base max-w-md mx-auto">
-              Start gathering real-time insights with the world's most flexible polling engine.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full sm:flex-1 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:border-white/40 focus:bg-white/15"
-              />
-              <Link
-                to="/auth"
-                className="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-bold text-white transition-colors whitespace-nowrap"
-                style={{ backgroundColor: BLUE }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
-              >
-                Start Now
-              </Link>
-            </div>
-            <p className="mt-3 text-xs text-white/30">No credit card required. Free 14-day trial for premium features.</p>
+      <section className="py-20 px-6 bg-white dark:bg-gray-900">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">Start creating polls today</h2>
+          <p className="mt-3 text-gray-500 dark:text-gray-400 text-base">
+            No account setup friction. No payment. Just create.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              to="/auth"
+              className="w-full sm:w-auto rounded-lg px-8 py-3 text-sm font-bold text-white transition-colors"
+              style={{ backgroundColor: BLUE }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = BLUE)}
+            >
+              Create Your First Poll
+            </Link>
+            <a
+              href="https://github.com/gnadi/0815poll"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-8 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <Github className="h-4 w-4" />
+              View on GitHub
+            </a>
           </div>
+          <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">Always free. Always open. No credit card ever needed.</p>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-gray-100 dark:border-gray-800 py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">PollFlex</span>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed & Made by Johannes Gnadlinger</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <span className="text-sm font-bold text-gray-900 dark:text-white">PollFlex</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed &amp; Made by Johannes Gnadlinger</p>
+            </div>
+            <a
+              href="https://github.com/gnadi/0815poll"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="GitHub repository"
+            >
+              <Github className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+            </a>
           </div>
           <nav className="flex flex-wrap items-center gap-5">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Support'].map((item) => (
