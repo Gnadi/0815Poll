@@ -8,7 +8,7 @@ import { NotificationProvider } from './contexts/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
-import LandingPage from './pages/LandingPage'
+const LandingPage = lazy(() => import('./pages/LandingPage'))
 
 const Auth = lazy(() => import('./pages/Auth'))
 const Explore = lazy(() => import('./pages/Explore'))

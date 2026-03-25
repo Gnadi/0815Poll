@@ -32,13 +32,14 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PollFlex — The Place to Put a Poll" />
     <meta name="twitter:description" content="Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types." />
-    <meta name="twitter:image" content="https://0815poll.vercel.app/og-image.svg" />
+    <meta name="twitter:image" content="https://0815poll.vercel.app/og-image.png" />
     <meta name="twitter:image:alt" content="PollFlex — Create and share every kind of poll" />
 
-    <!-- Non-blocking Google Fonts -->
+    <!-- Google Fonts: preload + non-blocking load (weights 400/600/700 cover all landing page usage) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -62,6 +63,13 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <noscript>
+      <div style="font-family:system-ui,sans-serif;max-width:640px;margin:80px auto;padding:0 24px;text-align:center">
+        <h1 style="font-size:2rem;font-weight:800;color:#111">Every kind of poll. Completely free.</h1>
+        <p style="margin-top:16px;color:#555">Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always.</p>
+        <p style="margin-top:24px"><a href="https://github.com/gnadi/0815poll" style="color:#1a56db">View on GitHub</a></p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx" fetchpriority="high"></script>
   </body>
 </html>
