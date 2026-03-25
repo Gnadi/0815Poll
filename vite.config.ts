@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png', 'robots.txt'],
       manifest: {
-        name: '0815Poll — The Place to Put a Poll',
-        short_name: '0815Poll',
+        name: 'PollFlex — The Place to Put a Poll',
+        short_name: 'PollFlex',
         description: 'Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types.',
         start_url: '/',
         display: 'standalone',

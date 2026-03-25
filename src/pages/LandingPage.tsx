@@ -168,7 +168,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-6xl px-6 flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
-            <span className="text-lg font-bold text-gray-900 dark:text-white">0815poll</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-white">PollFlex</span>
             <nav className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-sm font-medium text-[#1a56db] border-b-2 border-[#1a56db] pb-0.5">Polls</a>
               <a href="#" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Templates</a>
@@ -381,7 +381,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 dark:border-gray-800 py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">0815poll</span>
+            <span className="text-sm font-bold text-gray-900 dark:text-white">PollFlex</span>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed & Made by Johannes Gnadlinger</p>
           </div>
           <nav className="flex flex-wrap items-center gap-5">

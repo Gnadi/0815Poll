@@ -95,7 +95,7 @@ export default function Auth() {
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-500 shadow-lg">
             <BarChart2 className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">0815Poll</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">PollFlex</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">The place to put a poll</p>
         </div>
 

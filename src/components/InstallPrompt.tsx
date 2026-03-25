@@ -40,7 +40,7 @@ export default function InstallPrompt() {
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-4 flex items-center gap-3 md:left-auto md:right-6 md:w-80">
       <div className="flex-1">
-        <p className="text-sm font-semibold text-gray-900 dark:text-white">Install 0815Poll</p>
+        <p className="text-sm font-semibold text-gray-900 dark:text-white">Install PollFlex</p>
         <p className="text-xs text-gray-500 dark:text-gray-400">Add to your home screen for quick access</p>
       </div>
       <button
