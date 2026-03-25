@@ -2,7 +2,16 @@ import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Sun, Moon, BarChart2, GripVertical, Calendar, MapPin, Sliders, Target, ImageIcon, Github, Code2, Eye, Layers, ExternalLink } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
-import { useAuth } from '../contexts/AuthContext'
+
+// Check for a cached Firebase auth session without loading the Firebase SDK.
+// Firebase stores the current user in localStorage under a key starting with 'firebase:authUser:'.
+function hasFirebaseSession(): boolean {
+  try {
+    return Object.keys(localStorage).some(k => k.startsWith('firebase:authUser:'))
+  } catch {
+    return false
+  }
+}
 
 const BLUE = '#1a56db'
 const BLUE_HOVER = '#1648c0'
@@ -210,12 +219,11 @@ const POLL_TYPES = [
 export default function LandingPage() {
   const { resolvedTheme, setTheme } = useTheme()
   const toggleTheme = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-  const { user, loading } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!loading && user) navigate('/home', { replace: true })
-  }, [user, loading, navigate])
+    if (hasFirebaseSession()) navigate('/home', { replace: true })
+  }, [navigate])
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
-import { useAuth } from './AuthContext'
+import { AuthContext } from './AuthContext'
 import { updateUserProfile } from '../lib/firestore'
 
 export type Theme = 'light' | 'dark' | 'system'
@@ -39,7 +39,9 @@ function getInitialTheme(): Theme {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { user, userProfile } = useAuth()
+  const authCtx = useContext(AuthContext)
+  const user = authCtx?.user ?? null
+  const userProfile = authCtx?.userProfile ?? null
   const [theme, setThemeState] = useState<Theme>(getInitialTheme)
   const themeRef = useRef<Theme>(theme)
   themeRef.current = theme
