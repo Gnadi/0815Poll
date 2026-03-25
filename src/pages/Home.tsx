@@ -51,7 +51,7 @@ export default function Home() {
 
   const greeting = user
     ? `Hello, ${userProfile?.displayName || user.displayName || 'there'}!`
-    : 'Welcome to PollFlex'
+    : 'Welcome to FlexPoll'
 
   return (
     <Layout>

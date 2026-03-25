@@ -11,8 +11,8 @@ export default defineConfig({
       injectRegister: 'script-defer',
       includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png', 'robots.txt'],
       manifest: {
-        name: 'PollFlex — The Place to Put a Poll',
-        short_name: 'PollFlex',
+        name: 'FlexPoll — The Place to Put a Poll',
+        short_name: 'FlexPoll',
         description: 'Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types.',
         start_url: '/',
         display: 'standalone',

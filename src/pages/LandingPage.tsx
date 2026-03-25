@@ -232,7 +232,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-6xl px-6 flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
-            <span className="text-lg font-bold text-gray-900 dark:text-white">PollFlex</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-white">FlexPoll</span>
             <nav className="hidden md:flex items-center gap-6">
               <a href="#poll-types" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Poll Types</a>
               <a href="#custom-editor" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Custom Editor</a>
@@ -329,7 +329,7 @@ export default function LandingPage() {
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">7 Poll Types</span>
             </div>
             <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">The right format for every question</h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 text-base max-w-xl mx-auto">Don't force your question into the wrong format. PollFlex has a dedicated poll type for every situation — all included, all free.</p>
+            <p className="mt-3 text-gray-500 dark:text-gray-400 text-base max-w-xl mx-auto">Don't force your question into the wrong format. FlexPoll has a dedicated poll type for every situation — all included, all free.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {POLL_TYPES.map(({ label, description, icon: Icon, bg, iconColor }) => (
@@ -419,7 +419,7 @@ export default function LandingPage() {
                 Free forever.<br />Open source always.
               </h2>
               <p className="mt-4 text-white/60 leading-relaxed">
-                PollFlex is completely free — no hidden fees, no premium tiers, no paywalls. The entire codebase is open source. Inspect it, fork it, self-host it, or contribute back.
+                FlexPoll is completely free — no hidden fees, no premium tiers, no paywalls. The entire codebase is open source. Inspect it, fork it, self-host it, or contribute back.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
@@ -510,7 +510,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div>
-              <span className="text-sm font-bold text-gray-900 dark:text-white">PollFlex</span>
+              <span className="text-sm font-bold text-gray-900 dark:text-white">FlexPoll</span>
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed &amp; Made by Johannes Gnadlinger</p>
             </div>
             <a
