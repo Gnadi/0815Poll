@@ -48,8 +48,8 @@
     <text x="0" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#94a3b8">Standard · Location · Schedule · Ranking · Sandbox</text>
 
     <!-- App name -->
-    <text x="0" y="492" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">0815Poll</text>
-    <text x="0" y="524" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#64748b">0815poll.vercel.app</text>
+    <text x="0" y="492" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">PollFlex</text>
+    <text x="0" y="524" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#64748b">pollflex.vercel.app</text>
   </g>
 
   <!-- Right: poll card mockup -->
