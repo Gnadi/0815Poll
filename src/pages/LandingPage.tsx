@@ -296,7 +296,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-8 flex items-center gap-3 flex-wrap">
               <Link
-                to="/auth"
+                to="/create"
                 className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors"
                 style={{ backgroundColor: BLUE }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
@@ -430,7 +430,7 @@ export default function LandingPage() {
                   <ExternalLink className="h-3.5 w-3.5 opacity-60" />
                 </a>
                 <Link
-                  to="/auth"
+                  to="/create"
                   className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors"
                   style={{ backgroundColor: BLUE }}
                   onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
@@ -480,7 +480,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              to="/auth"
+              to="/create"
               className="w-full sm:w-auto rounded-lg px-8 py-3 text-sm font-bold text-white transition-colors"
               style={{ backgroundColor: BLUE }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = BLUE_HOVER)}
