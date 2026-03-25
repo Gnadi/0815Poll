@@ -86,4 +86,4 @@ public/           # Static assets
 
 ## License
 
-Private project.
+MIT
