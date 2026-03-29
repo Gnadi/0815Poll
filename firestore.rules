@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Polls: public read, open creation (app supports anonymous poll creation),
+    // only the authenticated owner can update (e.g. end a poll)
+    match /polls/{pollId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.createdBy;
+      allow delete: if false;
+    }
+
+    // Votes: public read, open creation (anonymous voting supported), immutable
+    match /votes/{voteId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
+    match /schedule_votes/{voteId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
+    match /ranking_votes/{voteId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
+    match /priority_votes/{voteId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
+    // User profiles: readable by anyone (needed to show creator info on polls),
+    // writable only by the owner
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+                             && request.auth.uid == userId;
+      allow delete: if false;
+
+      // Contacts: owner-only CRUD
+      match /contacts/{contactId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
+    }
+
+    // Notifications: owner reads/marks-read; any authenticated user can create
+    // (writeNotificationsForEmails runs client-side as the poll creator)
+    match /notifications/{userId}/items/{notifId} {
+      allow read, update: if request.auth != null
+                          && request.auth.uid == userId;
+      allow create: if request.auth != null;
+      allow delete: if false;
+    }
+
+    // Push queue: client creates only (authenticated); Cloud Function deletes via Admin SDK
+    match /push_queue/{docId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+  }
+}
