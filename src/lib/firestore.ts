@@ -52,11 +52,12 @@ export async function getPoll(pollId: string): Promise<Poll | null> {
 export async function getPolls(limitCount = 20): Promise<Poll[]> {
   const q = query(
     collection(db, 'polls'),
+    where('isPrivate', '==', false),
     orderBy('createdAt', 'desc'),
     limit(limitCount)
   )
   const snap = await getDocs(q)
-  return snap.docs.map(docToPoll).filter((p) => !p.isPrivate)
+  return snap.docs.map(docToPoll)
 }
 
 export async function getPollsPage(
@@ -65,12 +66,14 @@ export async function getPollsPage(
 ): Promise<{ polls: Poll[]; lastDoc: QueryDocumentSnapshot | null }> {
   let q = query(
     collection(db, 'polls'),
+    where('isPrivate', '==', false),
     orderBy('createdAt', 'desc'),
     limit(limitCount)
   )
   if (lastDoc) {
     q = query(
       collection(db, 'polls'),
+      where('isPrivate', '==', false),
       orderBy('createdAt', 'desc'),
       startAfter(lastDoc),
       limit(limitCount)
@@ -78,7 +81,7 @@ export async function getPollsPage(
   }
   const snap = await getDocs(q)
   return {
-    polls: snap.docs.map(docToPoll).filter((p) => !p.isPrivate),
+    polls: snap.docs.map(docToPoll),
     lastDoc: snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null,
   }
 }
@@ -87,10 +90,11 @@ export async function getActivePolls(limitCount = 10): Promise<Poll[]> {
   const q = query(
     collection(db, 'polls'),
     where('status', '==', 'active'),
+    where('isPrivate', '==', false),
     limit(limitCount)
   )
   const snap = await getDocs(q)
-  return snap.docs.map(docToPoll).filter((p) => !p.isPrivate).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
+  return snap.docs.map(docToPoll).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
 }
 
 export async function getUserPolls(userId: string): Promise<Poll[]> {
@@ -122,6 +126,14 @@ export async function castVote(
   userId: string | null,
   optionId: string
 ): Promise<void> {
+  // Prevent authenticated users from voting twice on the same poll.
+  if (userId) {
+    const existing = await getDocs(
+      query(collection(db, 'votes'), where('pollId', '==', pollId), where('userId', '==', userId), limit(1))
+    )
+    if (!existing.empty) throw new Error('Already voted')
+  }
+
   await runTransaction(db, async (tx) => {
     const pollRef = doc(db, 'polls', pollId)
     const pollSnap = await tx.get(pollRef)
@@ -160,6 +172,13 @@ export async function castMultipleVote(
   userId: string | null,
   optionIds: string[]
 ): Promise<void> {
+  if (userId) {
+    const existing = await getDocs(
+      query(collection(db, 'votes'), where('pollId', '==', pollId), where('userId', '==', userId), limit(1))
+    )
+    if (!existing.empty) throw new Error('Already voted')
+  }
+
   await runTransaction(db, async (tx) => {
     const pollRef = doc(db, 'polls', pollId)
     const pollSnap = await tx.get(pollRef)
@@ -194,6 +213,13 @@ export async function castScheduleVote(
   userId: string | null,
   selectedSlots: string[]
 ): Promise<void> {
+  if (userId) {
+    const existing = await getDocs(
+      query(collection(db, 'schedule_votes'), where('pollId', '==', pollId), where('userId', '==', userId), limit(1))
+    )
+    if (!existing.empty) throw new Error('Already voted')
+  }
+
   await runTransaction(db, async (tx) => {
     const pollRef = doc(db, 'polls', pollId)
     const pollSnap = await tx.get(pollRef)
@@ -258,6 +284,13 @@ export async function castRankingVote(
   userId: string | null,
   ranking: string[]
 ): Promise<void> {
+  if (userId) {
+    const existing = await getDocs(
+      query(collection(db, 'ranking_votes'), where('pollId', '==', pollId), where('userId', '==', userId), limit(1))
+    )
+    if (!existing.empty) throw new Error('Already voted')
+  }
+
   await runTransaction(db, async (tx) => {
     const pollRef = doc(db, 'polls', pollId)
     const pollSnap = await tx.get(pollRef)
@@ -303,6 +336,13 @@ export async function castPriorityVote(
   userId: string | null,
   distribution: Record<string, number>
 ): Promise<void> {
+  if (userId) {
+    const existing = await getDocs(
+      query(collection(db, 'priority_votes'), where('pollId', '==', pollId), where('userId', '==', userId), limit(1))
+    )
+    if (!existing.empty) throw new Error('Already voted')
+  }
+
   await runTransaction(db, async (tx) => {
     const pollRef = doc(db, 'polls', pollId)
     const pollSnap = await tx.get(pollRef)
@@ -368,10 +408,13 @@ export async function getUserVoteCount(userId: string): Promise<number> {
   return snap.size
 }
 
-export async function getUserByEmail(email: string): Promise<User | null> {
+export async function getUserByEmail(email: string): Promise<Omit<User, 'fcmToken'> | null> {
   const q = query(collection(db, 'users'), where('email', '==', email), limit(1))
   const snap = await getDocs(q)
-  return snap.empty ? null : ({ id: snap.docs[0].id, ...snap.docs[0].data() } as User)
+  if (snap.empty) return null
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { fcmToken: _omit, id: _id, ...publicFields } = snap.docs[0].data() as User
+  return { id: snap.docs[0].id, ...publicFields }
 }
 
 export async function updateUserFCMToken(userId: string, fcmToken: string): Promise<void> {

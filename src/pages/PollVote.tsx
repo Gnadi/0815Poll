@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import DOMPurify from 'dompurify'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { formatDistanceToNow, format, isPast } from 'date-fns'
 import { BarChart2, Users, Clock, Share2, ChevronDown, ChevronUp, MessageCircle, Bell } from 'lucide-react'
@@ -12,6 +13,7 @@ import PollQRCode from '../components/PollQRCode'
 import ContactSelector from '../components/ContactSelector'
 import NotifyMethodPicker from '../components/NotifyMethodPicker'
 import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, getUserRankingVote, getUserPriorityVote, writeNotificationsForEmails, enqueuePushNotification, getUserByEmail } from '../lib/firestore'
+import { sanitizeCustomContent } from '../lib/sanitize'
 import { buildWhatsAppShareLink, copyToClipboard, buildSmsLink } from '../lib/share'
 import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
 import { filterFCMTokens } from '../lib/fcm'
@@ -47,6 +49,16 @@ export default function PollVote() {
   const [notifyBySms, setNotifyBySms] = useState(false)
   const [notified, setNotified] = useState(false)
   const [notifying, setNotifying] = useState(false)
+
+  // Sanitize custom poll option HTML once per poll load to prevent XSS from stored content.
+  const sanitizedContent = useMemo(() => {
+    if (!poll?.options) return {}
+    return Object.fromEntries(
+      poll.options
+        .filter((o) => o.customContent)
+        .map((o) => [o.id, sanitizeCustomContent(o.customContent!)])
+    )
+  }, [poll])
 
   // Check if already voted
   const checkVoted = useCallback(async (poll: Poll) => {
@@ -459,9 +471,10 @@ export default function PollVote() {
                   {/* Rendered custom HTML in sandboxed iframe */}
                   {opt.customContent && (
                     <iframe
-                      srcDoc={opt.customContent}
+                      srcDoc={sanitizedContent[opt.id] ?? opt.customContent}
                       title={opt.text}
                       sandbox="allow-scripts"
+                      referrerPolicy="no-referrer"
                       className="w-full border-0 pointer-events-none"
                       style={{ height: '160px' }}
                     />

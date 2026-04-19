@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import DOMPurify from 'dompurify'
 import {
   Image,
   Star,
@@ -164,6 +165,14 @@ export default function CreateCustom() {
   const { showToast } = useToast()
   const navigate = useNavigate()
 
+  // Custom polls require authentication — anonymous abuse would be untraceable.
+  useEffect(() => {
+    if (user === null) {
+      showToast('Sign in to create a custom poll', 'error')
+      navigate('/login', { replace: true })
+    }
+  }, [user, navigate, showToast])
+
   const activeOption = options[activeOptionIdx] || options[0]
 
   const setActiveOptionHtml = useCallback((html: string) => {
@@ -207,25 +216,30 @@ export default function CreateCustom() {
     )
   }
 
-  // Build full HTML document for a given option
-  const buildOptionDoc = useCallback((optHtml: string) =>
-    `<!DOCTYPE html>
+  // Build full HTML document for a given option.
+  // HTML is sanitised with DOMPurify to strip event-handler attributes and
+  // dangerous tags while preserving layout markup.
+  // A strict Content-Security-Policy meta blocks all outgoing network requests
+  // from the sandboxed iframe so injected scripts cannot exfiltrate data.
+  const buildOptionDoc = useCallback((optHtml: string) => {
+    const safeHtml = DOMPurify.sanitize(optHtml, { USE_PROFILES: { html: true } })
+    return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data: blob:; font-src https:; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none';">
 <style>
 body { margin: 0; }
 ${cssCode}
 </style>
 </head>
 <body>
-${optHtml}
+${safeHtml}
 <script>${jsCode}<\/script>
 </body>
-</html>`,
-    [cssCode, jsCode]
-  )
+</html>`
+  }, [cssCode, jsCode])
 
   const previewSrcDoc = useMemo(
     () => buildOptionDoc(activeOption.html),
@@ -239,6 +253,11 @@ ${optHtml}
   }
 
   const handleSubmit = async () => {
+    if (!user) {
+      showToast('Sign in to create a custom poll', 'error')
+      navigate('/login')
+      return
+    }
     const errs: Record<string, string> = {}
     if (!question.trim()) errs.question = 'Question is required.'
     if (options.length < 2) errs.options = 'Need at least 2 options.'
@@ -262,7 +281,7 @@ ${optHtml}
         options: pollOptions,
         isPrivate,
         settings: { anonymous, duration, allowMultipleChoices },
-        createdBy: user?.uid || null,
+        createdBy: user.uid,
       })
       showToast('Custom poll created!', 'success')
       navigate(`/poll/${id}`)
@@ -387,6 +406,7 @@ ${optHtml}
               srcDoc={previewSrcDoc}
               title="Preview"
               sandbox="allow-scripts"
+              referrerPolicy="no-referrer"
               className="w-full h-full border-0"
             />
           </div>
@@ -716,6 +736,7 @@ ${optHtml}
                   srcDoc={previewSrcDoc}
                   title="Live Preview"
                   sandbox="allow-scripts"
+              referrerPolicy="no-referrer"
                   className="w-full border-0 rounded-xl bg-white shadow-sm"
                   style={{ minHeight: '200px', height: '250px' }}
                 />
@@ -739,6 +760,7 @@ ${optHtml}
                       srcDoc={buildOptionDoc(opt.html)}
                       title={opt.name}
                       sandbox="allow-scripts"
+              referrerPolicy="no-referrer"
                       className="w-full border-0 pointer-events-none"
                       style={{ height: '80px' }}
                     />
