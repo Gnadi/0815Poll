@@ -145,13 +145,13 @@ export async function castVote(
     } else {
       tx.update(pollRef, { totalVotes: increment(1) })
     }
-  })
 
-  await addDoc(collection(db, 'votes'), {
-    pollId,
-    userId,
-    optionId,
-    createdAt: Timestamp.now(),
+    tx.set(doc(collection(db, 'votes')), {
+      pollId,
+      userId,
+      optionId,
+      createdAt: Timestamp.now(),
+    })
   })
 }
 
@@ -179,13 +179,13 @@ export async function castMultipleVote(
     } else {
       tx.update(pollRef, { totalVotes: increment(1) })
     }
-  })
 
-  await addDoc(collection(db, 'votes'), {
-    pollId,
-    userId,
-    optionIds,
-    createdAt: Timestamp.now(),
+    tx.set(doc(collection(db, 'votes')), {
+      pollId,
+      userId,
+      optionIds,
+      createdAt: Timestamp.now(),
+    })
   })
 }
 
@@ -213,13 +213,13 @@ export async function castScheduleVote(
       })
       tx.update(pollRef, { timeSlots: updatedSlots, totalVotes: increment(1) })
     }
-  })
 
-  await addDoc(collection(db, 'schedule_votes'), {
-    pollId,
-    userId,
-    selectedSlots,
-    createdAt: Timestamp.now(),
+    tx.set(doc(collection(db, 'schedule_votes')), {
+      pollId,
+      userId,
+      selectedSlots,
+      createdAt: Timestamp.now(),
+    })
   })
 }
 
@@ -273,13 +273,13 @@ export async function castRankingVote(
       })
       tx.update(pollRef, { options: updatedOptions, totalVotes: increment(1) })
     }
-  })
 
-  await addDoc(collection(db, 'ranking_votes'), {
-    pollId,
-    userId,
-    ranking,
-    createdAt: Timestamp.now(),
+    tx.set(doc(collection(db, 'ranking_votes')), {
+      pollId,
+      userId,
+      ranking,
+      createdAt: Timestamp.now(),
+    })
   })
 }
 
@@ -316,13 +316,13 @@ export async function castPriorityVote(
       }))
       tx.update(pollRef, { options: updatedOptions, totalVotes: increment(1) })
     }
-  })
 
-  await addDoc(collection(db, 'priority_votes'), {
-    pollId,
-    userId,
-    distribution,
-    createdAt: Timestamp.now(),
+    tx.set(doc(collection(db, 'priority_votes')), {
+      pollId,
+      userId,
+      distribution,
+      createdAt: Timestamp.now(),
+    })
   })
 }
 

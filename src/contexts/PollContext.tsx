@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react'
 import {
   createPoll as firestoreCreatePoll,
   getPolls,
@@ -110,8 +110,8 @@ export function PollProvider({ children }: { children: ReactNode }) {
     setLocalVote(pollId, 'priority-voted')
   }, [])
 
-  return (
-    <PollContext.Provider value={{
+  const value = useMemo(
+    () => ({
       polls,
       loading,
       fetchPolls,
@@ -122,10 +122,22 @@ export function PollProvider({ children }: { children: ReactNode }) {
       castScheduleVote,
       castRankingVote,
       castPriorityVote,
-    }}>
-      {children}
-    </PollContext.Provider>
+    }),
+    [
+      polls,
+      loading,
+      fetchPolls,
+      createPoll,
+      getLocalVote,
+      castVote,
+      castMultipleVote,
+      castScheduleVote,
+      castRankingVote,
+      castPriorityVote,
+    ]
   )
+
+  return <PollContext.Provider value={value}>{children}</PollContext.Provider>
 }
 
 export function usePoll() {

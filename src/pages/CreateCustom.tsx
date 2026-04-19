@@ -5,8 +5,6 @@ import {
   Star,
   SlidersHorizontal,
   ListOrdered,
-  GitBranch,
-  Webhook,
   Settings,
   Lock,
   Rocket,
@@ -31,12 +29,7 @@ import BottomNav from '../components/BottomNav'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
-
-const DURATION_OPTIONS = [
-  { label: '24 hours', value: 24 },
-  { label: '48 hours', value: 48 },
-  { label: '7 days', value: 168 },
-]
+import { LONG_DURATION_OPTIONS as DURATION_OPTIONS } from '../lib/pollConstants'
 
 const DEFAULT_OPTION_HTML = `<div class="option-card">
     <div class="option-icon">🎨</div>
@@ -221,7 +214,7 @@ ${cssCode}
 </head>
 <body>
 ${optHtml}
-<script>${jsCode}<\/script>
+<script>${jsCode}</${'script'}>
 </body>
 </html>`,
     [cssCode, jsCode]
@@ -282,7 +275,7 @@ ${optHtml}
   const mobileView = (
     <div className="lg:hidden min-h-screen bg-app-bg">
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 bg-white px-4 py-3">
-        <button type="button" onClick={() => navigate(-1)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
+        <button type="button" onClick={() => navigate(-1)} aria-label="Go back" className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
           <ArrowLeft className="h-5 w-5 text-gray-700" />
         </button>
         <h1 className="text-base font-bold text-gray-900">Custom Poll</h1>
@@ -452,7 +445,7 @@ ${optHtml}
         {/* Top header bar */}
         <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => navigate(-1)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
+            <button type="button" onClick={() => navigate(-1)} aria-label="Go back" className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
               <ArrowLeft className="h-5 w-5 text-gray-700" />
             </button>
             <h1 className="text-lg font-bold text-gray-900">Custom Poll Editor</h1>
@@ -624,21 +617,6 @@ ${optHtml}
                 })}
               </div>
 
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-3">Advanced</p>
-              <div className="space-y-1">
-                {[
-                  { icon: GitBranch, label: 'Logic Jumps' },
-                  { icon: Webhook, label: 'Webhooks' },
-                ].map((item) => {
-                  const Icon = item.icon
-                  return (
-                    <div key={item.label} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-gray-400">
-                      <Icon className="h-4 w-4 shrink-0" />
-                      <span className="text-sm">{item.label}</span>
-                    </div>
-                  )
-                })}
-              </div>
             </div>
           </div>
 

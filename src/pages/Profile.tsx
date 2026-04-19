@@ -122,7 +122,6 @@ export default function Profile() {
   const initial = displayName.charAt(0).toUpperCase()
 
   const activePolls = myPolls.filter((p) => p.status === 'active')
-  const endedPolls = myPolls.filter((p) => p.status === 'ended')
 
   return (
     <Layout title="Profile">

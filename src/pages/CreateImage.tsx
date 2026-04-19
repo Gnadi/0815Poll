@@ -12,15 +12,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { nanoid } from '../lib/nanoid'
 import { uploadPollImage } from '../lib/storage'
+import { DURATION_OPTIONS } from '../lib/pollConstants'
 import type { Contact } from '../types'
-
-const DURATION_OPTIONS = [
-  { label: '1 hour', value: 1 },
-  { label: '6 hours', value: 6 },
-  { label: '24 hours', value: 24 },
-  { label: '48 hours', value: 48 },
-  { label: '7 days', value: 168 },
-]
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
