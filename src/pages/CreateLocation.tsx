@@ -10,13 +10,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { Lock } from 'lucide-react'
 import { nanoid } from '../lib/nanoid'
+import { LONG_DURATION_OPTIONS as DURATION_OPTIONS } from '../lib/pollConstants'
 import type { LocationOption, Contact } from '../types'
-
-const DURATION_OPTIONS = [
-  { label: '24 hours', value: 24 },
-  { label: '48 hours', value: 48 },
-  { label: '7 days', value: 168 },
-]
 
 export default function CreateLocation() {
   const [question, setQuestion] = useState('')

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -38,11 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password)
-  }
+  }, [])
 
-  const signUp = async (email: string, password: string, displayName: string) => {
+  const signUp = useCallback(async (email: string, password: string, displayName: string) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
     await updateProfile(cred.user, { displayName })
     const profile: Omit<User, 'id'> = {
@@ -52,9 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     await createUserProfile(cred.user.uid, profile)
     setUserProfile({ id: cred.user.uid, ...profile })
-  }
+  }, [])
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider()
     const cred = await signInWithPopup(auth, provider)
     const existing = await getUserProfile(cred.user.uid)
@@ -70,19 +70,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setUserProfile(existing)
     }
-  }
+  }, [])
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await firebaseSignOut(auth)
     setUser(null)
     setUserProfile(null)
-  }
+  }, [])
 
-  return (
-    <AuthContext.Provider value={{ user, userProfile, loading, signIn, signUp, signInWithGoogle, signOut }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, userProfile, loading, signIn, signUp, signInWithGoogle, signOut }),
+    [user, userProfile, loading, signIn, signUp, signInWithGoogle, signOut]
   )
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

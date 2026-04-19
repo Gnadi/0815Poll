@@ -9,6 +9,7 @@ import LocationViewMap from '../components/LocationViewMap'
 import PollQRCode from '../components/PollQRCode'
 import { subscribeToPoll } from '../lib/firestore'
 import { buildWhatsAppShareLink, copyToClipboard } from '../lib/share'
+import { usePollSummary } from '../hooks/usePollSummary'
 import { usePoll } from '../contexts/PollContext'
 import { useToast } from '../components/Toast'
 import type { Poll } from '../types'
@@ -22,6 +23,7 @@ export default function PollResults() {
 
   const [poll, setPoll] = useState<Poll | null>(null)
   const [loading, setLoading] = useState(true)
+  const summary = usePollSummary(poll)
 
   useEffect(() => {
     if (!id) return
@@ -66,65 +68,23 @@ export default function PollResults() {
   const isEnded = poll.status === 'ended'
   const votedOptionId = getLocalVote(poll.id)
 
-  // Compute winner for standard polls
-  let winnerOption = null
-  let winnerPct = 0
-  let runnerUpPct = 0
-  if (poll.type === 'standard' && poll.options && poll.totalVotes > 0) {
-    const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
-    winnerOption = sorted[0]
-    winnerPct = Math.round((winnerOption.votes / poll.totalVotes) * 100)
-    runnerUpPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
-  }
-
-  // Ranking poll: winner by Borda Count
-  let rankingWinner = null
-  let totalBordaPoints = 0
-  if (poll.type === 'ranking' && poll.options && poll.totalVotes > 0) {
-    totalBordaPoints = poll.options.reduce((sum, o) => sum + (o.bordaPoints || 0), 0)
-    const sorted = [...poll.options].sort((a, b) => (b.bordaPoints || 0) - (a.bordaPoints || 0))
-    rankingWinner = sorted[0]
-  }
-
-  // Schedule poll: find most popular slot
-  type TopSlot = { date: string; time: string; votes: number }
-  let topSlot: TopSlot | null = null
-  if (poll.type === 'schedule' && poll.timeSlots) {
-    poll.timeSlots.forEach((slot) => {
-      slot.times.forEach((time) => {
-        const v = slot.votes?.[time] || 0
-        if (!topSlot || v > (topSlot as TopSlot).votes) {
-          topSlot = { date: slot.date, time, votes: v }
-        }
-      })
-    })
-  }
-
-  // Location poll winner
-  let winnerLoc = null
-  if (poll.type === 'location' && poll.locations && poll.totalVotes > 0) {
-    winnerLoc = [...poll.locations].sort((a, b) => b.votes - a.votes)[0]
-  }
-
-  // Priority poll: winner by highest priorityPoints
-  let priorityWinner = null
-  let totalPriorityPoints = 0
-  if (poll.type === 'priority' && poll.options && poll.totalVotes > 0) {
-    totalPriorityPoints = poll.options.reduce((sum, o) => sum + (o.priorityPoints || 0), 0)
-    const sorted = [...poll.options].sort((a, b) => (b.priorityPoints || 0) - (a.priorityPoints || 0))
-    priorityWinner = sorted[0]
-  }
-
-  // Image poll: winner by vote count (same as standard)
-  let imageWinner = null
-  let imageWinnerPct = 0
-  let imageRunnerUpPct = 0
-  if (poll.type === 'image' && poll.options && poll.totalVotes > 0) {
-    const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
-    imageWinner = sorted[0]
-    imageWinnerPct = Math.round((imageWinner.votes / poll.totalVotes) * 100)
-    imageRunnerUpPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
-  }
+  const winnerOption = summary.kind === 'standard' ? summary.winner : null
+  const winnerPct = summary.kind === 'standard' ? summary.winnerPct : 0
+  const runnerUpPct = summary.kind === 'standard' ? summary.runnerUpPct : 0
+  const rankingWinner = summary.kind === 'ranking' ? summary.winner : null
+  const totalBordaPoints = summary.kind === 'ranking' ? summary.totalBordaPoints : 0
+  const rankingGap = summary.kind === 'ranking' ? summary.gap : 0
+  const topSlot = summary.kind === 'schedule' ? summary.topSlot : null
+  const winnerLoc = summary.kind === 'location' ? summary.winner : null
+  const priorityWinner = summary.kind === 'priority' ? summary.winner : null
+  const totalPriorityPoints = summary.kind === 'priority' ? summary.totalPriorityPoints : 0
+  const priorityGap = summary.kind === 'priority' ? summary.gap : 0
+  const imageWinner = summary.kind === 'image' ? summary.winner : null
+  const imageWinnerPct = summary.kind === 'image' ? summary.winnerPct : 0
+  const imageRunnerUpPct = summary.kind === 'image' ? summary.runnerUpPct : 0
+  const customWinner = summary.kind === 'custom' ? summary.winner : null
+  const customWinnerPct = summary.kind === 'custom' ? summary.winnerPct : 0
+  const customRunnerUpPct = summary.kind === 'custom' ? summary.runnerUpPct : 0
 
   return (
     <div className="min-h-screen bg-app-bg dark:bg-dark-bg">
@@ -138,6 +98,7 @@ export default function PollResults() {
             <button
               type="button"
               onClick={() => navigate(-1)}
+              aria-label="Go back"
               className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -146,6 +107,7 @@ export default function PollResults() {
             <button
               type="button"
               onClick={share}
+              aria-label="Share poll"
               className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -234,13 +196,13 @@ export default function PollResults() {
                 )}
 
                 {/* Winner card — Schedule poll */}
-                {poll.type === 'schedule' && topSlot && (topSlot as TopSlot).votes > 0 && (
+                {poll.type === 'schedule' && topSlot && topSlot.votes > 0 && (
                   <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
                     <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
                     <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Best Time</p>
-                    <h3 className="text-2xl font-bold">{(topSlot as TopSlot).time}</h3>
-                    <p className="text-sm text-primary-200">{format(new Date((topSlot as TopSlot).date + 'T00:00:00'), 'EEEE, MMMM d')}</p>
-                    <p className="text-sm mt-1">{(topSlot as TopSlot).votes} people available</p>
+                    <h3 className="text-2xl font-bold">{topSlot.time}</h3>
+                    <p className="text-sm text-primary-200">{format(new Date(topSlot.date + 'T00:00:00'), 'EEEE, MMMM d')}</p>
+                    <p className="text-sm mt-1">{topSlot.votes} people available</p>
                   </div>
                 )}
 
@@ -321,14 +283,13 @@ export default function PollResults() {
                             <div className="p-3 space-y-2">
                               {slot.times.map((time) => {
                                 const votes = slot.votes?.[time] || 0
-                                const ts = topSlot as TopSlot | null
                                 return (
                                   <ResultBar
                                     key={time}
                                     label={time}
                                     votes={votes}
                                     totalVotes={totalSlotVotes || 1}
-                                    isWinner={ts?.date === slot.date && ts?.time === time}
+                                    isWinner={topSlot?.date === slot.date && topSlot?.time === time}
                                   />
                                 )
                               })}
@@ -479,38 +440,31 @@ export default function PollResults() {
                 )}
 
                 {/* Custom poll winner */}
-                {poll.type === 'custom' && poll.options && poll.totalVotes > 0 && (() => {
-                  const sorted = [...poll.options].sort((a, b) => b.votes - a.votes)
-                  const winner = sorted[0]
-                  const wPct = Math.round((winner.votes / poll.totalVotes) * 100)
-                  const ruPct = sorted[1] ? Math.round((sorted[1].votes / poll.totalVotes) * 100) : 0
-                  return (
-                    <div className="rounded-2xl bg-primary-500 relative overflow-hidden">
-                      {winner.customContent && (
-                        <iframe
-                          srcDoc={winner.customContent}
-                          title={winner.text}
-                          sandbox="allow-scripts"
-                          className="w-full border-0 pointer-events-none"
-                          style={{ height: '200px' }}
-                        />
-                      )}
-                      <div className="p-5 lg:p-6">
-                        <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
-                        <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Option</p>
-                        <h3 className="text-2xl font-bold text-white mb-2">{winner.text}</h3>
-                        <div className="flex items-center gap-3">
-                          <span className="text-3xl font-black text-white">{wPct}%</span>
-                          {ruPct > 0 && (
-                            <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white">
-                              +{wPct - ruPct}% vs runner-up
-                            </span>
-                          )}
-                        </div>
+                {poll.type === 'custom' && customWinner && (
+                  <div className="rounded-2xl bg-primary-500 relative overflow-hidden">
+                    {customWinner.customContent && (
+                      <iframe
+                        srcDoc={customWinner.customContent}
+                        title={customWinner.text}
+                        sandbox="allow-scripts"
+                        className="w-full border-0 pointer-events-none h-[200px]"
+                      />
+                    )}
+                    <div className="p-5 lg:p-6">
+                      <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
+                      <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Winning Option</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">{customWinner.text}</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl font-black text-white">{customWinnerPct}%</span>
+                        {customRunnerUpPct > 0 && (
+                          <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white">
+                            +{customWinnerPct - customRunnerUpPct}% vs runner-up
+                          </span>
+                        )}
                       </div>
                     </div>
-                  )
-                })()}
+                  </div>
+                )}
 
                 {/* Custom poll distribution */}
                 {poll.type === 'custom' && poll.options && poll.options.length > 0 && (
@@ -572,11 +526,7 @@ export default function PollResults() {
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                       <strong>{rankingWinner.text}</strong> leads with {rankingWinner.bordaPoints || 0} Borda points
                       across {poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}.
-                      {poll.options && poll.options.length > 1 && (() => {
-                        const sorted = [...poll.options].sort((a, b) => (b.bordaPoints || 0) - (a.bordaPoints || 0))
-                        const gap = (sorted[0].bordaPoints || 0) - (sorted[1] ? (sorted[1].bordaPoints || 0) : 0)
-                        return gap > 0 ? ` ${gap} pts ahead of the runner-up.` : ''
-                      })()}
+                      {rankingGap > 0 ? ` ${rankingGap} pts ahead of the runner-up.` : ''}
                     </p>
                   </div>
                 )}
@@ -591,11 +541,7 @@ export default function PollResults() {
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                       <strong>{priorityWinner.text}</strong> received {priorityWinner.priorityPoints || 0} of {totalPriorityPoints} total points
                       from {poll.totalVotes} {poll.totalVotes === 1 ? 'voter' : 'voters'}.
-                      {poll.options && poll.options.length > 1 && (() => {
-                        const sorted = [...poll.options].sort((a, b) => (b.priorityPoints || 0) - (a.priorityPoints || 0))
-                        const gap = (sorted[0].priorityPoints || 0) - (sorted[1] ? (sorted[1].priorityPoints || 0) : 0)
-                        return gap > 0 ? ` ${gap} pts ahead of the runner-up.` : ''
-                      })()}
+                      {priorityGap > 0 ? ` ${priorityGap} pts ahead of the runner-up.` : ''}
                     </p>
                   </div>
                 )}

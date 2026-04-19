@@ -35,6 +35,26 @@ function getMessagingInstance() {
 }
 
 /**
+ * Register the FCM service worker, encoding the public Firebase web config as
+ * query-string params so the SW can initialise Firebase without a build step.
+ */
+async function registerMessagingServiceWorker(): Promise<ServiceWorkerRegistration | undefined> {
+  if (!('serviceWorker' in navigator)) return undefined
+  const params = new URLSearchParams({
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY ?? '',
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? '',
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ?? '',
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ?? '',
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? '',
+    appId: import.meta.env.VITE_FIREBASE_APP_ID ?? '',
+  })
+  return navigator.serviceWorker.register(
+    `/firebase-messaging-sw.js?${params.toString()}`,
+    { scope: '/' }
+  )
+}
+
+/**
  * Request notification permission, get FCM token and store in Firestore.
  * Safe to call on every login — silently skips if already granted or if not configured.
  */
@@ -47,7 +67,11 @@ export async function initFCM(userId: string): Promise<void> {
     if (permission !== 'granted') return
 
     const messaging = getMessagingInstance()
-    const token = await getToken(messaging, { vapidKey: VAPID_KEY })
+    const serviceWorkerRegistration = await registerMessagingServiceWorker()
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration,
+    })
     if (token) {
       await updateUserFCMToken(userId, token)
     }

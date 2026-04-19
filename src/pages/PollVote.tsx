@@ -15,6 +15,7 @@ import { subscribeToPoll, updatePollStatus, getUserVote, getUserScheduleVote, ge
 import { buildWhatsAppShareLink, copyToClipboard, buildSmsLink } from '../lib/share'
 import { sendPollInvites, isEmailJsConfigured } from '../lib/emailjs'
 import { filterFCMTokens } from '../lib/fcm'
+import { percent } from '../lib/pollSummary'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
@@ -159,9 +160,8 @@ export default function PollVote() {
       }
       setVoted(true)
       showToast('Vote cast!', 'success')
-    } catch (err) {
+    } catch {
       showToast('Failed to cast vote. Please try again.', 'error')
-      console.error(err)
     } finally {
       setSubmitting(false)
     }
@@ -234,8 +234,7 @@ export default function PollVote() {
   const timeRemaining = endsAt ? formatDistanceToNow(endsAt, { addSuffix: true }) : ''
 
   // Calculate percentages for standard/location polls
-  const getPercentage = (votes: number) =>
-    poll.totalVotes > 0 ? Math.round((votes / poll.totalVotes) * 100) : 0
+  const getPercentage = (votes: number) => percent(votes, poll.totalVotes)
 
   return (
     <Layout

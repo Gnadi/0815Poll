@@ -11,14 +11,8 @@ import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { ChevronLeft, ChevronRight, Lock } from 'lucide-react'
+import { SCHEDULE_DURATION_OPTIONS as DURATION_OPTIONS } from '../lib/pollConstants'
 import type { Contact } from '../types'
-
-const DURATION_OPTIONS = [
-  { label: '24 hours', value: 24 },
-  { label: '48 hours', value: 48 },
-  { label: '7 days', value: 168 },
-  { label: '14 days', value: 336 },
-]
 
 interface SlotMap {
   [date: string]: string[]

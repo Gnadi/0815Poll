@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 import {
   subscribeToUnreadCount,
@@ -53,32 +53,35 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [user])
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!user) return
     setLoading(true)
     const items = await getNotifications(user.uid)
     setNotifications(items)
     setLoading(false)
-  }
+  }, [user])
 
-  const markRead = async (notifId: string) => {
+  const markRead = useCallback(async (notifId: string) => {
     if (!user) return
     await markNotificationRead(user.uid, notifId)
     setNotifications((prev) =>
       prev.map((n) => (n.id === notifId ? { ...n, read: true } : n))
     )
-  }
+  }, [user])
 
-  const markAllRead = async () => {
+  const markAllRead = useCallback(async () => {
     if (!user) return
     await markAllNotificationsRead(user.uid)
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-  }
+  }, [user])
+
+  const value = useMemo(
+    () => ({ unreadCount, notifications, loading, markRead, markAllRead, refresh }),
+    [unreadCount, notifications, loading, markRead, markAllRead, refresh]
+  )
 
   return (
-    <NotificationContext.Provider
-      value={{ unreadCount, notifications, loading, markRead, markAllRead, refresh }}
-    >
+    <NotificationContext.Provider value={value}>
       {children}
     </NotificationContext.Provider>
   )

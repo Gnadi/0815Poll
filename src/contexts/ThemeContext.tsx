@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AuthContext } from './AuthContextDef'
 
 export type Theme = 'light' | 'dark' | 'system'
@@ -84,7 +84,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile])
 
-  const setTheme = (newTheme: Theme) => {
+  const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme)
     try { localStorage.setItem(STORAGE_KEY, newTheme) } catch { /* ignore */ }
     if (user?.uid) {
@@ -94,10 +94,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         updateUserProfile(uid, { theme: newTheme }).catch(() => {})
       })
     }
-  }
+  }, [user?.uid])
+
+  const value = useMemo(
+    () => ({ theme, resolvedTheme, setTheme }),
+    [theme, resolvedTheme, setTheme]
+  )
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   )
