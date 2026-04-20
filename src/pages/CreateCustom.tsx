@@ -161,17 +161,18 @@ export default function CreateCustom() {
   const [previewKey, setPreviewKey] = useState(0)
 
   const { createPoll } = usePoll()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const { showToast } = useToast()
   const navigate = useNavigate()
 
-  // Custom polls require authentication — anonymous abuse would be untraceable.
+  // Wait for auth to resolve before checking — user is null on first render
+  // while Firebase restores the session, which would cause a false redirect.
   useEffect(() => {
-    if (user === null) {
+    if (!authLoading && user === null) {
       showToast('Sign in to create a custom poll', 'error')
       navigate('/login', { replace: true })
     }
-  }, [user, navigate, showToast])
+  }, [authLoading, user, navigate, showToast])
 
   const activeOption = options[activeOptionIdx] || options[0]
 
