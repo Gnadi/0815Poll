@@ -8,20 +8,28 @@ service cloud.firestore {
       allow read: if !resource.data.isPrivate
                   || (request.auth != null && request.auth.uid == resource.data.createdBy);
 
-      // Only authenticated users may create polls.
-      allow create: if request.auth != null
-                    && request.resource.data.createdBy == request.auth.uid;
+      // Authenticated users may create polls (createdBy must match their uid).
+      // Unauthenticated users may also create polls; createdBy must be null.
+      // Custom polls are restricted to authenticated users in the app layer (CreateCustom.tsx).
+      allow create: if (request.auth != null && request.resource.data.createdBy == request.auth.uid)
+                    || (request.auth == null && request.resource.data.createdBy == null);
 
-      // The creator may fully update their own poll.
-      // Any authenticated user may flip status to 'ended' once the poll has expired
-      // (client-side auto-expiry feature), but may not touch any other fields.
-      allow update: if (request.auth != null && request.auth.uid == resource.data.createdBy)
-                    || (
-                      request.auth != null
-                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
-                      && request.resource.data.status == 'ended'
-                      && resource.data.endsAt < request.time
-                    );
+      // Allowed poll updates:
+      // 1. Creator can change anything.
+      // 2. Anyone can increment vote counts on an active poll (castVote transaction).
+      // 3. Anyone can flip status to 'ended' once the poll has expired (client auto-expiry).
+      allow update: if
+        (request.auth != null && request.auth.uid == resource.data.createdBy)
+        || (
+          resource.data.status == 'active'
+          && request.resource.data.diff(resource.data)
+               .affectedKeys().hasOnly(['options', 'locations', 'timeSlots', 'totalVotes'])
+        )
+        || (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status == 'ended'
+          && resource.data.endsAt < request.time
+        );
 
       // Only the creator may delete their poll.
       allow delete: if request.auth != null && request.auth.uid == resource.data.createdBy;
@@ -29,12 +37,12 @@ service cloud.firestore {
 
     // ── Votes ────────────────────────────────────────────────────────────────
     match /votes/{voteId} {
-      // Only the voter themselves may read their own vote record.
+      // Only the voter themselves may read their own vote record (anonymous votes are unreadable).
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
 
-      // Any authenticated user may cast a vote.
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
+      // Authenticated users must match userId; anonymous users must set userId to null.
+      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
+                    || (request.auth == null && request.resource.data.userId == null);
 
       // Votes are immutable once cast.
       allow update, delete: if false;
@@ -43,24 +51,24 @@ service cloud.firestore {
     // ── Schedule votes ───────────────────────────────────────────────────────
     match /schedule_votes/{voteId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
+      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
+                    || (request.auth == null && request.resource.data.userId == null);
       allow update, delete: if false;
     }
 
     // ── Ranking votes ────────────────────────────────────────────────────────
     match /ranking_votes/{voteId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
+      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
+                    || (request.auth == null && request.resource.data.userId == null);
       allow update, delete: if false;
     }
 
     // ── Priority votes ───────────────────────────────────────────────────────
     match /priority_votes/{voteId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
+      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
+                    || (request.auth == null && request.resource.data.userId == null);
       allow update, delete: if false;
     }
 
