@@ -286,7 +286,7 @@ ${safeHtml}
 
   /* ---- Mobile layout ---- */
   const mobileView = (
-    <div className="lg:hidden min-h-screen bg-app-bg">
+    <div className="lg:hidden min-h-screen bg-app-bg dark:bg-dark-bg">
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3">
         <button type="button" onClick={() => navigate(-1)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -452,12 +452,12 @@ ${safeHtml}
 
   /* ---- Desktop layout ---- */
   const desktopView = (
-    <div className="hidden lg:block min-h-screen bg-app-bg">
+    <div className="hidden lg:block min-h-screen bg-app-bg dark:bg-dark-bg">
       <Sidebar />
 
       <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Top header bar */}
-        <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <button type="button" onClick={() => navigate(-1)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
               <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -491,7 +491,7 @@ ${safeHtml}
 
         {/* Config panel (collapsible) */}
         {showConfig && (
-          <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4">
+          <div className="bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-gray-800 px-6 py-4">
             <div className="max-w-4xl mx-auto grid grid-cols-4 gap-6">
               <div>
                 <label className="block text-sm font-bold text-gray-800 dark:text-gray-100 mb-2">Poll Title / Question</label>
@@ -542,7 +542,7 @@ ${safeHtml}
         {/* Three-panel editor */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left panel - Options list + Snippets */}
-          <div className="w-56 shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto">
+          <div className="w-56 shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-dark-bg overflow-y-auto">
             <div className="px-4 py-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white">Options</h3>
@@ -685,7 +685,7 @@ ${safeHtml}
           </div>
 
           {/* Right panel - Live Preview */}
-          <div className="w-80 shrink-0 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col overflow-hidden">
+          <div className="w-80 shrink-0 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-dark-bg flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
               <span className="text-sm font-bold text-gray-900 dark:text-white">Preview: {activeOption.name}</span>
               <div className="flex items-center gap-1">
