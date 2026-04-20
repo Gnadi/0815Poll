@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import DOMPurify from 'dompurify'
 import { useParams, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, format } from 'date-fns'
 import { Trophy, Share2, Users, Clock, Lightbulb, ArrowLeft, MessageCircle } from 'lucide-react'
@@ -8,6 +9,7 @@ import Sidebar from '../components/Sidebar'
 import LocationViewMap from '../components/LocationViewMap'
 import PollQRCode from '../components/PollQRCode'
 import { subscribeToPoll } from '../lib/firestore'
+import { sanitizeCustomContent } from '../lib/sanitize'
 import { buildWhatsAppShareLink, copyToClipboard } from '../lib/share'
 import { usePoll } from '../contexts/PollContext'
 import { useToast } from '../components/Toast'
@@ -22,6 +24,15 @@ export default function PollResults() {
 
   const [poll, setPoll] = useState<Poll | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const sanitizedContent = useMemo(() => {
+    if (!poll?.options) return {}
+    return Object.fromEntries(
+      poll.options
+        .filter((o) => o.customContent)
+        .map((o) => [o.id, sanitizeCustomContent(o.customContent!)])
+    )
+  }, [poll])
 
   useEffect(() => {
     if (!id) return
@@ -488,9 +499,10 @@ export default function PollResults() {
                     <div className="rounded-2xl bg-primary-500 relative overflow-hidden">
                       {winner.customContent && (
                         <iframe
-                          srcDoc={winner.customContent}
+                          srcDoc={sanitizedContent[winner.id] ?? winner.customContent}
                           title={winner.text}
                           sandbox="allow-scripts"
+                          referrerPolicy="no-referrer"
                           className="w-full border-0 pointer-events-none"
                           style={{ height: '200px' }}
                         />
@@ -530,9 +542,10 @@ export default function PollResults() {
                             >
                               {opt.customContent && (
                                 <iframe
-                                  srcDoc={opt.customContent}
+                                  srcDoc={sanitizedContent[opt.id] ?? opt.customContent}
                                   title={opt.text}
                                   sandbox="allow-scripts"
+                                  referrerPolicy="no-referrer"
                                   className="w-full border-0 pointer-events-none"
                                   style={{ height: '160px' }}
                                 />
