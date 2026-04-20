@@ -145,7 +145,7 @@ export default function CreateRanking() {
                     value={opt}
                     onChange={(e) => updateOption(idx, e.target.value)}
                     placeholder={`Option ${idx + 1}`}
-                    className="flex-1 text-sm outline-none bg-transparent"
+                    className="flex-1 text-sm outline-none bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                   {options.length > 2 && (
                     <button
