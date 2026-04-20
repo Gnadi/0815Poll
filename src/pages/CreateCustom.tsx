@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import {
@@ -165,14 +165,6 @@ export default function CreateCustom() {
   const { showToast } = useToast()
   const navigate = useNavigate()
 
-  // Custom polls require authentication — anonymous abuse would be untraceable.
-  useEffect(() => {
-    if (user === null) {
-      showToast('Sign in to create a custom poll', 'error')
-      navigate('/login', { replace: true })
-    }
-  }, [user, navigate, showToast])
-
   const activeOption = options[activeOptionIdx] || options[0]
 
   const setActiveOptionHtml = useCallback((html: string) => {
@@ -253,11 +245,6 @@ ${safeHtml}
   }
 
   const handleSubmit = async () => {
-    if (!user) {
-      showToast('Sign in to create a custom poll', 'error')
-      navigate('/login')
-      return
-    }
     const errs: Record<string, string> = {}
     if (!question.trim()) errs.question = 'Question is required.'
     if (options.length < 2) errs.options = 'Need at least 2 options.'
@@ -281,7 +268,7 @@ ${safeHtml}
         options: pollOptions,
         isPrivate,
         settings: { anonymous, duration, allowMultipleChoices },
-        createdBy: user.uid,
+        createdBy: user?.uid || null,
       })
       showToast('Custom poll created!', 'success')
       navigate(`/poll/${id}`)
