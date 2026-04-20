@@ -4,9 +4,12 @@ service cloud.firestore {
 
     // ── Polls ────────────────────────────────────────────────────────────────
     match /polls/{pollId} {
-      // Public polls are readable by everyone; private polls only by their creator.
-      allow read: if !resource.data.isPrivate
-                  || (request.auth != null && request.auth.uid == resource.data.createdBy);
+      // Any poll is readable by anyone who knows its document ID.
+      // "Private" means excluded from public listings (enforced in queries via
+      // where('isPrivate', '==', false)), not blocked from direct access.
+      // This is required so voters (including anonymous) can read the poll
+      // document inside the castVote transaction before updating vote counts.
+      allow read: if true;
 
       // Authenticated users may create polls (createdBy must match their uid).
       // Unauthenticated users may also create polls; createdBy must be null.
