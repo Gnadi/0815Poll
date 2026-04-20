@@ -318,7 +318,7 @@ ${safeHtml}
                 onClick={() => { setActiveOptionIdx(idx); setActiveTab('html') }}
                 className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-colors ${
                   idx === activeOptionIdx
-                    ? 'border-primary-400 bg-primary-50'
+                    ? 'border-primary-400 bg-primary-50 dark:bg-primary-900/30'
                     : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
                 }`}
               >
@@ -563,7 +563,7 @@ ${safeHtml}
                     onClick={() => { setActiveOptionIdx(idx); setActiveTab('html') }}
                     className={`group flex items-center gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-colors ${
                       idx === activeOptionIdx
-                        ? 'border-primary-400 bg-primary-50'
+                        ? 'border-primary-400 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
