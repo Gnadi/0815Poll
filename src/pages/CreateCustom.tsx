@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import {
@@ -161,18 +161,9 @@ export default function CreateCustom() {
   const [previewKey, setPreviewKey] = useState(0)
 
   const { createPoll } = usePoll()
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
   const { showToast } = useToast()
   const navigate = useNavigate()
-
-  // Wait for auth to resolve before checking — user is null on first render
-  // while Firebase restores the session, which would cause a false redirect.
-  useEffect(() => {
-    if (!authLoading && user === null) {
-      showToast('Sign in to create a custom poll', 'error')
-      navigate('/login', { replace: true })
-    }
-  }, [authLoading, user, navigate, showToast])
 
   const activeOption = options[activeOptionIdx] || options[0]
 
@@ -254,11 +245,6 @@ ${safeHtml}
   }
 
   const handleSubmit = async () => {
-    if (!user) {
-      showToast('Sign in to create a custom poll', 'error')
-      navigate('/login')
-      return
-    }
     const errs: Record<string, string> = {}
     if (!question.trim()) errs.question = 'Question is required.'
     if (options.length < 2) errs.options = 'Need at least 2 options.'
@@ -282,7 +268,7 @@ ${safeHtml}
         options: pollOptions,
         isPrivate,
         settings: { anonymous, duration, allowMultipleChoices },
-        createdBy: user.uid,
+        createdBy: user?.uid || null,
       })
       showToast('Custom poll created!', 'success')
       navigate(`/poll/${id}`)
