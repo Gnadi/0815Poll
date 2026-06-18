@@ -1,7 +1,23 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { Sun, Moon, BarChart2, GripVertical, Calendar, MapPin, Sliders, Target, ImageIcon, Github, Code2, Eye, Layers, ExternalLink } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
+
+const BASE_URL = 'https://flexpoll.app'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'FlexPoll',
+  url: BASE_URL,
+  description:
+    'Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always.',
+  applicationCategory: 'SocialApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  inLanguage: 'en',
+}
 
 // Check for a cached Firebase auth session without loading the Firebase SDK.
 // Firebase stores the current user in localStorage under a key starting with 'firebase:authUser:'.
@@ -227,6 +243,28 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
+      <Helmet>
+        <title>FlexPoll — The Place to Put a Poll</title>
+        <meta name="description" content="Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always." />
+        <link rel="canonical" href={`${BASE_URL}/`} />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="FlexPoll" />
+        <meta property="og:title" content="FlexPoll — The Place to Put a Poll" />
+        <meta property="og:description" content="Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always." />
+        <meta property="og:url" content={`${BASE_URL}/`} />
+        <meta property="og:image" content={`${BASE_URL}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="FlexPoll — Create and share every kind of poll" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="FlexPoll — The Place to Put a Poll" />
+        <meta name="twitter:description" content="Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always." />
+        <meta name="twitter:image" content={`${BASE_URL}/og-image.png`} />
+        <meta name="twitter:image:alt" content="FlexPoll — Create and share every kind of poll" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
 
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
