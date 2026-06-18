@@ -3,10 +3,10 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     react(),
-    VitePWA({
+    !isSsrBuild && VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
       includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png', 'robots.txt'],
@@ -67,7 +67,7 @@ export default defineConfig({
         ],
       },
     }),
-  ],
+  ].filter(Boolean),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -76,14 +76,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          'vendor-firebase-msg': ['firebase/messaging'],
-          'vendor-editor': ['@tiptap/react', '@tiptap/starter-kit'],
-          'vendor-leaflet': ['leaflet', 'react-leaflet'],
-        },
+        manualChunks: isSsrBuild
+          ? undefined
+          : {
+              'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+              'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+              'vendor-firebase-msg': ['firebase/messaging'],
+              'vendor-editor': ['@tiptap/react', '@tiptap/starter-kit'],
+              'vendor-leaflet': ['leaflet', 'react-leaflet'],
+            },
       },
     },
   },
-})
+}))

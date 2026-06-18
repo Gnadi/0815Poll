@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlexPoll — The Place to Put a Poll</title>
-    <meta name="description" content="Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types." />
-    <link rel="canonical" href="https://0815poll.vercel.app/" />
-    <meta name="robots" content="index, follow" />
+    <!-- Page title, description, canonical, OG, Twitter, JSON-LD injected by react-helmet-async per route -->
     <meta name="theme-color" content="#5d5fef" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
@@ -16,25 +13,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="FlexPoll" />
 
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="FlexPoll" />
-    <meta property="og:title" content="FlexPoll — The Place to Put a Poll" />
-    <meta property="og:description" content="Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types." />
-    <meta property="og:url" content="https://0815poll.vercel.app/" />
-    <meta property="og:image" content="https://0815poll.vercel.app/og-image.svg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/svg+xml" />
-    <meta property="og:image:alt" content="FlexPoll — Create and share every kind of poll" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="FlexPoll — The Place to Put a Poll" />
-    <meta name="twitter:description" content="Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types." />
-    <meta name="twitter:image" content="https://0815poll.vercel.app/og-image.png" />
-    <meta name="twitter:image:alt" content="FlexPoll — Create and share every kind of poll" />
-
     <!-- Prevent dark-mode flash: apply class before React mounts -->
     <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();</script>
 
@@ -43,26 +21,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
-
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "FlexPoll",
-      "url": "https://0815poll.vercel.app",
-      "description": "Create and share polls easily. Standard, Schedule, Location, Ranking, Priority, and Custom poll types.",
-      "applicationCategory": "SocialApplication",
-      "operatingSystem": "Web",
-      "browserRequirements": "Requires JavaScript",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "inLanguage": "en"
-    }
-    </script>
   </head>
   <body>
     <div id="root"></div>

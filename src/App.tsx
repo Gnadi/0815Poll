@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './contexts/ThemeContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import LandingPage from './pages/LandingPage'
@@ -15,24 +16,26 @@ const Spinner = () => (
 
 export default function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <ThemeProvider>
-          <Routes>
-            {/* Landing page: no Firebase, no auth — renders immediately */}
-            <Route path="/" element={<LandingPage />} />
-            {/* All other routes: lazy-load Firebase + auth stack on demand */}
-            <Route
-              path="/*"
-              element={
-                <Suspense fallback={<Spinner />}>
-                  <PrivateSection />
-                </Suspense>
-              }
-            />
-          </Routes>
-        </ThemeProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <ThemeProvider>
+            <Routes>
+              {/* Landing page: no Firebase, no auth — renders immediately */}
+              <Route path="/" element={<LandingPage />} />
+              {/* All other routes: lazy-load Firebase + auth stack on demand */}
+              <Route
+                path="/*"
+                element={
+                  <Suspense fallback={<Spinner />}>
+                    <PrivateSection />
+                  </Suspense>
+                }
+              />
+            </Routes>
+          </ThemeProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
+    </HelmetProvider>
   )
 }
