@@ -1,0 +1,15 @@
+# FlexPoll
+
+> FlexPoll is a free, open-source polling web app. Create and share Standard, Schedule, Location, Ranking, Priority, Image, and Custom HTML/CSS/JS polls, then collect votes and view results in real time.
+
+FlexPoll is built with React, TypeScript, and Firebase. Polls can be shared via link or QR code, results update live, and the app is installable as a PWA.
+
+## Docs
+
+- [Homepage](https://flexpoll.app/): Overview of FlexPoll and its poll types
+- [Explore](https://flexpoll.app/explore): Browse public polls from other users
+- [Create a poll](https://flexpoll.app/create): Start creating a new poll
+
+## Optional
+
+- [GitHub repository](https://github.com/gnadi/0815poll): Source code, issues, and contributions
