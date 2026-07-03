@@ -545,9 +545,9 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-gray-100 dark:border-gray-800 py-8">
-        <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div>
+            <div className="text-center md:text-left">
               <span className="text-sm font-bold text-gray-900 dark:text-white">FlexPoll</span>
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed &amp; Made by Johannes Gnadlinger</p>
             </div>
@@ -555,13 +555,13 @@ export default function LandingPage() {
               href="https://github.com/gnadi/0815poll"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="GitHub repository"
             >
               <Github className="h-4 w-4 text-gray-400 dark:text-gray-500" />
             </a>
           </div>
-          <nav className="flex flex-wrap items-center gap-5">
+          <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Support'].map((item) => (
               <a key={item} href="#" className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">{item}</a>
             ))}

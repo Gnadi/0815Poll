@@ -4,7 +4,6 @@ import { AuthProvider } from './contexts/AuthContext'
 import { PollProvider } from './contexts/PollContext'
 import { ToastProvider } from './components/Toast'
 import { NotificationProvider } from './contexts/NotificationContext'
-import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
 
 const Auth = lazy(() => import('./pages/Auth'))
@@ -56,7 +55,6 @@ export default function PrivateSection() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
-            <InstallPrompt />
           </ToastProvider>
         </PollProvider>
       </NotificationProvider>
