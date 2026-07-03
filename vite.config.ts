@@ -9,6 +9,10 @@ export default defineConfig(({ isSsrBuild }) => ({
     !isSsrBuild && VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png', 'robots.txt'],
       manifest: {
         name: 'FlexPoll — The Place to Put a Poll',
