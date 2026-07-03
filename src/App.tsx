@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './contexts/ThemeContext'
 import ErrorBoundary from './components/ErrorBoundary'
+import InstallPrompt from './components/InstallPrompt'
 import LandingPage from './pages/LandingPage'
 
 // Firebase and all auth-dependent code is deferred inside PrivateSection
@@ -33,6 +34,7 @@ export default function App() {
                 }
               />
             </Routes>
+            <InstallPrompt />
           </ThemeProvider>
         </BrowserRouter>
       </ErrorBoundary>
