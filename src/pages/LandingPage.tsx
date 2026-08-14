@@ -1,23 +1,65 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { Sun, Moon, BarChart2, GripVertical, Calendar, MapPin, Sliders, Target, ImageIcon, Github, Code2, Eye, Layers, ExternalLink } from 'lucide-react'
+import { Sun, Moon, BarChart2, GripVertical, Calendar, MapPin, Sliders, Target, ImageIcon, Github, Code2, Eye, Layers, ExternalLink, ChevronDown } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 
 const BASE_URL = 'https://flexpoll.app'
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'FlexPoll',
-  url: BASE_URL,
-  description:
-    'Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always.',
-  applicationCategory: 'SocialApplication',
-  operatingSystem: 'Web',
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  inLanguage: 'en',
-}
+const GITHUB_URL = 'https://github.com/gnadi/0815poll'
+
+// Answers are kept to things the code actually does — anonymous voting really
+// does pass a null uid (src/pages/PollVote.tsx), the licence really is MIT.
+const FAQ = [
+  {
+    q: 'Do people need an account to vote?',
+    a: 'No. Anyone with the link can vote straight away — no sign-up, no app install. You only need an account to create polls and see them collected in one place.',
+  },
+  {
+    q: 'Is FlexPoll really free?',
+    a: 'Yes, and there is no upgrade to sell you. Every poll type and every feature is free, with no vote caps, no trial period and no card required.',
+  },
+  {
+    q: 'Which poll type should I pick?',
+    a: 'Classic for a quick decision, Schedule to find a time, Location for anything map-based, Ranking when the order matters, Priority when you want people to weigh options against each other, Image for visual choices, and Custom when you want to build the option cards yourself.',
+  },
+  {
+    q: 'How do I share a poll?',
+    a: 'Every poll gets a link you can send anywhere, plus a generated QR code for posters, slides or a room full of people.',
+  },
+  {
+    q: 'When do results appear?',
+    a: 'Immediately. Vote counts and result bars update live as votes come in, so you can watch a poll resolve in real time.',
+  },
+  {
+    q: 'Can I self-host it?',
+    a: 'Yes. The whole codebase is on GitHub under the MIT licence — read it, fork it, run your own instance, or send a pull request.',
+  },
+]
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'FlexPoll',
+    url: BASE_URL,
+    description:
+      'Create and share polls easily — Classic, Ranking, Schedule, Location, Priority, Image, and Custom HTML/CSS/JS poll types. Free forever, open source always.',
+    applicationCategory: 'SocialApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    inLanguage: 'en',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+]
 
 // Check for a cached Firebase auth session without loading the Firebase SDK.
 // Firebase stores the current user in localStorage under a key starting with 'firebase:authUser:'.
@@ -266,6 +308,14 @@ export default function LandingPage() {
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
+      {/* Lets keyboard users skip the sticky nav and its in-page anchors. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-gray-900 focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white dark:focus:bg-white dark:focus:text-gray-900"
+      >
+        Skip to content
+      </a>
+
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-6xl px-6 flex h-14 items-center justify-between">
@@ -275,8 +325,9 @@ export default function LandingPage() {
               <a href="#poll-types" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Poll Types</a>
               <a href="#custom-editor" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Custom Editor</a>
               <a href="#open-source" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Open Source</a>
+              <a href="#faq" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">FAQ</a>
               <a
-                href="https://github.com/gnadi/0815poll"
+                href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -314,6 +365,7 @@ export default function LandingPage() {
         </div>
       </header>
 
+      <main id="main">
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:pt-24 md:pb-28">
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -461,7 +513,7 @@ export default function LandingPage() {
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
-                  href="https://github.com/gnadi/0815poll"
+                  href={GITHUB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition-colors"
@@ -512,6 +564,37 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* FAQ — mirrored as FAQPage JSON-LD above */}
+      <section id="faq" className="py-20 px-6 bg-gray-50 dark:bg-gray-800/50">
+        <div className="mx-auto max-w-3xl">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">
+              Questions before your first poll
+            </h2>
+            <p className="mt-3 text-gray-500 dark:text-gray-400 text-base">
+              The things people usually check before sending a link round.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {FAQ.map(({ q, a }) => (
+              <details
+                key={q}
+                className="group rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-gray-900 dark:text-white [&::-webkit-details-marker]:hidden">
+                  {q}
+                  <ChevronDown
+                    className="h-5 w-5 shrink-0 text-gray-400 transition-transform group-open:rotate-180"
+                    aria-hidden="true"
+                  />
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 px-6 bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-2xl text-center">
@@ -530,7 +613,7 @@ export default function LandingPage() {
               Create Your First Poll
             </Link>
             <a
-              href="https://github.com/gnadi/0815poll"
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-8 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -543,16 +626,18 @@ export default function LandingPage() {
         </div>
       </section>
 
+      </main>
+
       {/* Footer */}
       <footer className="border-t border-gray-100 dark:border-gray-800 py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <div className="text-center md:text-left">
               <span className="text-sm font-bold text-gray-900 dark:text-white">FlexPoll</span>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© 2026 Designed &amp; Made by Johannes Gnadlinger</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">© {new Date().getFullYear()} Designed &amp; Made by Johannes Gnadlinger</p>
             </div>
             <a
-              href="https://github.com/gnadi/0815poll"
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -561,10 +646,29 @@ export default function LandingPage() {
               <Github className="h-4 w-4 text-gray-400 dark:text-gray-500" />
             </a>
           </div>
-          <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Support'].map((item) => (
-              <a key={item} href="#" className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">{item}</a>
-            ))}
+          {/* These were four href="#" stubs for pages that do not exist — the
+              links looked real and went nowhere. Until there are actual policy
+              pages to point at, link the destinations that do exist. */}
+          <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-gray-400 dark:text-gray-500">
+            <Link to="/explore" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Explore polls</Link>
+            <Link to="/create" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Create a poll</Link>
+            <a href="#faq" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">FAQ</a>
+            <a
+              href={`${GITHUB_URL}/blob/main/LICENSE.txt`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              MIT License
+            </a>
+            <a
+              href={`${GITHUB_URL}/issues`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              Support
+            </a>
           </nav>
         </div>
       </footer>
