@@ -16,11 +16,11 @@
     <!-- Prevent dark-mode flash: apply class before React mounts -->
     <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();</script>
 
-    <!-- Google Fonts: preload + non-blocking load (weights 400/600/700 cover all landing page usage) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
+    <!-- Self-hosted Inter: one variable woff2 covering weights 400-800.
+         No third-party font request, and the file lands in the PWA precache.
+         See public/fonts; regenerate with scripts/generate_fonts.py. -->
+    <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts/inter.css" />
   </head>
   <body>
     <div id="root"></div>
