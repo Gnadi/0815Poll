@@ -71,6 +71,37 @@ npm run preview
 npm run lint
 ```
 
+## Firestore rules & indexes
+
+`firestore.rules` and `firestore.indexes.json` are deployed by GitHub Actions
+(`.github/workflows/firebase-firestore.yml`) as soon as a change to either one
+lands on `main` — i.e. on merge. Pull requests that touch them run the
+validation job only, so broken rules are caught before the merge.
+
+Two repository settings are required (Settings → Secrets and variables →
+Actions):
+
+| Name | Type | Value |
+| --- | --- | --- |
+| `FIREBASE_SERVICE_ACCOUNT` | Secret | The complete JSON key of a Google Cloud service account for the Firebase project |
+| `FIREBASE_PROJECT_ID` | Variable | The Firebase project id to deploy to |
+
+The service account needs the **Firebase Rules Admin**
+(`roles/firebaserules.admin`) and **Cloud Datastore Index Admin**
+(`roles/datastore.indexAdmin`) roles; **Firebase Admin** covers both. Create
+the key in the Google Cloud console under IAM & Admin → Service Accounts →
+Keys → Add key → JSON, and paste the file's entire contents into the secret.
+
+The deploy runs without `--force`: indexes are created and updated, but an
+index that exists in Firebase and is missing from `firestore.indexes.json` is
+only reported in the job log, never deleted. Removing an index stays a manual
+step in the Firebase console.
+
+`firestore.indexes.json` was derived from the queries in `src/lib/firestore.ts`.
+If indexes were created by hand in the console earlier, capture them once with
+`firebase firestore:indexes > firestore.indexes.json` so the file stays the
+source of truth.
+
 ## Project Structure
 
 ```
