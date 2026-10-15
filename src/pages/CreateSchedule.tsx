@@ -11,6 +11,7 @@ import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { ChevronLeft, ChevronRight, Lock } from 'lucide-react'
+import { ALL_DAY } from '../types'
 import type { Contact } from '../types'
 
 const DURATION_OPTIONS = [
@@ -93,19 +94,14 @@ export default function CreateSchedule() {
   }
 
   const handleSubmit = async () => {
-    if (totalSlots === 0) {
-      showToast('Please select at least one time slot.', 'error')
-      return
-    }
     setSubmitting(true)
     try {
-      const timeSlots = selectedDates
-        .filter((d) => (slotMap[d]?.length || 0) > 0)
-        .map((date) => ({
-          date,
-          times: slotMap[date].sort(),
-          votes: {},
-        }))
+      // Dates without chosen times become all-day options
+      const timeSlots = selectedDates.map((date) => ({
+        date,
+        times: slotMap[date]?.length ? [...slotMap[date]].sort() : [ALL_DAY],
+        votes: {},
+      }))
 
       const id = await createPoll({
         type: 'schedule',
@@ -236,8 +232,8 @@ export default function CreateSchedule() {
         {step === 3 && (
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Select Time Slots</h3>
-              <p className="text-sm text-gray-500 mb-4">Pick available times for each date</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Select Time Slots <span className="text-sm font-normal text-gray-400">(optional)</span></h3>
+              <p className="text-sm text-gray-500 mb-4">Pick available times for each date, or skip to let people vote on whole days</p>
             </div>
 
             {/* Date tabs */}
@@ -299,7 +295,7 @@ export default function CreateSchedule() {
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Selection Summary</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-800">
-                  {selectedDates.length} dates, {totalSlots} time slots
+                  {selectedDates.length} dates, {totalSlots > 0 ? `${totalSlots} time slots` : 'no time slots (all-day)'}
                 </span>
                 <div className="flex gap-1">
                   {selectedDates.map((d) => (
@@ -352,7 +348,7 @@ export default function CreateSchedule() {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={submitting || totalSlots === 0}
+              disabled={submitting}
               className="flex flex-1 items-center justify-center rounded-2xl bg-primary-500 py-3.5 text-sm font-bold text-white hover:bg-primary-600 disabled:opacity-50"
             >
               {submitting ? <Spinner size="sm" /> : 'Create Poll'}

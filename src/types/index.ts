@@ -13,6 +13,10 @@ export interface PollOption {
   imageUrl?: string // Firebase Storage download URL for image poll options
 }
 
+// Placeholder time for dates without specific time slots (date-only voting)
+export const ALL_DAY = 'all-day'
+export const formatSlotTime = (time: string) => (time === ALL_DAY ? 'All day' : time)
+
 export interface TimeSlot {
   date: string // ISO date string e.g. "2024-10-05"
   times: string[] // e.g. ["09:00", "11:00"]
