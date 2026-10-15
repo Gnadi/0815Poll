@@ -13,6 +13,7 @@ import { sanitizeCustomContent } from '../lib/sanitize'
 import { buildWhatsAppShareLink, copyToClipboard } from '../lib/share'
 import { usePoll } from '../contexts/PollContext'
 import { useToast } from '../components/Toast'
+import { formatSlotTime } from '../types'
 import type { Poll } from '../types'
 import BottomNav from '../components/BottomNav'
 
@@ -249,7 +250,7 @@ export default function PollResults() {
                   <div className="rounded-2xl bg-primary-500 p-5 text-white relative overflow-hidden lg:p-6">
                     <Trophy className="absolute right-4 top-4 h-16 w-16 text-white/20" />
                     <p className="text-xs font-semibold uppercase tracking-wide text-primary-200 mb-1">Best Time</p>
-                    <h3 className="text-2xl font-bold">{(topSlot as TopSlot).time}</h3>
+                    <h3 className="text-2xl font-bold">{formatSlotTime((topSlot as TopSlot).time)}</h3>
                     <p className="text-sm text-primary-200">{format(new Date((topSlot as TopSlot).date + 'T00:00:00'), 'EEEE, MMMM d')}</p>
                     <p className="text-sm mt-1">{(topSlot as TopSlot).votes} people available</p>
                   </div>
@@ -336,7 +337,7 @@ export default function PollResults() {
                                 return (
                                   <ResultBar
                                     key={time}
-                                    label={time}
+                                    label={formatSlotTime(time)}
                                     votes={votes}
                                     totalVotes={totalSlotVotes || 1}
                                     isWinner={ts?.date === slot.date && ts?.time === time}

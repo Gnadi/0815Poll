@@ -20,6 +20,7 @@ import { filterFCMTokens } from '../lib/fcm'
 import { usePoll } from '../contexts/PollContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
+import { formatSlotTime } from '../types'
 import type { Poll, Contact } from '../types'
 
 export default function PollVote() {
@@ -385,7 +386,7 @@ export default function PollVote() {
                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary-300'
                         }`}
                       >
-                        <div>{time}</div>
+                        <div>{formatSlotTime(time)}</div>
                         {voted && <div className="text-xs opacity-75">{voteCount}✓</div>}
                       </button>
                     )
