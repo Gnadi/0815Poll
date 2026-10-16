@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import DOMPurify from 'dompurify'
 import { useParams, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, format } from 'date-fns'
-import { Trophy, Share2, Users, Clock, Lightbulb, ArrowLeft, MessageCircle } from 'lucide-react'
+import { Trophy, Share2, Users, Clock, Lightbulb, ArrowLeft, MessageCircle, Pencil } from 'lucide-react'
 import ResultBar from '../components/ResultBar'
 import Spinner from '../components/Spinner'
 import Sidebar from '../components/Sidebar'
@@ -12,6 +12,7 @@ import { subscribeToPoll } from '../lib/firestore'
 import { sanitizeCustomContent } from '../lib/sanitize'
 import { buildWhatsAppShareLink, copyToClipboard } from '../lib/share'
 import { usePoll } from '../contexts/PollContext'
+import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import { formatSlotTime } from '../types'
 import type { Poll } from '../types'
@@ -22,6 +23,7 @@ export default function PollResults() {
   const navigate = useNavigate()
   const { getLocalVote } = usePoll()
   const { showToast } = useToast()
+  const { user } = useAuth()
 
   const [poll, setPoll] = useState<Poll | null>(null)
   const [loading, setLoading] = useState(true)
@@ -155,13 +157,25 @@ export default function PollResults() {
               <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-base font-bold text-gray-900 dark:text-white lg:hidden">Poll Results</h1>
-            <button
-              type="button"
-              onClick={share}
-              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-            </button>
+            <div className="flex items-center gap-1">
+              {poll && user?.uid && user.uid === poll.createdBy && (
+                <button
+                  type="button"
+                  onClick={() => navigate(`/poll/${poll.id}/edit`)}
+                  aria-label="Edit poll"
+                  className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <Pencil className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={share}
+                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
           </header>
 
           <div className="px-4 py-4 pb-24 lg:px-8 lg:pb-8 space-y-5">

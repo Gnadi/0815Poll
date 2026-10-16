@@ -17,6 +17,7 @@ const CreateRanking = lazy(() => import('./pages/CreateRanking'))
 const CreatePriority = lazy(() => import('./pages/CreatePriority'))
 const CreateImage = lazy(() => import('./pages/CreateImage'))
 const PollVote = lazy(() => import('./pages/PollVote'))
+const EditPoll = lazy(() => import('./pages/EditPoll'))
 const PollResults = lazy(() => import('./pages/PollResults'))
 const Profile = lazy(() => import('./pages/Profile'))
 const Contacts = lazy(() => import('./pages/Contacts'))
@@ -48,6 +49,7 @@ export default function PrivateSection() {
                 <Route path="create/priority" element={<CreatePriority />} />
                 <Route path="create/image" element={<CreateImage />} />
                 <Route path="poll/:id" element={<PollVote />} />
+                <Route path="poll/:id/edit" element={<EditPoll />} />
                 <Route path="poll/:id/results" element={<PollResults />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="contacts" element={<Contacts />} />

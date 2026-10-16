@@ -16,6 +16,7 @@ import {
   runTransaction,
   Timestamp,
   increment,
+  type UpdateData,
   type Unsubscribe,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
@@ -113,6 +114,21 @@ export function subscribeToPoll(
   return onSnapshot(doc(db, 'polls', pollId), (snap) => {
     callback(snap.exists() ? docToPoll(snap as QueryDocumentSnapshot) : null)
   })
+}
+
+export type PollUpdate = Partial<Pick<Poll, 'question' | 'description' | 'isPrivate' | 'options' | 'locations' | 'settings'>> & {
+  endsAt?: Date
+}
+
+/** Creator-only edit of an existing poll. Re-activates the poll if the new end date is in the future. */
+export async function updatePoll(pollId: string, changes: PollUpdate): Promise<void> {
+  const { endsAt, ...rest } = changes
+  const data: UpdateData<Poll> = { ...rest }
+  if (endsAt) {
+    data.endsAt = Timestamp.fromDate(endsAt)
+    data.status = endsAt.getTime() > Date.now() ? 'active' : 'ended'
+  }
+  await updateDoc(doc(db, 'polls', pollId), data)
 }
 
 export async function updatePollStatus(pollId: string, status: PollStatus): Promise<void> {

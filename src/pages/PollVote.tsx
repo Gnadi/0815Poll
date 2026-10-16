@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import DOMPurify from 'dompurify'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { formatDistanceToNow, format, isPast } from 'date-fns'
-import { BarChart2, Users, Clock, Share2, ChevronDown, ChevronUp, MessageCircle, Bell } from 'lucide-react'
+import { BarChart2, Users, Clock, Share2, ChevronDown, ChevronUp, MessageCircle, Bell, Pencil } from 'lucide-react'
 import Layout from '../components/Layout'
 import VoteOption from '../components/VoteOption'
 import RankingList from '../components/RankingList'
@@ -255,9 +255,16 @@ export default function PollVote() {
       title="Cast Your Vote"
       showBack
       headerRight={
-        <button type="button" onClick={share} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-          <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-        </button>
+        <div className="flex items-center gap-1">
+          {user?.uid && user.uid === poll.createdBy && (
+            <button type="button" onClick={() => navigate(`/poll/${poll.id}/edit`)} aria-label="Edit poll" className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+              <Pencil className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            </button>
+          )}
+          <button type="button" onClick={share} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+          </button>
+        </div>
       }
     >
       <div className="lg:max-w-2xl lg:mx-auto">
