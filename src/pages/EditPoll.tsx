@@ -7,7 +7,7 @@ import Toggle from '../components/Toggle'
 import Spinner from '../components/Spinner'
 import CodeEditor from '../components/CodeEditor'
 import { DEFAULT_TIMES } from '../components/TimeSlotPicker'
-import { getPoll, updatePoll } from '../lib/firestore'
+import { getPoll, updatePoll, removeAllVotes, removeVotesForOptions } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/Toast'
 import MapPicker from '../components/MapPicker'
@@ -160,27 +160,32 @@ export default function EditPoll() {
     const end = new Date(endsAt)
     if (!endsAt || isNaN(end.getTime())) { setError('Please choose a valid end date.'); return }
 
-    // Voters removed by resets are subtracted from the total.
-    let totalVotes = poll.totalVotes
-    if (pointsReset) {
-      totalVotes = 0
-    } else {
-      const before = [...(poll.options ?? []), ...(poll.locations ?? [])]
-      const after = [...options, ...locations]
-      const removed = before.reduce((sum, b) => {
-        const a = after.find((x) => x.id === b.id)
-        return sum + (a ? Math.max(0, b.votes - a.votes) : 0)
-      }, 0)
-      totalVotes = Math.max(0, totalVotes - removed)
-    }
-
     setError('')
     setSaving(true)
     try {
+      // Options/locations whose votes were reset: delete the vote documents so people can vote again.
+      let totalVotes = poll.totalVotes
       let finalOptions = options
+      let finalLocations = locations
+      if (pointsReset) {
+        await removeAllVotes(poll.id)
+        totalVotes = 0
+      } else {
+        const resetIds = [...(poll.options ?? []), ...(poll.locations ?? [])]
+          .filter((b) => b.votes > 0 && [...options, ...locations].some((x) => x.id === b.id && x.votes === 0))
+          .map((b) => b.id)
+        if (resetIds.length > 0) {
+          const { deleted, otherOptionDecrements } = await removeVotesForOptions(poll.id, resetIds)
+          totalVotes = Math.max(0, totalVotes - deleted)
+          const dec = <T extends { id: string; votes: number }>(list: T[]) =>
+            list.map((x) => (otherOptionDecrements[x.id] ? { ...x, votes: Math.max(0, x.votes - otherOptionDecrements[x.id]) } : x))
+          finalOptions = dec(options)
+          finalLocations = dec(locations)
+        }
+      }
       if (poll.type === 'image') {
         finalOptions = await Promise.all(
-          options.map(async (o) =>
+          finalOptions.map(async (o) =>
             files[o.id] ? { ...o, imageUrl: await uploadPollImage(files[o.id], poll.id, o.id) } : o
           )
         )
@@ -200,7 +205,7 @@ export default function EditPoll() {
         totalVotes,
         ...(poll.options ? { options: finalOptions.map((o) => ({ ...o, text: o.text.trim() })) } : {}),
         ...(poll.locations
-          ? { locations: locations.map((l) => ({ ...l, name: l.name.trim(), address: l.address.trim() })) }
+          ? { locations: finalLocations.map((l) => ({ ...l, name: l.name.trim(), address: l.address.trim() })) }
           : {}),
         ...(poll.timeSlots ? { timeSlots: slots } : {}),
       })
