@@ -16,6 +16,7 @@ import {
   runTransaction,
   Timestamp,
   increment,
+  type UpdateData,
   type Unsubscribe,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
@@ -113,6 +114,60 @@ export function subscribeToPoll(
   return onSnapshot(doc(db, 'polls', pollId), (snap) => {
     callback(snap.exists() ? docToPoll(snap as QueryDocumentSnapshot) : null)
   })
+}
+
+export type PollUpdate = Partial<Pick<Poll, 'question' | 'description' | 'isPrivate' | 'options' | 'locations' | 'timeSlots' | 'totalVotes' | 'settings'>> & {
+  endsAt?: Date
+}
+
+/** Creator-only edit of an existing poll. Re-activates the poll if the new end date is in the future. */
+export async function updatePoll(pollId: string, changes: PollUpdate): Promise<void> {
+  const { endsAt, ...rest } = changes
+  const data: Record<string, unknown> = { ...rest }
+  if (endsAt) {
+    data.endsAt = Timestamp.fromDate(endsAt)
+    data.status = endsAt.getTime() > Date.now() ? 'active' : 'ended'
+  }
+  await updateDoc(doc(db, 'polls', pollId), data as UpdateData<Poll>)
+}
+
+const VOTE_COLLECTIONS = ['votes', 'schedule_votes', 'ranking_votes', 'priority_votes'] as const
+
+/** Creator only: delete every vote document of a poll so voters can vote again. */
+export async function removeAllVotes(pollId: string): Promise<void> {
+  for (const name of VOTE_COLLECTIONS) {
+    const snap = await getDocs(query(collection(db, name), where('pollId', '==', pollId)))
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)))
+  }
+}
+
+/**
+ * Creator only: delete the vote documents that include any of the given options.
+ * Returns how many votes were removed and, for multiple-choice votes, how many
+ * votes that also removes from other options (so counters can be kept consistent).
+ */
+export async function removeVotesForOptions(
+  pollId: string,
+  optionIds: string[]
+): Promise<{ deleted: number; otherOptionDecrements: Record<string, number> }> {
+  const found = new Map<string, QueryDocumentSnapshot>()
+  for (let i = 0; i < optionIds.length; i += 30) {
+    const chunk = optionIds.slice(i, i + 30)
+    const [single, multi] = await Promise.all([
+      getDocs(query(collection(db, 'votes'), where('pollId', '==', pollId), where('optionId', 'in', chunk))),
+      getDocs(query(collection(db, 'votes'), where('pollId', '==', pollId), where('optionIds', 'array-contains-any', chunk))),
+    ])
+    ;[...single.docs, ...multi.docs].forEach((d) => found.set(d.id, d))
+  }
+  const otherOptionDecrements: Record<string, number> = {}
+  found.forEach((d) => {
+    const data = d.data() as Partial<Vote>
+    ;(data.optionIds ?? []).forEach((oid) => {
+      if (!optionIds.includes(oid)) otherOptionDecrements[oid] = (otherOptionDecrements[oid] ?? 0) + 1
+    })
+  })
+  await Promise.all([...found.values()].map((d) => deleteDoc(d.ref)))
+  return { deleted: found.size, otherOptionDecrements }
 }
 
 export async function updatePollStatus(pollId: string, status: PollStatus): Promise<void> {
