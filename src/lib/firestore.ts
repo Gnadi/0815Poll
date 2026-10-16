@@ -116,19 +116,19 @@ export function subscribeToPoll(
   })
 }
 
-export type PollUpdate = Partial<Pick<Poll, 'question' | 'description' | 'isPrivate' | 'options' | 'locations' | 'settings'>> & {
+export type PollUpdate = Partial<Pick<Poll, 'question' | 'description' | 'isPrivate' | 'options' | 'locations' | 'timeSlots' | 'totalVotes' | 'settings'>> & {
   endsAt?: Date
 }
 
 /** Creator-only edit of an existing poll. Re-activates the poll if the new end date is in the future. */
 export async function updatePoll(pollId: string, changes: PollUpdate): Promise<void> {
   const { endsAt, ...rest } = changes
-  const data: UpdateData<Poll> = { ...rest }
+  const data: Record<string, unknown> = { ...rest }
   if (endsAt) {
     data.endsAt = Timestamp.fromDate(endsAt)
     data.status = endsAt.getTime() > Date.now() ? 'active' : 'ended'
   }
-  await updateDoc(doc(db, 'polls', pollId), data)
+  await updateDoc(doc(db, 'polls', pollId), data as UpdateData<Poll>)
 }
 
 export async function updatePollStatus(pollId: string, status: PollStatus): Promise<void> {
