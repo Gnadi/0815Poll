@@ -11,13 +11,13 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
-    "@tiptap/pm": "^2.10.4",
-    "@tiptap/react": "^2.10.4",
-    "@tiptap/starter-kit": "^2.10.4",
+    "@tiptap/pm": "^3.32.0",
+    "@tiptap/react": "^3.32.0",
+    "@tiptap/starter-kit": "^3.32.0",
     "@types/dompurify": "^3.0.5",
     "date-fns": "^4.1.0",
     "dompurify": "^3.4.0",
-    "firebase": "^11.4.0",
+    "firebase": "^12.19.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.479.0",
     "qrcode.react": "^4.2.0",
@@ -46,5 +46,10 @@
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
     "vite-plugin-pwa": "^1.2.0"
+  },
+  "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.13.6"
+    }
   }
 }
