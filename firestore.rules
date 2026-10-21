@@ -2,6 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // True if the signed-in user created the poll the given vote belongs to.
+    // Lets creators reset votes (read to find them, delete to remove them).
+    function isPollCreator(pollId) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/polls/$(pollId))
+        && get(/databases/$(database)/documents/polls/$(pollId)).data.createdBy == request.auth.uid;
+    }
+
     // ── Polls ────────────────────────────────────────────────────────────────
     match /polls/{pollId} {
       // Any poll is readable by anyone who knows its document ID.
@@ -40,39 +48,51 @@ service cloud.firestore {
 
     // ── Votes ────────────────────────────────────────────────────────────────
     match /votes/{voteId} {
-      // Only the voter themselves may read their own vote record (anonymous votes are unreadable).
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Voters read their own vote record (anonymous votes are unreadable); the poll creator may read votes of their poll to reset them.
+      allow read: if (request.auth != null && request.auth.uid == resource.data.userId)
+                  || isPollCreator(resource.data.pollId);
 
       // Authenticated users must match userId; anonymous users must set userId to null.
       allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
                     || (request.auth == null && request.resource.data.userId == null);
 
-      // Votes are immutable once cast.
-      allow update, delete: if false;
+      // Votes are immutable once cast (only deletable by the poll creator).
+      allow update: if false;
+      // Poll creator may delete votes when resetting them.
+      allow delete: if isPollCreator(resource.data.pollId);
     }
 
     // ── Schedule votes ───────────────────────────────────────────────────────
     match /schedule_votes/{voteId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if (request.auth != null && request.auth.uid == resource.data.userId)
+                  || isPollCreator(resource.data.pollId);
       allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
                     || (request.auth == null && request.resource.data.userId == null);
-      allow update, delete: if false;
+      allow update: if false;
+      // Poll creator may delete votes when resetting them.
+      allow delete: if isPollCreator(resource.data.pollId);
     }
 
     // ── Ranking votes ────────────────────────────────────────────────────────
     match /ranking_votes/{voteId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if (request.auth != null && request.auth.uid == resource.data.userId)
+                  || isPollCreator(resource.data.pollId);
       allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
                     || (request.auth == null && request.resource.data.userId == null);
-      allow update, delete: if false;
+      allow update: if false;
+      // Poll creator may delete votes when resetting them.
+      allow delete: if isPollCreator(resource.data.pollId);
     }
 
     // ── Priority votes ───────────────────────────────────────────────────────
     match /priority_votes/{voteId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if (request.auth != null && request.auth.uid == resource.data.userId)
+                  || isPollCreator(resource.data.pollId);
       allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid)
                     || (request.auth == null && request.resource.data.userId == null);
-      allow update, delete: if false;
+      allow update: if false;
+      // Poll creator may delete votes when resetting them.
+      allow delete: if isPollCreator(resource.data.pollId);
     }
 
     // ── Users ────────────────────────────────────────────────────────────────
