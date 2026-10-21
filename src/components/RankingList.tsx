@@ -78,7 +78,7 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
               isDragging
                 ? 'border-primary-300 shadow-md opacity-40'
                 : isDropTarget
-                ? 'border-primary-400 ring-2 ring-primary-200 shadow-sm'
+                ? 'border-primary-400 ring-2 ring-primary-200 shadow-xs'
                 : 'border-gray-200 dark:border-gray-700'
             } ${!disabled ? 'cursor-grab active:cursor-grabbing' : ''}`}
           >
@@ -108,7 +108,7 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
                   type="button"
                   onClick={() => moveItem(index, index - 1)}
                   disabled={index === 0}
-                  className="flex h-5 w-5 items-center justify-center rounded text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="flex h-5 w-5 items-center justify-center rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Move up"
                 >
                   <ChevronUp className="h-3.5 w-3.5" />
@@ -117,7 +117,7 @@ export default function RankingList({ options, order, onChange, disabled }: Rank
                   type="button"
                   onClick={() => moveItem(index, index + 1)}
                   disabled={index === order.length - 1}
-                  className="flex h-5 w-5 items-center justify-center rounded text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="flex h-5 w-5 items-center justify-center rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Move down"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />

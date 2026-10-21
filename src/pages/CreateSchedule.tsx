@@ -155,7 +155,7 @@ export default function CreateSchedule() {
                 onChange={(e) => setQuestion(e.target.value)}
                 rows={3}
                 placeholder="When should we meet?"
-                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-hidden focus:border-primary-400 resize-none"
               />
               {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
             </div>
@@ -166,7 +166,7 @@ export default function CreateSchedule() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
                 placeholder="Add context for your group..."
-                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 resize-none"
+                className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-hidden focus:border-primary-400 resize-none"
               />
             </div>
             <div>

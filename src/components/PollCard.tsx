@@ -29,7 +29,7 @@ export default function PollCard({ poll }: { poll: Poll }) {
     <button
       type="button"
       onClick={() => navigate(isActive ? `/poll/${poll.id}` : `/poll/${poll.id}/results`)}
-      className="w-full rounded-2xl bg-white dark:bg-gray-800 p-4 text-left shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
+      className="w-full rounded-2xl bg-white dark:bg-gray-800 p-4 text-left shadow-xs hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
     >
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-1.5 flex-wrap">

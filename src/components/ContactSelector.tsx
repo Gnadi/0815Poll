@@ -99,21 +99,21 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Name"
-            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-hidden focus:border-primary-400"
           />
           <input
             type="email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
             placeholder="Email address"
-            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-hidden focus:border-primary-400"
           />
           <input
             type="tel"
             value={newPhone}
             onChange={(e) => setNewPhone(e.target.value)}
             placeholder="Phone number (optional, for SMS)"
-            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm outline-hidden focus:border-primary-400"
           />
           <div className="flex gap-2">
             <button
@@ -144,7 +144,7 @@ export default function ContactSelector({ selected, onChange }: ContactSelectorP
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search contacts…"
-            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 py-2 pl-9 pr-8 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 py-2 pl-9 pr-8 text-sm outline-hidden focus:border-primary-400"
           />
           {search && (
             <button

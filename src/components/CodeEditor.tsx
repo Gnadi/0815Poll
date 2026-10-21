@@ -57,7 +57,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
         autoCapitalize="off"
         autoComplete="off"
         autoCorrect="off"
-        className="flex-1 bg-transparent text-[#e2e8f0] caret-white resize-none outline-none py-4 pr-4 overflow-auto whitespace-pre tab-[4]"
+        className="flex-1 bg-transparent text-[#e2e8f0] caret-white resize-none outline-hidden py-4 pr-4 overflow-auto whitespace-pre tab-4"
         style={{ tabSize: 4 }}
       />
     </div>

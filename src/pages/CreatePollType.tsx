@@ -86,7 +86,7 @@ export default function CreatePollType() {
               key={pt.type}
               type="button"
               onClick={() => navigate(pt.route)}
-              className="rounded-2xl bg-white dark:bg-gray-800 p-5 shadow-sm border border-gray-100 dark:border-gray-700 text-left hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all group lg:p-6"
+              className="rounded-2xl bg-white dark:bg-gray-800 p-5 shadow-xs border border-gray-100 dark:border-gray-700 text-left hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all group lg:p-6"
             >
               <div className="flex items-start gap-4 mb-4">
                 <div className={`rounded-xl p-3 ${pt.color}`}>

@@ -83,7 +83,7 @@ function PhoneMockup() {
           {/* Notch */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-5 bg-gray-900 rounded-full z-10" />
           {/* Screen */}
-          <div className="rounded-[2rem] bg-white overflow-hidden" style={{ minHeight: 420 }}>
+          <div className="rounded-4xl bg-white overflow-hidden" style={{ minHeight: 420 }}>
             {/* Status bar */}
             <div className="bg-white px-4 pt-6 pb-1 flex justify-between items-center">
               <span className="text-[9px] font-semibold text-gray-400 tracking-wider">FINAL RESULTS</span>
@@ -126,7 +126,7 @@ function PhoneMockup() {
                   </div>
                 </div>
                 <div className="absolute" style={{ top: '60%', left: '30%', transform: 'translate(-50%,-50%)' }}>
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white flex items-center justify-center shadow" style={{ backgroundColor: BLUE + 'aa' }}>
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white flex items-center justify-center shadow-sm" style={{ backgroundColor: BLUE + 'aa' }}>
                     <div className="w-1.5 h-1.5 bg-white rounded-full" />
                   </div>
                 </div>
@@ -184,7 +184,7 @@ function CustomEditorMockup() {
             {tabs.map((tab, i) => (
               <span
                 key={tab}
-                className="px-2.5 py-0.5 rounded text-[10px] font-mono"
+                className="px-2.5 py-0.5 rounded-sm text-[10px] font-mono"
                 style={
                   i === 0
                     ? { backgroundColor: '#1e2030', color: '#e2e8f0' }
@@ -311,7 +311,7 @@ export default function LandingPage() {
       {/* Lets keyboard users skip the sticky nav and its in-page anchors. */}
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-gray-900 focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white dark:focus:bg-white dark:focus:text-gray-900"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-60 focus:rounded-lg focus:bg-gray-900 focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white dark:focus:bg-white dark:focus:text-gray-900"
       >
         Skip to content
       </a>
@@ -380,7 +380,7 @@ export default function LandingPage() {
                 <span className="text-xs font-semibold text-blue-700 dark:text-blue-400">100% Free &amp; Open Source</span>
               </div>
             </div>
-            <h1 className="text-4xl font-extrabold leading-tight text-gray-900 dark:text-white md:text-5xl lg:text-[3.25rem]">
+            <h1 className="text-4xl font-extrabold leading-tight text-gray-900 dark:text-white md:text-5xl md:leading-none lg:text-[3.25rem]">
               Every kind of poll.<br />
               <span className="dark:text-blue-400" style={{ color: BLUE }}>Completely free.</span>
             </h1>
@@ -448,7 +448,7 @@ export default function LandingPage() {
                   <Sliders className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                   <span className="text-xs font-semibold text-purple-700 dark:text-purple-400">Custom Poll Editor</span>
                 </div>
-                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl leading-tight">
+                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl leading-tight md:leading-10">
                   Your poll,<br />your rules.
                 </h2>
                 <p className="mt-4 text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -505,7 +505,7 @@ export default function LandingPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 mb-6">
                 <Github className="h-6 w-6 text-white" />
               </div>
-              <h2 className="text-3xl font-extrabold text-white md:text-4xl leading-tight">
+              <h2 className="text-3xl font-extrabold text-white md:text-4xl leading-tight md:leading-10">
                 Free forever.<br />Open source always.
               </h2>
               <p className="mt-4 text-white/60 leading-relaxed">

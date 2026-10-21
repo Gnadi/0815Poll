@@ -31,7 +31,7 @@ export default function RichEditor({ content, onChange, placeholder }: RichEdito
     },
     editorProps: {
       attributes: {
-        class: 'prose max-w-none focus:outline-none min-h-[160px] text-sm text-gray-800 p-3',
+        class: 'prose max-w-none focus:outline-hidden min-h-[160px] text-sm text-gray-800 p-3',
       },
     },
   })

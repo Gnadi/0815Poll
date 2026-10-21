@@ -100,7 +100,7 @@ export default function Auth() {
         </div>
 
         {/* Tab switcher */}
-        <div className="mb-6 flex rounded-2xl bg-white dark:bg-gray-800 p-1 shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="mb-6 flex rounded-2xl bg-white dark:bg-gray-800 p-1 shadow-xs border border-gray-100 dark:border-gray-700">
           {(['login', 'register'] as const).map((m) => (
             <button
               key={m}
@@ -108,7 +108,7 @@ export default function Auth() {
               onClick={() => { setMode(m); setError('') }}
               className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 mode === m
-                  ? 'bg-primary-500 text-white shadow'
+                  ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
@@ -126,7 +126,7 @@ export default function Auth() {
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-hidden focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
                 placeholder="Your name"
                 autoComplete="name"
               />
@@ -139,7 +139,7 @@ export default function Auth() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-hidden focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
               placeholder="you@example.com"
               autoComplete="email"
             />
@@ -151,7 +151,7 @@ export default function Auth() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-hidden focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
               placeholder="••••••••"
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             />
@@ -164,7 +164,7 @@ export default function Auth() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 text-sm outline-hidden focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900"
                 placeholder="••••••••"
                 autoComplete="new-password"
               />
@@ -199,7 +199,7 @@ export default function Auth() {
           type="button"
           onClick={handleGoogle}
           disabled={submitting}
-          className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors shadow-sm"
+          className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors shadow-xs"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

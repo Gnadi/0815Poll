@@ -303,7 +303,7 @@ ${safeHtml}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What's the topic of this poll?"
-            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-hidden focus:border-primary-400"
           />
           {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
         </div>
@@ -328,7 +328,7 @@ ${safeHtml}
                   value={opt.name}
                   onChange={(e) => renameOption(idx, e.target.value)}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex-1 bg-transparent text-sm font-medium text-gray-800 dark:text-white outline-none min-w-0"
+                  className="flex-1 bg-transparent text-sm font-medium text-gray-800 dark:text-white outline-hidden min-w-0"
                 />
                 <button
                   type="button"
@@ -500,7 +500,7 @@ ${safeHtml}
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="What's the topic of this poll?"
-                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm outline-none focus:border-primary-400"
+                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm outline-hidden focus:border-primary-400"
                 />
                 {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
               </div>
@@ -573,7 +573,7 @@ ${safeHtml}
                       value={opt.name}
                       onChange={(e) => renameOption(idx, e.target.value)}
                       onClick={(e) => e.stopPropagation()}
-                      className="flex-1 bg-transparent text-sm font-medium text-gray-800 dark:text-white outline-none min-w-0"
+                      className="flex-1 bg-transparent text-sm font-medium text-gray-800 dark:text-white outline-hidden min-w-0"
                     />
                     <div className="hidden group-hover:flex items-center gap-0.5">
                       <button
@@ -724,7 +724,7 @@ ${safeHtml}
                   title="Live Preview"
                   sandbox="allow-scripts"
               referrerPolicy="no-referrer"
-                  className="w-full border-0 rounded-xl bg-white dark:bg-gray-700 shadow-sm"
+                  className="w-full border-0 rounded-xl bg-white dark:bg-gray-700 shadow-xs"
                   style={{ minHeight: '200px', height: '250px' }}
                 />
               </div>

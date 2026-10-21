@@ -1,6 +1,55 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-primary-50: #eef0fd;
+  --color-primary-100: #dce0fb;
+  --color-primary-200: #b9c1f7;
+  --color-primary-300: #9699f4;
+  --color-primary-400: #7a7cf1;
+  --color-primary-500: #5d5fef;
+  --color-primary-600: #4b4dcc;
+  --color-primary-700: #393ba9;
+  --color-primary-800: #2a2c86;
+  --color-primary-900: #1c1d63;
+
+  --color-app-bg: #f6f6f8;
+  --color-dark-bg: #111121;
+
+  --font-sans: Inter, system-ui, sans-serif;
+}
+
+/*
+  Tailwind 4 changed three defaults the app was designed on: borders take
+  currentcolor instead of gray-200, placeholders a half-transparent text color
+  instead of gray-400, and buttons the default cursor instead of a pointer.
+  These rules keep the v3 look; an element that wants otherwise sets its own
+  utility, which wins over the base layer.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 
 @layer base {
   body {
@@ -16,12 +65,6 @@
 @media (prefers-color-scheme: dark) {
   html:not(.dark):not([class]) body {
     background-color: #f6f6f8;
-  }
-}
-
-@layer utilities {
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
