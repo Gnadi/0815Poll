@@ -303,7 +303,7 @@ ${safeHtml}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What's the topic of this poll?"
-            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm outline-hidden focus:border-primary-400"
+            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-hidden focus:border-primary-400"
           />
           {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
         </div>
@@ -500,7 +500,7 @@ ${safeHtml}
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="What's the topic of this poll?"
-                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm outline-hidden focus:border-primary-400"
+                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2.5 text-sm outline-hidden focus:border-primary-400"
                 />
                 {errors.question && <p className="mt-1 text-xs text-red-500">{errors.question}</p>}
               </div>
