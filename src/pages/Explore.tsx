@@ -79,7 +79,7 @@ export default function Explore() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search polls..."
-            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 pl-10 pr-4 py-3 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 pl-10 pr-4 py-3 text-sm outline-hidden focus:border-primary-400"
           />
         </div>
 

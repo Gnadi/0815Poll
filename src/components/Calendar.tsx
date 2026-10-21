@@ -36,7 +36,7 @@ export default function Calendar({ selectedDates, onToggleDate, minDate }: Calen
   const days = eachDayOfInterval({ start: calStart, end: calEnd })
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-gray-800 p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+    <div className="rounded-2xl bg-white dark:bg-gray-800 p-4 shadow-xs border border-gray-100 dark:border-gray-700">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-4">
         <button

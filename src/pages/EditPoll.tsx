@@ -17,7 +17,7 @@ import { ALL_DAY, formatSlotTime } from '../types'
 import type { LocationOption, Poll, PollOption, TimeSlot } from '../types'
 
 const inputCls =
-  'w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-none focus:border-primary-400 disabled:opacity-60'
+  'w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm outline-hidden focus:border-primary-400 disabled:opacity-60'
 
 const DT_FORMAT = "yyyy-MM-dd'T'HH:mm"
 

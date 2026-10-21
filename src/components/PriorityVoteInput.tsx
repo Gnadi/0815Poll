@@ -44,7 +44,7 @@ export default function PriorityVoteInput({ options, distribution, votingPower, 
           <div
             key={opt.id}
             className={`rounded-2xl border bg-white dark:bg-gray-800 overflow-hidden transition-all ${
-              allocated > 0 ? 'border-blue-300 dark:border-blue-700 shadow-sm' : 'border-gray-200 dark:border-gray-700'
+              allocated > 0 ? 'border-blue-300 dark:border-blue-700 shadow-xs' : 'border-gray-200 dark:border-gray-700'
             }`}
           >
             <div className="px-4 py-3 flex items-center gap-3">

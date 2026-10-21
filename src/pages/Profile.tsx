@@ -150,7 +150,7 @@ export default function Profile() {
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 text-sm outline-none focus:border-primary-400"
+                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 text-sm outline-hidden focus:border-primary-400"
                   autoFocus
                 />
                 <button type="button" aria-label="Save name" onClick={saveName} className="text-green-500 hover:text-green-600">

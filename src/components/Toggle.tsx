@@ -19,7 +19,7 @@ export default function Toggle({ checked, onChange, label, description }: Toggle
         {description && <span className="block text-xs text-gray-500 dark:text-gray-400">{description}</span>}
       </span>
       <span
-        className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
+        className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ease-in-out focus:outline-hidden ${
           checked ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-600'
         }`}
       >

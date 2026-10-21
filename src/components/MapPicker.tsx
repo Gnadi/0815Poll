@@ -161,14 +161,14 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
             onChange={(e) => handleSearchInput(e.target.value)}
             onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
             placeholder="Search for a location..."
-            className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-9 py-2 text-sm outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-9 py-2 text-sm outline-hidden focus:border-primary-400"
           />
           {searching && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />
           )}
         </div>
         {showDropdown && searchResults.length > 0 && (
-          <ul className="absolute z-[1000] w-full mt-1 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+          <ul className="absolute z-1000 w-full mt-1 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
             {searchResults.map((result, i) => (
               <li key={i}>
                 <button
@@ -196,7 +196,7 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm mb-1 outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm mb-1 outline-hidden focus:border-primary-400"
             placeholder="Location name"
           />
           <p className="text-xs text-gray-500 mb-3">{pending.address}</p>
@@ -241,7 +241,7 @@ export default function MapPicker({ locations, onAddLocation, onRemoveLocation }
           )}
         </MapContainer>
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-xs">
             <Loader2 className="h-6 w-6 text-primary-500 animate-spin" />
           </div>
         )}

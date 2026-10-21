@@ -473,7 +473,7 @@ export default function PollVote() {
                       ? 'border-primary-500 ring-2 ring-primary-200 shadow-md'
                       : voted
                       ? 'border-gray-100 dark:border-gray-700 opacity-60 cursor-default'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:shadow-sm'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:shadow-xs'
                   }`}
                 >
                   {/* Rendered custom HTML in sandboxed iframe */}
@@ -573,7 +573,7 @@ export default function PollVote() {
                         ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800 shadow-md'
                         : voted
                         ? 'border-gray-100 dark:border-gray-700 cursor-default'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:shadow-sm'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:shadow-xs'
                     }`}
                   >
                     {/* Image */}
@@ -614,7 +614,7 @@ export default function PollVote() {
                           <span className="text-xs text-gray-400 dark:text-gray-500 truncate">No caption</span>
                         )}
                         {isMultiple ? (
-                          <div className={`h-4 w-4 shrink-0 rounded-sm border-2 flex items-center justify-center ${
+                          <div className={`h-4 w-4 shrink-0 rounded-xs border-2 flex items-center justify-center ${
                             isActive ? 'border-primary-500 bg-primary-500' : 'border-gray-300 dark:border-gray-600'
                           }`}>
                             {isActive && (

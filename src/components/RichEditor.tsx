@@ -19,14 +19,19 @@ interface RichEditorProps {
 
 export default function RichEditor({ content, onChange, placeholder }: RichEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit],
+    // StarterKit 3 added Link and Underline; they stay off so the editor
+    // produces the same HTML it did on Tiptap 2.
+    extensions: [StarterKit.configure({ link: false, underline: false })],
     content,
+    // Tiptap 3 no longer re-renders on every transaction by default, which
+    // would leave the toolbar's active states stale.
+    shouldRerenderOnTransaction: true,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML())
     },
     editorProps: {
       attributes: {
-        class: 'prose max-w-none focus:outline-none min-h-[160px] text-sm text-gray-800 p-3',
+        class: 'prose max-w-none focus:outline-hidden min-h-[160px] text-sm text-gray-800 p-3',
       },
     },
   })
