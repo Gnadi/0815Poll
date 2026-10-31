@@ -7,6 +7,7 @@ import { useTheme } from '../contexts/ThemeContext'
 const BASE_URL = 'https://flexpoll.app'
 
 const GITHUB_URL = 'https://github.com/gnadi/0815poll'
+const BLOG_URL = 'https://blog.gnadlinger.me/blog/flexpoll/'
 
 // Answers are kept to things the code actually does — anonymous voting really
 // does pass a null uid (src/pages/PollVote.tsx), the licence really is MIT.
@@ -326,6 +327,15 @@ export default function LandingPage() {
               <a href="#custom-editor" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Custom Editor</a>
               <a href="#open-source" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Open Source</a>
               <a href="#faq" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">FAQ</a>
+              <a
+                href={BLOG_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                Blog
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </a>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -653,6 +663,14 @@ export default function LandingPage() {
             <Link to="/explore" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Explore polls</Link>
             <Link to="/create" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Create a poll</Link>
             <a href="#faq" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">FAQ</a>
+            <a
+              href={BLOG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              Blog: Why I built FlexPoll
+            </a>
             <a
               href={`${GITHUB_URL}/blob/main/LICENSE.txt`}
               target="_blank"
